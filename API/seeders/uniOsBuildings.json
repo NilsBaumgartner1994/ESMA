@@ -1,0 +1,386 @@
+[
+    {
+        "short": "01",
+        "name": "Costa Rica Zentrum",
+        "latitude": 52.270494,
+        "longitude": 8.047908
+    },
+    {
+        "short": "02",
+        "name": "Institut für Geographie",
+        "latitude": 52.27153,
+        "longitude": 8.046059
+    },
+    {
+        "short": "03",
+        "name": "Institut für Kulturgeschichte der Frühen Neuzeit (IKFN), Institut für Migrationsforschung und Interkulturelle Studien (IMIS), Osnabrücker Friedensgespräche (Geschäftsstelle)",
+        "latitude": 52.271685,
+        "longitude": 8.046098
+    },
+    {
+        "short": "04",
+        "name": "Dekanat, Institut für Sozialwissenschaften, Jean Monnet Centre of Excellence in European Studies, Zentrum für Demokratie- und Friedensforschung (ZeDF)",
+        "latitude": 52.271533,
+        "longitude": 8.047637
+    },
+    {
+        "short": "05",
+        "name": "Kunst/Kunstpädagogik, Textiles Gestalten, Universitätsbibliothek, Bereichsbibliothek Sozialwissenschaften",
+        "latitude": 52.271242,
+        "longitude": 8.047786
+    },
+    {
+        "short": "06",
+        "name": "Gästehaus",
+        "latitude": 52.279317,
+        "longitude": 8.035927
+    },
+    {
+        "short": "07",
+        "name": "Institut für Germanistik",
+        "latitude": 52.272667,
+        "longitude": 8.045966
+    },
+    {
+        "short": "08",
+        "name": "Allgemeiner Studierendenausschuss (AStA)",
+        "latitude": 52.272727,
+        "longitude": 8.045838
+    },
+    {
+        "short": "09",
+        "name": "Universitätsbibliothek, Zimeliensaal, Universitätsverlag Osnabrück",
+        "latitude": 52.272902,
+        "longitude": 8.045499
+    },
+    {
+        "short": "10",
+        "name": "Universitätsbibliothek, Bibliothek Alte Münze – Bibliothekszentrale und Lesesäle Philologien/Kulturwissenschaften",
+        "latitude": 52.273248,
+        "longitude": 8.045366
+    },
+    {
+        "short": "11",
+        "name": "Institut für Evangelische Theologie, Institut für Musikwissenschaft und Musikpädagogik",
+        "latitude": 52.271396,
+        "longitude": 8.044218
+    },
+    {
+        "short": "12",
+        "name": "Dezernat 2 – Personal, Dezernat 3 – Finanzen",
+        "latitude": 52.271668,
+        "longitude": 8.043516
+    },
+    {
+        "short": "13",
+        "name": "Kommunikation und Marketing, Präsidium, Dezernat 4 – Akademische Angelegenheiten. Justitiariat. Zentrale Verwaltungsangelegenheiten",
+        "latitude": 52.271616,
+        "longitude": 8.044814
+    },
+    {
+        "short": "14",
+        "name": "Kommunikation und Marketing, Druckerei",
+        "latitude": 52.271825,
+        "longitude": 8.044249
+    },
+    {
+        "short": "15",
+        "name": "Dekanat, Institut für Psychologie, Servicestelle Lehrevaluation",
+        "latitude": 52.271313,
+        "longitude": 8.046097
+    },
+    {
+        "short": "17",
+        "name": "Institut für Katholische Theologie",
+        "latitude": 52.270194,
+        "longitude": 8.047119
+    },
+    {
+        "short": "18",
+        "name": "Historisches Seminar",
+        "latitude": 52.270012,
+        "longitude": 8.046762
+    },
+    {
+        "short": "19",
+        "name": "StudiOS – Studierenden Information Osnabrück, Zentrale Studienberatung (ZSB), UniShop, Studienfinanzierung",
+        "latitude": 52.271648,
+        "longitude": 8.045221
+    },
+    {
+        "short": "20",
+        "name": "Institut für Finanz- und Steuerrecht",
+        "latitude": 52.272065,
+        "longitude": 8.038838
+    },
+    {
+        "short": "21",
+        "name": "Universitätsbibliothek, Bereichsbibliothek Rechts- und Wirtschaftswissenschaften",
+        "latitude": 52.27216,
+        "longitude": 8.039361
+    },
+    {
+        "short": "22",
+        "name": "Fachbereich 9, Fachbereich 10 – Rechtswissenschaften, Universitätsbibliothek, Bereichsbibliothek Rechts- und Wirtschaftswissenschaften",
+        "latitude": 52.272623,
+        "longitude": 8.039988
+    },
+    {
+        "short": "24",
+        "name": "Institut für Sport- und Bewegungswissenschaften, Zentrum für Hochschulsport",
+        "latitude": 52.268306,
+        "longitude": 8.031542
+    },
+    {
+        "short": "25",
+        "name": "Institut für Kommunalrecht und Verwaltungswissenschaft",
+        "latitude": 52.272045,
+        "longitude": 8.038634
+    },
+    {
+        "short": "26",
+        "name": "Institut für Erziehungswissenschaft",
+        "latitude": 52.272971,
+        "longitude": 8.038044
+    },
+    {
+        "short": "27",
+        "name": "Institut für Kommunalrecht und Verwaltungswissenschaft",
+        "latitude": 52.272011,
+        "longitude": 8.038443
+    },
+    {
+        "short": "28",
+        "name": "Institut für Handels- und Wirtschaftsrecht",
+        "latitude": 52.272874,
+        "longitude": 8.039264
+    },
+    {
+        "short": "29",
+        "name": "Institut für empirische Wirtschaftsforschung",
+        "latitude": 52.274015,
+        "longitude": 8.037015
+    },
+    {
+        "short": "31",
+        "name": "Rechenzentrum",
+        "latitude": 52.283703,
+        "longitude": 8.025339
+    },
+    {
+        "short": "32",
+        "name": "Dekanat, Physik",
+        "latitude": 52.28469,
+        "longitude": 8.02481
+    },
+    {
+        "short": "33",
+        "name": "Physik, Feinmechanische Werkstatt",
+        "latitude": 52.285229,
+        "longitude": 8.024308
+    },
+    {
+        "short": "34",
+        "name": "Institut für Chemie neuer Materialien",
+        "latitude": 52.284699,
+        "longitude": 8.0242
+    },
+    {
+        "short": "35",
+        "name": "Biologie, Schülerlabor Explain-OS, Dekanat",
+        "latitude": 52.282657,
+        "longitude": 8.022725
+    },
+    {
+        "short": "36",
+        "name": "Biologie",
+        "latitude": 52.28258,
+        "longitude": 8.021589
+    },
+    {
+        "short": "37",
+        "name": "Biologie",
+        "latitude": 52.282724,
+        "longitude": 8.020623
+    },
+    {
+        "short": "38",
+        "name": "Zentrum für zelluläre Nanoanalytik (CellNanOs)",
+        "latitude": 52.282762,
+        "longitude": 8.020237
+    },
+    {
+        "short": "39",
+        "name": "Biologie",
+        "latitude": 52.282822,
+        "longitude": 8.019912
+    },
+    {
+        "short": "41",
+        "name": "Dekanat, Institut für Anglistik und Amerikanistik, Institut für Germanistik, Institut für Romanistik/Latinistik",
+        "latitude": 52.272256,
+        "longitude": 8.041963
+    },
+    {
+        "short": "42",
+        "name": "Zentrum für Digitale Lehre, Campus Management und Hochschuldidaktik (virtUOS)",
+        "latitude": 52.272475,
+        "longitude": 8.04101
+    },
+    {
+        "short": "43",
+        "name": "Dekanat, Institut für Erziehungswissenschaft",
+        "latitude": 52.272724,
+        "longitude": 8.040921
+    },
+    {
+        "short": "44",
+        "name": "European Legal Studies Institute",
+        "latitude": 52.26933,
+        "longitude": 8.048218
+    },
+    {
+        "short": "45",
+        "name": "Wirtschaftswissenschaften",
+        "latitude": 52.272989,
+        "longitude": 8.041168
+    },
+    {
+        "short": "46",
+        "name": "Kunsthistorisches Institut",
+        "latitude": 52.27302,
+        "longitude": 8.041374
+    },
+    {
+        "short": "47",
+        "name": "Kunsthistorisches Institut",
+        "latitude": 52.273047,
+        "longitude": 8.041726
+    },
+    {
+        "short": "49",
+        "name": "Dezernat 6 – Gebäudemanagement",
+        "latitude": 52.272879,
+        "longitude": 8.042362
+    },
+    {
+        "short": "50",
+        "name": "Wachsbleiche, Institut für Kognitionswissenschaft (IKW)",
+        "latitude": 52.28516,
+        "longitude": 8.03688
+    },
+    {
+        "short": "51",
+        "name": "Institut für Islamische Theologie",
+        "latitude": 52.27324,
+        "longitude": 8.046844
+    },
+    {
+        "short": "52",
+        "name": "Fachgebiet Sachunterricht, Gleichstellungsbüro, Kompetenzzentrum für Lehrerfortbildung, Sprachenzentrum, Zentrum für Lehrerbildung (ZLB)",
+        "latitude": 52.272274,
+        "longitude": 8.047313
+    },
+    {
+        "short": "54",
+        "name": "Institut für Psychologie",
+        "latitude": 52.284187,
+        "longitude": 8.050117
+    },
+    {
+        "short": "61",
+        "name": "Botanischer Garten",
+        "latitude": 52.282014,
+        "longitude": 8.026781
+    },
+    {
+        "short": "62",
+        "name": "Dezernat 6 – Gebäudemanagement, Tischlerei",
+        "latitude": 52.282341,
+        "longitude": 8.027128
+    },
+    {
+        "short": "63",
+        "name": "Botanischer Garten",
+        "latitude": 52.282408,
+        "longitude": 8.027766
+    },
+    {
+        "short": "64",
+        "name": "Botanischer Garten, Grüne Schule, Regenwaldhaus, Bohnenkamp-Haus im Botanischen Garten",
+        "latitude": 52.282096,
+        "longitude": 8.02825
+    },
+    {
+        "short": "66",
+        "name": "Angewandte Systemwissenschaft, Institut für Umweltsystemforschung (IUSF)",
+        "latitude": 52.283068,
+        "longitude": 8.022635
+    },
+    {
+        "short": "67",
+        "name": "Biologie",
+        "latitude": 52.283475,
+        "longitude": 8.022885
+    },
+    {
+        "short": "68",
+        "name": "Institut für Psychologie",
+        "latitude": 52.285792,
+        "longitude": 8.020599
+    },
+    {
+        "short": "69",
+        "name": "Dekanat, Institut für Mathematik, Fachbereich 8 – Humanwissenschaften, Institut für Philosophie, Center for Early Childhood and Education Research (CEDER)",
+        "latitude": 52.284226,
+        "longitude": 8.026065
+    },
+    {
+        "short": "72",
+        "name": "Institut für interdisziplinäre Dermatologische Prävention und Rehabilitation (iDerm) Betriebsgesellschaft gGmbH, NIB",
+        "latitude": 52.2797,
+        "longitude": 8.003635
+    },
+    {
+        "short": "92",
+        "name": "Allgemeiner Studierendenausschuss (AStA)",
+        "latitude": 52.285499,
+        "longitude": 8.020658
+    },
+    {
+        "short": "93",
+        "name": "Institut für Gesundheitsforschung und Bildung",
+        "latitude": 52.285084,
+        "longitude": 8.020677
+    },
+    {
+        "short": "94",
+        "name": "Rechenzentrum",
+        "latitude": 52.285417,
+        "longitude": 8.022016
+    },
+    {
+        "short": "95",
+        "name": "Dezernat 6 – Gebäudemanagement",
+        "latitude": 52.285686,
+        "longitude": 8.022079
+    },
+    {
+        "short": "96",
+        "name": "Universitätsbibliothek, Bereichsbibliothek Naturwissenschaften/Mathematik",
+        "latitude": 52.286057,
+        "longitude": 8.023214
+    },
+    {
+        "short": "ICO",
+        "name": "DFKI Robotics Innovation Center, GesundheitsCampus Osnabrück, Transfer- und Innovationsmanagement",
+        "latitude": 52.287679,
+        "longitude": 8.018003
+    },
+    {
+        "short": "SL",
+        "name": "Hörsaalgebäude",
+        "latitude": 52.284967,
+        "longitude": 8.022886
+    }
+]

@@ -1,0 +1,16 @@
+{
+  "server": {
+    "port": 3001,
+    "metricsPort": 9999,
+    "redisPort": 6379,
+    "serverAPIVersion": "3.0.0",
+    "redisAlreadyRunning":true,
+    "email": {
+      "service": "gmail",
+      "auth": {
+        "user": "swosy.swos@gmail.com",
+        "pass": "Cola4Live!"
+      }
+    }
+  }
+}

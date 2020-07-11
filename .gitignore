@@ -1,0 +1,12 @@
+*.DS_Store
+*.log
+*/node_modules/
+*/bundle.js
+*/package-lock.json
+*.trace
+*.lock
+*.xcworkspacedata
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks\.plist
+
+
+.idea/

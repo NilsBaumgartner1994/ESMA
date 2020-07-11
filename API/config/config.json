@@ -1,0 +1,12 @@
+{
+  "production": {
+    "username": "root",
+    "password": "MySQLIstDasBesteAufDerWelt",
+    "database": "swosy",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 0,
+    "logging": false,
+    "insecureAuth": true
+  }
+}
