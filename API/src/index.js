@@ -28,18 +28,10 @@ import path from "path";
 import Express from "express"; //express as server
 import MyAccessControl from "./module/MyAccessControl"; //Database handler
 import MyExpressRouter from "./module/MyExpressRouter"; //Routing Module
-import EnvironmentRecorder from "./schedules/EnvironmentRecorder"; //Tracking System Informations etc.
 import FirebaseAPI from "./module/FirebaseAPI"; //Push Notifications sending
 import MyLogger from "./module/MyLogger"; //Logger Module
 import CustomSchedule from "./schedules/CustomSchedule"; //A Custom Schedule for testing and renaming
-import MealParseSchedule from "./schedules/MealParseSchedule"; //Mensa Meal parsing
-import MealRatingSchedule from "./schedules/MealRatingSchedule"; //Meal rating schedule
-import NewsSchedule from "./schedules/NewsSchedule"; //News parsing
-import FavoriteMealReminderSchedule from "./schedules/FavoriteMealReminderSchedule"; //Push Notification Reminders
-import MealFeedbackToCanteenSchedule from "./schedules/MealFeedbackToCanteenSchedule"; //Meal Rating and Comments send to Canteens
-import WasherSchedule from "./schedules/WasherSchedule";
 import UserInactivitySchedule from "./schedules/UserInactivitySchedule";
-import EmergencyCareCanteenSchedule from "./schedules/EmergencyCareCanteenSchedule";
 import DatabaseBackupSchedule from "./schedules/DatabaseBackupSchedule";
 import FancyTerminal from "./helper/FancyTerminal"; //backup for Database
 
@@ -385,24 +377,7 @@ function createWorkerModules(workerID) {
 function createMasterSchedules() {
     addWorkerOutput("Master", "createMasterSchedules");
     customSchedule = new CustomSchedule(serverAPILogger, models); //we may want to run our own things
-    mealParseSchedule = new MealParseSchedule(serverAPILogger, models); //we need a meal parser
-    mealRatingSchedule = new MealRatingSchedule(serverAPILogger, models);
-    emergencyCareCanteenSchedule = new EmergencyCareCanteenSchedule(serverAPILogger, models); //in case of orders for meals
-    mealFeedbackToCanteenSchedule = new MealFeedbackToCanteenSchedule(serverAPILogger, models); //meal feedbacks will be send to canteen
     databaseBackupSchedule = new DatabaseBackupSchedule(serverAPILogger, models); //we need a database backup schedule
-    favoriteMealReminderSchedule = new FavoriteMealReminderSchedule( //a favorite meal schedule
-        serverAPILogger,
-        models,
-        firebaseAPI
-    );
-    newsSchedule = new NewsSchedule(serverAPILogger, models); // a news schedule
-    washerSchedule = new WasherSchedule(serverAPILogger, models, firebaseAPI); //a washer schedule
-    environmentRecorder = new EnvironmentRecorder( //an environment recorder
-        serverAPILogger,
-        environmentLogger,
-        systemLogger,
-        redisClient
-    );
     userInactiviySchedule = new UserInactivitySchedule( //a user inactivity checker
         serverAPILogger,
         models,

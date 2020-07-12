@@ -1,42 +1,22 @@
 const config = require("./../config.json")["server"];
 
-import React from 'react';
 import HttpStatus from 'http-status-codes';
 import SystemInformationHelper from '../helper/SystemInformationHelper';
 
-import AddressController from "../controllers/AddressController";
-import BuildingController from "../controllers/BuildingController";
-import CanteenController from "../controllers/CanteenController";
 import DeviceController from "../controllers/DeviceController";
 import FriendController from "../controllers/FriendController";
-import GrantListController from "../controllers/GrantListController";
 import LoginController from "../controllers/LoginController";
-import MarkingController from "../controllers/MarkingController";
-import TableUpdateTimesController from "../controllers/TableUpdateTimesController";
-import MealController from "../controllers/MealController";
-import MealRatingController from "../controllers/MealRatingController";
-import MealCommentController from "../controllers/MealCommentController";
-import MeetingController from "../controllers/MeetingController";
-import NewsController from "../controllers/NewsController";
 import PermissionController from "../controllers/PermissionController";
-import ResidenceController from "../controllers/ResidenceController";
 import RoleController from "../controllers/RoleController";
 import StreamViewController from "../controllers/StreamViewController";
 import UserController from "../controllers/UserController";
 import UserRoleController from "../controllers/UserRoleController";
-import UniversityController from "../controllers/UniversityController";
 import FeedbackController from "../controllers/FeedbackController";
-import InformationController from "../controllers/InformationController";
 
-import OrderController from "../controllers/OrderController";
-import OrderDetailController from "../controllers/OrderDetailController";
-
-import WasherController from "../controllers/WasherController";
 import MyTokenHelper from "../helper/MyTokenHelper";
 import MetricsHelper from "../helper/MetricsHelper";
 import DateHelper from "../helper/DateHelper";
 import DefaultPhotoHelper from "../helper/DefaultPhotoHelper";
-import WasherJobController from "../controllers/WasherJobController";
 import DefaultControllerHelper from "../helper/DefaultControllerHelper";
 import Function_BackupController from "../controllers/Function_BackupController";
 import MyAccessControl from "./MyAccessControl";
@@ -505,34 +485,15 @@ export default class MyExpressRouter {
         this.photoHelper = new DefaultPhotoHelper(logger, models, instance);
 
         //Tables
-        this.addressController = new AddressController(logger, models, expressApp, myAccessControl, instance);
-        this.buildingController = new BuildingController(logger, models, expressApp, myAccessControl, instance);
-        this.canteenController = new CanteenController(logger, models, expressApp, myAccessControl, instance);
         this.deviceController = new DeviceController(logger, models, expressApp, myAccessControl, instance);
         this.friendController = new FriendController(logger, models, expressApp, myAccessControl, instance);
-        this.grantListController = new GrantListController(logger, models, expressApp, myAccessControl, instance);
         this.loginController = new LoginController(logger, models, expressApp, myAccessControl, instance);
-        this.markingController = new MarkingController(logger, models, expressApp, myAccessControl, instance);
-        this.tableUpdateTimesController = new TableUpdateTimesController(logger, models, expressApp, myAccessControl, instance);
-        this.mealController = new MealController(logger, models, expressApp, myAccessControl, instance);
-        this.mealRatingController = new MealRatingController(logger, models, expressApp, myAccessControl, instance);
-        this.mealCommentController = new MealCommentController(logger, models, expressApp, myAccessControl, instance);
-        this.meetingController = new MeetingController(logger, models, expressApp, myAccessControl, instance);
-        this.newsController = new NewsController(logger, models, expressApp, myAccessControl, instance);
         this.permissionController = new PermissionController(logger, models, expressApp, myAccessControl, instance);
-        this.residenceController = new ResidenceController(logger, models, expressApp, myAccessControl, instance);
         this.roleController = new RoleController(logger, models, expressApp, myAccessControl, instance);
         this.streamViewController = new StreamViewController(logger, models, expressApp, myAccessControl, instance);
-        this.universityController = new UniversityController(logger, models, expressApp, myAccessControl, instance);
         this.userController = new UserController(logger, models, expressApp, myAccessControl, instance);
         this.userroleController = new UserRoleController(logger, models, expressApp, myAccessControl, instance);
-        this.washerController = new WasherController(logger, models, expressApp, myAccessControl, instance);
-        this.washerjobController = new WasherJobController(logger, models, expressApp, myAccessControl, instance);
         this.feedbackController = new FeedbackController(logger, models, expressApp, myAccessControl, instance);
-        this.informationController = new InformationController(logger, models, expressApp, myAccessControl, instance);
-
-	this.orderController = new OrderController(logger, models, expressApp, myAccessControl, instance);
-	this.orderdetailController = new OrderDetailController(logger, models, expressApp, myAccessControl, instance);
     }
 
     /**
