@@ -5,46 +5,37 @@
 #                                                           #
 #############################################################
 
-scriptName="MySQL Setup"
+scriptName="Redis Setup"
 
 comments=()
 commands=()
 
 comments+=("Create tmp folder")
-commands+=("mkdir tmp && cd tmp")
+commands+=("mkdir -p tmp && cd tmp")
 
-comments+=("Download Bundle")
-commands+=('wget https://downloads.mysql.com/archives/get/p/23/file/mysql-server_8.0.16-2ubuntu18.04_amd64.deb-bundle.tar')
+comments+=("Download Redis")
+commands+=('wget http://download.redis.io/redis-stable.tar.gz')
 
-comments+=("Untar Download")
-commands+=("tar -xvf mysql-server_8.0.16-2ubuntu18.04_amd64.deb-bundle.tar")
+comments+=("Untar redis")
+commands+=('tar xzvf redis-stable.tar.gz')
 
-comments+=("Installing Libaio1")
-commands+=("sudo apt-get install libaio1")
+comments+=("Move into folder")
+commands+=('cd redis-stable')
 
-comments+=("Installing mysql-common")
-commands+=("dpkg -i mysql-common_8.0.16-2ubuntu18.04_amd64.deb")
+comments+=("Compile redis")
+commands+=('make')
 
-comments+=("Installing mysql-community-client")
-commands+=("dpkg -i mysql-community-client_8.0.16-2ubuntu18.04_amd64.deb")
+comments+=("Install binaries onto the system")
+commands+=('sudo make install')
 
-comments+=("Installing mysql-community-client-core")
-commands+=("dpkg -i mysql-community-client-core_8.0.16-2ubuntu18.04_amd64.deb")
+comments+=("Move back")
+commands+=('cd ..')
 
-comments+=("Installing mysql-client")
-commands+=("dpkg -i mysql-client_8.0.16-2ubuntu18.04_amd64.deb")
-
-comments+=("Installing mysql-community-server-core")
-commands+=("dpkg -i mysql-community-server-core_8.0.16-2ubuntu18.04_amd64.deb")
-
-comments+=("Installing mysql-community-server")
-commands+=("dpkg -i mysql-community-server_8.0.16-2ubuntu18.04_amd64.deb")
-
-comments+=("Installing mysql-server")
-commands+=("dpkg -i mysql-server_8.0.16-2ubuntu18.04_amd64.deb")
+comments+=("Move back")
+commands+=('cd ..')
 
 comments+=("Clean up tmp")
-commands+=("cd .. & rm -rf ./tmp")
+commands+=("rm -rf ./tmp")
 
 
 #############################################################

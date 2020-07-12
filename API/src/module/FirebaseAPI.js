@@ -5,7 +5,7 @@ import path from "path";
 
 const ownPath = fs.realpathSync('.');
 const pathToFirebasePrivateKey = path.resolve(ownPath,"certificates","firebasePrivateKey.json");
-const serviceAccount = require("/home/ESMA/API/certificates/firebasePrivateKey.json");
+const serviceAccount = require("/root/ESMA/API/certificates/firebasePrivateKey.json");
 //const serviceAccount = require(pathToFirebasePrivateKey);
 
 /** SUBSCRIBING TO TOPICS needs to be implemented

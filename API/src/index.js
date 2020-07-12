@@ -42,7 +42,8 @@ const http = require("http"); //if the server cant start as http
 const helmet = require("helmet"); //Security
 const tls = require("tls");
 const cluster = require("cluster"); //distibuting this server on all cores of the server
-const numCPUs = os.cpus().length;
+var numCPUs = os.cpus().length;
+numCPUs = 1;
 const redis = require("redis"); //for caching
 const cors = require("cors"); // for cross origin allow support
 
@@ -52,6 +53,7 @@ const models = require("./../models"); // Sequelize The ORM (Database Models)
 
 const RedisServer = require("redis-server"); //redis server for caching requests
 const redisPort = config.redisPort;
+const redisBinaryPath = config.redisBinaryPath;
 
 var myServerAPILogger,
     serverAPILogger,

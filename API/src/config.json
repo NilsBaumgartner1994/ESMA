@@ -3,8 +3,9 @@
     "port": 3001,
     "metricsPort": 9999,
     "redisPort": 6379,
-    "serverAPIVersion": "3.0.0",
-    "redisAlreadyRunning":true,
+    "redisBinaryPath": "",
+    "serverAPIVersion": "1.0.0",
+    "redisAlreadyRunning":false,
     "email": {
       "service": "gmail",
       "auth": {

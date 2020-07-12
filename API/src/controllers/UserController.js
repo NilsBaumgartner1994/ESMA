@@ -81,12 +81,6 @@ export default class UserController {
         this.expressApp.post(this.routeUserGetNewToken, this.myExpressRouter.middlewareOnlyAuthenticatedViaPlaintextSecret.bind(this), this.handleGetNewToken.bind(this));
         this.expressApp.post(this.user_routeUserPrivacyPolicyRead, this.handleUpdatePrivacyPolicy.bind(this));
 
-        // Favorite Meals
-        this.expressApp.get(this.user_routeUsersFavoriteMeals, this.handleGetFavoriteMeals.bind(this));
-        this.expressApp.post(this.user_routeUsersFavoriteMeal, this.handleCreateFavoriteMeal.bind(this));
-        this.expressApp.get(this.user_routeUsersFavoriteMeal, this.handleGetFavoriteMeal.bind(this));
-        this.expressApp.delete(this.user_routeUsersFavoriteMeal, this.handleDeleteFavoriteMeal.bind(this));
-
         // Friends
         this.expressApp.get(this.user_routeUsersFriends, this.handleGetFriends.bind(this));
         this.expressApp.post(this.user_routeUsersFriend, this.handleCreateFriend.bind(this));
@@ -99,17 +93,6 @@ export default class UserController {
         this.expressApp.get(this.user_routeUsersFriendRequest, this.handleGetFriendRequest.bind(this));
         this.expressApp.delete(this.user_routeUsersFriendRequest, this.handleDeleteFriendRequest.bind(this));
 
-        // UserMarkings
-        this.expressApp.get(this.user_routeMarkings, this.handleGetUserMarkings.bind(this));
-        this.expressApp.post(this.user_routeMarking, this.handleCreateUserMarking.bind(this));
-        this.expressApp.get(this.user_routeMarking, this.handleGetUserMarking.bind(this));
-        this.expressApp.delete(this.user_routeMarking, this.handleDeleteUserMarking.bind(this));
-
-        // User Washer Notificatios
-        this.expressApp.get(this.user_routeWasherNotifications, this.handleGetUserWasherNotifications.bind(this));
-        this.expressApp.post(this.user_routeWasherNotification, this.handleCreateUserWasherNotification.bind(this));
-        this.expressApp.get(this.user_routeWasherNotification, this.handleGetUserWasherNotification.bind(this));
-        this.expressApp.delete(this.user_routeWasherNotification, this.handleDeleteUserWasherNotification.bind(this));
     }
 
     /**

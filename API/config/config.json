@@ -1,8 +1,8 @@
 {
   "production": {
     "username": "root",
-    "password": "MySQLIstDasBesteAufDerWelt",
-    "database": "swosy",
+    "password": "KekseSindDasBesteAufDerWelt",
+    "database": "dev",
     "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": 0,

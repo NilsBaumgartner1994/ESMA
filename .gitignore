@@ -1,12 +1,12 @@
 *.DS_Store
 *.log
+*/logs/
 */node_modules/
-*/bundle.js
+*bundle.js
 */package-lock.json
 *.trace
 *.lock
 *.xcworkspacedata
 *.xcworkspace/xcshareddata/IDEWorkspaceChecks\.plist
-
-
+*/v8-compile-cache-0/
 .idea/
