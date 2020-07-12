@@ -11,10 +11,10 @@ comments=()
 commands=()
 
 comments+=("Download Bundle")
-commands+=('curl https://downloads.mysql.com/archives/get/p/23/file/mysql-server_8.0.16-2ubuntu19.04_amd64.deb-bundle.tar --output mySQLBundle.tar')
+commands+=('wget https://downloads.mysql.com/archives/get/p/23/file/mysql-server_8.0.16-2ubuntu19.04_amd64.deb-bundle.tar')
 
 comments+=("Untar Download")
-commands+=("tar -xvf mySQLBundle.tar")
+commands+=("tar -xvf mysql-server_8.0.16-2ubuntu19.04_amd64.deb-bundle.tar")
 
 comments+=("Installing Libaio1")
 commands+=("sudo apt-get install libaio1")
