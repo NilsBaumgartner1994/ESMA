@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 3001,
+    "port": 8080,
     "metricsPort": 9999,
     "redisPort": 6379,
     "serverAPIVersion": "1.0.0",

@@ -9,7 +9,7 @@ import ScheduleModule from "./module/ScheduleModule";
  * and the server will be started
  */
 
-const config = require("./config.json")["server"];
+const config = require("./../config/config.json")["server"];
 
 const fs = require("fs"); //file-system
 const ownPath = fs.realpathSync('.');
@@ -32,9 +32,6 @@ import MyAccessControl from "./module/MyAccessControl"; //Database handler
 import MyExpressRouter from "./module/MyExpressRouter"; //Routing Module
 import FirebaseAPI from "./module/FirebaseAPI"; //Push Notifications sending
 import MyLogger from "./module/MyLogger"; //Logger Module
-import CustomSchedule from "./schedules/CustomSchedule"; //A Custom Schedule for testing and renaming
-import UserInactivitySchedule from "./schedules/UserInactivitySchedule";
-import DatabaseBackupSchedule from "./schedules/DatabaseBackupSchedule";
 import FancyTerminal from "./helper/FancyTerminal"; //backup for Database
 
 const os = require("os");

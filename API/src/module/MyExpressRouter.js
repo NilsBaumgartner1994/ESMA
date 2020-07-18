@@ -1,4 +1,4 @@
-const config = require("./../config.json")["server"];
+const config = require("./../../config/config.json")["server"];
 
 import HttpStatus from 'http-status-codes';
 import SystemInformationSchedule from '../schedules/SystemInformationSchedule'
