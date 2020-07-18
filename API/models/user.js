@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     language: DataTypes.STRING,
     avatar: DataTypes.JSON,
     online_time: DataTypes.DATE,
-    privacyPoliceReadDate: {type: DataTypes.DATE, allowNull: false} //required
+    privacyPolicyReadDate: {type: DataTypes.DATE, allowNull: false} //required
   }, {});
   User.associate = function(models) {
     // associations can be defined here

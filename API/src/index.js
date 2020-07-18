@@ -1,5 +1,7 @@
 /* eslint no-console: "off" */
 
+import ScheduleModule from "./module/ScheduleModule";
+
 /**
  * ServerAPI Starts here
  * All needed modules will be loaded here
@@ -15,7 +17,7 @@ const ownPath = fs.realpathSync('.');
 const certs = {
     "swosy.sw-os.de": {
         key: ownPath + "/certificates/swosy-privkey.pem",
-	cert: ownPath + "/certificates/swosy-combined.pem"
+	    cert: ownPath + "/certificates/swosy-combined.pem"
     }
 };
 
@@ -53,7 +55,6 @@ const models = require("./../models"); // Sequelize The ORM (Database Models)
 
 const RedisServer = require("redis-server"); //redis server for caching requests
 const redisPort = config.redisPort;
-const redisBinaryPath = config.redisBinaryPath;
 
 var myServerAPILogger,
     serverAPILogger,
@@ -64,31 +65,21 @@ var myServerAPILogger,
     mySystemLogger,
     systemLogger,
     expressApp,
-    environmentRecorder,
     firebaseAPI,
     myAccessControl,
     myExpressRouter,
-    customSchedule,
-    mealParseSchedule,
-    mealRatingSchedule,
-    newsSchedule,
-    washerSchedule,
-    userInactiviySchedule,
-    favoriteMealReminderSchedule,
-    emergencyCareCanteenSchedule,
-    mealFeedbackToCanteenSchedule,
-    databaseBackupSchedule,
+    scheduleModule,
     redisClient;
 
 const motd =
     "\n" +
-    "███████╗██╗    ██╗ ██████╗ ███████╗██╗   ██╗\n" +
-    "██╔════╝██║    ██║██╔═══██╗██╔════╝╚██╗ ██╔╝\n" +
-    "███████╗██║ █╗ ██║██║   ██║███████╗ ╚████╔╝ \n" +
-    "╚════██║██║███╗██║██║   ██║╚════██║  ╚██╔╝  \n" +
-    "███████║╚███╔███╔╝╚██████╔╝███████║   ██║   \n" +
-    "╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚══════╝   ╚═╝   \n" +
-    "                                            \n";
+    "███████╗███████╗███╗   ███╗ █████╗ \n" +
+    "██╔════╝██╔════╝████╗ ████║██╔══██╗\n" +
+    "█████╗  ███████╗██╔████╔██║███████║\n" +
+    "██╔══╝  ╚════██║██║╚██╔╝██║██╔══██║\n" +
+    "███████╗███████║██║ ╚═╝ ██║██║  ██║\n" +
+    "╚══════╝╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝\n" +
+    "\n";
 
 main();
 
@@ -205,7 +196,7 @@ async function prepareMasterServer() {
     addWorkerOutput(workerID, "prepareMasterServer");
     prepareSharedLoggerAndModules(workerID);
     createMasterLoggers(workerID); //keep this order
-    createMasterSchedules(workerID);
+    scheduleModule = new ScheduleModule(serverAPILogger,models,firebaseAPI,redisClient);
     createMasterExpressApp();
     startWorkerServer(config.metricsPort); //we will listen on 9999 and we are a "worker"
 }
@@ -370,20 +361,6 @@ function createWorkerModules(workerID) {
         models,
         myAccessControl.getAccessControlInstance(),
         redisClient
-    );
-}
-
-/**
- * Create modules specialiy for the master. These modules should only be instanciated once
- */
-function createMasterSchedules() {
-    addWorkerOutput("Master", "createMasterSchedules");
-    customSchedule = new CustomSchedule(serverAPILogger, models); //we may want to run our own things
-    databaseBackupSchedule = new DatabaseBackupSchedule(serverAPILogger, models); //we need a database backup schedule
-    userInactiviySchedule = new UserInactivitySchedule( //a user inactivity checker
-        serverAPILogger,
-        models,
-        firebaseAPI
     );
 }
 

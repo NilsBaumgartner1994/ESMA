@@ -1,12 +1,20 @@
 {
-  "production": {
-    "username": "root",
-    "password": "KekseSindDasBesteAufDerWelt",
-    "database": "dev",
-    "host": "localhost",
-    "dialect": "mysql",
-    "operatorsAliases": 0,
-    "logging": false,
-    "insecureAuth": true
+  "server": {
+    "port": 3001,
+    "metricsPort": 9999,
+    "redisPort": 6379,
+    "serverAPIVersion": "1.0.0",
+    "redisAlreadyRunning":false,
+    "email": {
+      "service": "gmail",
+      "auth": {
+        "user": "swosy.swos@gmail.com",
+        "pass": "Cola4Live!"
+      }
+    }
+  },
+  "users": {
+    "DaysOfInactivityUntilDeletion": 180,
+    "DaysOfInactivityUntilWarningOfDeletion": 178
   }
 }

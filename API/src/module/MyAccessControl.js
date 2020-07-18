@@ -123,50 +123,14 @@ export default class MyAccessControl {
      */
     initGuestPermissions() {
         let ac = this.getAccessControlInstance();
-        ac.grant(MyAccessControl.roleNameGuest).readAny('Address', ['id', 'street', 'number', 'city', 'zip', 'country']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.building_accessControlResource, ['id', 'short', 'name', 'moreInformation', 'latitude', 'longitude', 'photoCopyright', 'opening_time_monday', 'closing_time_monday', 'opening_time_tuesday', 'closing_time_tuesday', 'opening_time_wednesday', 'closing_time_wednesday', 'opening_time_thursday', 'closing_time_thursday', 'opening_time_friday', 'closing_time_friday', 'opening_time_saturday', 'closing_time_saturday', 'opening_time_sunday', 'closing_time_sunday', 'Canteens', 'Universities', 'Residences']);
-        ac.grant(MyAccessControl.roleNameGuest).readAny('BuildingGetPopularTimes'); //TODO check if can be removed
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.tableUpdateTimes_accessControlResource, ['*']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.canteen_accessControlResource, ['id', "name", 'opening_time_monday', 'closing_time_monday', 'opening_time_tuesday', 'closing_time_tuesday', 'opening_time_wednesday', 'closing_time_wednesday', 'opening_time_thursday', 'closing_time_thursday', 'opening_time_friday', 'closing_time_friday', 'opening_time_saturday', 'closing_time_saturday', 'opening_time_sunday', 'closing_time_sunday', "BuildingId"]);
-
 	    ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.feedback_accessControlResource, ['message', 'label', 'id', 'createdAt']);
         ac.grant(MyAccessControl.roleNameGuest).createOwn(MyExpressRouter.feedback_accessControlResource, ['message', 'label']);
 
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.information_accessControlResource, ['label', 'value', 'datatype', 'createdAt', 'updatedAt']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.residence_accessControlResource, ['id', "BuildingId", "name", "size", "rooms", "description", "livingWithChild", "livingWithHandicap", "singleFlat", "available", "available_from", "available_contact"]);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.marking_accessControlResource, ['id', 'classification', 'label', 'description']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.meal_accessControlResource, ['id', 'name','nameEng', 'text1', 'text2', 'text3', 'text4', 'text5', 'text6', 'text1Eng', 'text2Eng', 'text3Eng', 'text4Eng', 'text5Eng', 'text6Eng', 'calorie', 'rating_average', 'rating_amount', 'photos', 'updatedAt']);
-        ac.grant(MyAccessControl.roleNameGuest).readAny('MealGetAllergens');
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.mealrating_accessControlResource, ['CanteenId', 'MealId', 'value']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.news_accessControlResource, ['title', 'abstract', 'date', 'imageURL', 'externURL']);
-
-        ac.grant(MyAccessControl.roleNameGuest).createOwn(MyExpressRouter.order_accessControlResource, ['CanteenId','timeslot','orderDetails']);
-	ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.order_accessControlResource, ['CanteenId','timeslot']); //to see how many orders at a timeslot are
-        ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.order_accessControlResource, ['id','timeslot','CanteenId','token']);
-	ac.grant(MyAccessControl.roleNameGuest).deleteOwn(MyExpressRouter.order_accessControlResource, ); // orders are final
-
-        ac.grant(MyAccessControl.roleNameGuest).createOwn(MyExpressRouter.orderdetail_accessControlResource, ['amount', 'MealId']);
-        ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.orderdetail_accessControlResource, ['id','amount', 'MealId','OrderId']);
-
         ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.permissions_accessControlResource, ['*']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny('PopularTime', ['id', 'date', 'time', 'traffic']);
-
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.university_accessControlResource, ['id', 'name', MyExpressRouter.building_accessControlResource]);
-        ac.grant(MyAccessControl.roleNameGuest).readAny('UniversityGetAddress');
 
         ac.grant(MyAccessControl.roleNameGuest).createOwn(MyExpressRouter.user_accessControlResource, ["plaintextSecret"]);
 
-        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.washer_accessControlResource, ['id', "name", "startTime", "status", "expectedFreeTime", "automateNr"]);
-
+        ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.adminRoutes_accessControlResource, ['*']);
     }
 
     /**
@@ -189,30 +153,8 @@ export default class MyAccessControl {
 
         ac.grant(MyAccessControl.roleNameUser).updateOwn('Login', ['plaintextSecret']);
 
-        ac.grant(MyAccessControl.roleNameUser).createOwn('UserMeeting', ['MeetingId']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn('UserMeeting', ['MeetingId']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn('UserMeeting', ['MeetingId']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn('UserMeeting');
-
         ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.feedback_accessControlResource, ['message', 'label', 'id', 'createdAt']);
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.feedback_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.mealcomment_accessControlResource, ['CanteenId', 'UserId','MealId', 'text']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.mealcomment_accessControlResource, ['id', 'CanteenId', 'UserId','MealId', 'text']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.mealcomment_accessControlResource, ['text']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.mealcomment_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.mealrating_accessControlResource, ['CanteenId', 'UserId','MealId', 'value']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.mealrating_accessControlResource, ['id', 'CanteenId', 'UserId','MealId', 'value']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.mealrating_accessControlResource, ['value']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.mealrating_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.meeting_accessControlResource, ['BuildingId', 'UserId', 'date']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.meeting_accessControlResource, ['id', 'BuildingId', 'date']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.meeting_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.order_accessControlResource, ['UserId']);
-        //ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.order_accessControlResource, ['UserId']); // orders are final
 
         ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.streamview_accessControlResource, ['screen', 'event', 'props', 'eventTime']);
         ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.streamview_accessControlResource, ['id', 'screen', 'event', 'props', 'eventTime']);
@@ -220,24 +162,9 @@ export default class MyAccessControl {
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.streamview_accessControlResource);
 
         //TODO Rename privacyPoliceReadDate to privacyPolicyReadDate
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.user_accessControlResource, ['id', 'online_time', 'privacyPoliceReadDate', 'pseudonym', 'avatar', 'typefood', 'language', 'ResidenceId', "CanteenId"]);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.user_accessControlResource, ['pseudonym', 'avatar', '!privacyPoliceReadDate', 'typefood', 'language', 'ResidenceId', "CanteenId"]); // user is not allowed to change privacyPoliceReadDate manualy
+        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.user_accessControlResource, ['id', 'online_time', 'privacyPolicyReadDate', 'pseudonym', 'avatar', 'typefood', 'language', 'ResidenceId', "CanteenId"]);
+        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.user_accessControlResource, ['pseudonym', 'avatar', '!privacyPolicyReadDate', 'typefood', 'language', 'ResidenceId', "CanteenId"]); // user is not allowed to change privacyPoliceReadDate manualy
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.user_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.userMarking_accessControlResource, ['MarkingId']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.userMarking_accessControlResource, ['MarkingId']);
-        // No Sense of Updating a relation, delete --> create new
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.userMarking_accessControlResource, ['MarkingId']);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.user_favoriteMeals_accessControlResource, ['MealId']);
-        // No Sense of Updating a relation, delete --> create new
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.user_favoriteMeals_accessControlResource, ['MealId']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.user_favoriteMeals_accessControlResource);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.userWasherNotification_accessControlResource, ['WasherId']);
-        // No Sense of Updating a relation, delete --> create new
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.userWasherNotification_accessControlResource, ['WasherId']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.userWasherNotification_accessControlResource);
 
         ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.friend_accessControlResource, ['id', 'pseudonym', 'avatar', 'createdAt','UserFriends']); //Friend is here a User
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.friend_accessControlResource);
@@ -255,14 +182,6 @@ export default class MyAccessControl {
     initModeratorPermissions() {
         let ac = this.getAccessControlInstance();
         ac.grant('moderator').extend(MyAccessControl.roleNameUser);
-
-        ac.grant(MyAccessControl.roleNameModerator).createAny('Address', []);
-        ac.grant(MyAccessControl.roleNameModerator).updateAny('Address', ['*']);
-
-        ac.grant(MyAccessControl.roleNameModerator).createAny(MyExpressRouter.building_accessControlResource, []);
-        ac.grant(MyAccessControl.roleNameModerator).updateAny(MyExpressRouter.building_accessControlResource, ['*']);
-
-        ac.grant(MyAccessControl.roleNameModerator).updateAny(MyExpressRouter.meal_accessControlResource, ['*']);
 
         //should be able to see who is a special person
         ac.grant(MyAccessControl.roleNameModerator).readAny(MyExpressRouter.userrole_accessControlResource, ['UserID', 'RoleId']);
@@ -292,40 +211,19 @@ export default class MyAccessControl {
         ac.grant(MyAccessControl.roleNameAdmin).extend(MyAccessControl.roleNameSuperModerator);
 
         let totalAdminPermission = [
-            MyExpressRouter.building_accessControlResource,
-            MyExpressRouter.canteen_accessControlResource,
             MyExpressRouter.device_accessControlResource,
             MyExpressRouter.friend_accessControlResource,
             MyExpressRouter.feedback_accessControlResource,
             MyExpressRouter.friendrequest_accessControlResource,
             MyExpressRouter.function_backup_accessControlResouce,
             MyExpressRouter.function_database_accessControlResource,
-            MyExpressRouter.information_accessControlResource,
             MyExpressRouter.login_accessControlResource,
-            MyExpressRouter.marking_accessControlResource,
-            MyExpressRouter.meal_accessControlResource,
-            MyExpressRouter.markingUsers_accessControlResource,
-            MyExpressRouter.mealcomment_accessControlResource,
-            MyExpressRouter.mealrating_accessControlResource,
-            MyExpressRouter.meeting_accessControlResource,
-            MyExpressRouter.news_accessControlResource,
-            MyExpressRouter.order_accessControlResource,
-            MyExpressRouter.orderdetail_accessControlResource,
             MyExpressRouter.permissions_accessControlResource,
-            MyExpressRouter.residence_accessControlResource,
-            MyExpressRouter.residence_routeAssociationUsersAccessControll,
             MyExpressRouter.role_accessControlResource,
             MyExpressRouter.streamview_accessControlResource,
             MyExpressRouter.user_accessControlResource,
             MyExpressRouter.user_accessToken_accessControlResource,
-            MyExpressRouter.user_favoriteMeals_accessControlResource,
-            MyExpressRouter.userMarking_accessControlResource,
             MyExpressRouter.userrole_accessControlResource,
-            MyExpressRouter.university_accessControlResource,
-            MyExpressRouter.washer_accessControlResource,
-            MyExpressRouter.washer_routeAssociationWasherJobAccessControll,
-            MyExpressRouter.userWasherNotification_accessControlResource,
-            MyExpressRouter.washerjob_accessControlResource,
         ];
 
         totalAdminPermission.push(MyExpressRouter.adminRoutes_accessControlResource); //for any general not resource based
@@ -337,16 +235,5 @@ export default class MyAccessControl {
             ac.grant(MyAccessControl.roleNameAdmin).updateAny(accessControl, ['*']);
             ac.grant(MyAccessControl.roleNameAdmin).deleteAny(accessControl, ['*']);
         }
-
-        //TODO Remove or implement
-        ac.grant(MyAccessControl.roleNameAdmin).createAny('Address', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).readAny('Address', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).updateAny('Address', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).deleteAny('Address', ['*']);
-
-        ac.grant(MyAccessControl.roleNameAdmin).createAny('GrantList', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).readAny('GrantList', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).updateAny('GrantList', ['*']);
-        ac.grant(MyAccessControl.roleNameAdmin).deleteAny('GrantList', ['*']);
     }
 }

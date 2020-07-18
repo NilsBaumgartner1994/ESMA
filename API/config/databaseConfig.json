@@ -1,0 +1,24 @@
+{
+  "production": {
+    "username": "root",
+    "password": "KekseSindDasBesteAufDerWelt",
+    "database": "production",
+    "host": "localhost",
+    "dialect": "sqlite",
+    "storage": "./database/dbname.db",
+    "operatorsAliases": 0,
+    "logging": false,
+    "insecureAuth": true
+  },
+  "development": {
+    "username": "root",
+    "password": "KekseSindDasBesteAufDerWelt",
+    "database": "dev",
+    "host": "localhost",
+    "dialect": "sqlite",
+    "storage": ":memory:",
+    "operatorsAliases": 0,
+    "logging": false,
+    "insecureAuth": true
+  }
+}

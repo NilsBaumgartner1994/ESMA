@@ -1,7 +1,7 @@
 const config = require("./../config.json")["server"];
 
 import HttpStatus from 'http-status-codes';
-import SystemInformationHelper from '../helper/SystemInformationHelper';
+import SystemInformationSchedule from '../schedules/SystemInformationSchedule'
 
 import DeviceController from "../controllers/DeviceController";
 import FriendController from "../controllers/FriendController";
@@ -62,17 +62,6 @@ export default class MyExpressRouter {
 
 
     // Tables
-
-    static building_resource_id_parameter = "building_id";
-    static building_routeIdentifier = "/buildings";
-    static building_resourceName = "building";
-    static building_accessControlResource = "Building";
-
-    static canteen_resource_id_parameter = "canteen_id";
-    static canteen_routeIdentifier = "/canteens";
-    static canteen_resourceName = "canteen";
-    static canteen_accessControlResource = "Canteen";
-
     static device_resource_id_parameter = "device_id";
     static device_routeIdentifier = "/devices";
     static device_resourceName = "device";
@@ -93,69 +82,14 @@ export default class MyExpressRouter {
     static friendrequest_resourceName = "friendrequest";
     static friendrequest_accessControlResource = "FriendRequest";
 
-    static information_resource_id_parameter = "information_id";
-    static information_routeIdentifier = "/informations";
-    static information_resourceName = "information";
-    static information_accessControlResource = "Information";
-
     static login_resource_id_parameter = "login_id";
     static login_routeIdentifier = "/logins";
     static login_resourceName = "login";
     static login_accessControlResource = "Login";
 
-    static tableUpdateTimes_accessControlResource = "TableUpdateTimes";
-    static tableUpdateTimes_routeIdentifier = "/tableUpdateTimes";
-    static tableUpdateTimes_resourceName = "TableUpdateTime";
-
-    static marking_resource_id_parameter = "marking_id";
-    static marking_routeIdentifier = "/markings";
-    static marking_resourceName = "marking";
-    static marking_accessControlResource = "Marking";
-
-    static meal_resource_id_parameter = "meal_id";
-    static meal_routeIdentifier = "/meals";
-    static meal_resourceName = "meal";
-    static meal_accessControlResource = "Meal";
-
-    static mealcomment_resource_id_parameter = "mealcomment_id";
-    static mealcomment_routeIdentifier = "/mealcomments";
-    static mealcomment_resourceName = "mealcomment";
-    static mealcomment_accessControlResource = "MealComment";
-
-    static mealrating_resource_id_parameter = "mealrating_id";
-    static mealrating_routeIdentifier = "/mealratings";
-    static mealrating_resourceName = "mealrating";
-    static mealrating_accessControlResource = "MealRating";
-
-    static meeting_resource_id_parameter = "meeting_id";
-    static meeting_routeIdentifier = "/meetings";
-    static meeting_resourceFindIdentifier = "/meetingFind";
-    static meeting_resourceName = "meeting";
-    static meeting_accessControlResource = "Meeting";
-
-    static news_resource_id_parameter = "news_id";
-    static news_routeIdentifier = "/news";
-    static news_resourceName = "news";
-    static news_accessControlResource = "News";
-
-    static order_resource_id_parameter = "order_id";
-    static order_routeIdentifier = "/orders";
-    static order_resourceName = "order";
-    static order_accessControlResource = "Orders";
-
-    static orderdetail_resource_id_parameter = "orderdetail_id";
-    static orderdetail_routeIdentifier = "/orderdetails";
-    static orderdetail_resourceName = "orderdetail";
-    static orderdetail_accessControlResource = "OrderDetail";
-
     static permissions_routeIdentifier = "/permissions";
     static permissions_resourceName = "permissions";
     static permissions_accessControlResource = "Permissions";
-
-    static residence_resource_id_parameter = "residence_id";
-    static residence_routeIdentifier = "/residences";
-    static residence_resourceName = "residence";
-    static residence_accessControlResource = "Residence";
 
     static role_resource_id_parameter = "role_id";
     static role_routeIdentifier = "/roles";
@@ -172,39 +106,16 @@ export default class MyExpressRouter {
     static user_resourceName = "user";
     static user_accessControlResource = "User";
     static user_accessToken_accessControlResource = "AccessToken";
-    static user_favoriteMeals_accessControlResource = "UserFavoriteMeal";
-
-    static userWasherNotification_routeIdentifier = "/washerNotifications";
-    static userWasherNotification_accessControlResource = "UserWasherNotification";
 
     static userrole_routeIdentifier = "/userroles";
     static userrole_resourceName = "userrole";
     static userrole_accessControlResource = "UserRole";
-
-    static university_resource_id_parameter = "university_id";
-    static university_routeIdentifier = "/universities";
-    static university_resourceName = "university";
-    static university_accessControlResource = "University";
-
-    static washer_resource_id_parameter = "washer_id";
-    static washer_routeIdentifier = "/washers";
-    static washer_resourceName = "washer";
-    static washer_accessControlResource = "Washer";
-
-    static washerjob_resource_id_parameter = "washerjob_id";
-    static washerjob_routeIdentifier = "/washerjobs";
-    static washerjob_resourceName = "washerjob";
-    static washerjob_accessControlResource = "WasherJob";
-
-    static userMarking_accessControlResource = "UserMarkings";
-    static markingUsers_accessControlResource = "MarkingUsers";
 
     /**
      * 2. Create the Route and Associations
      */
 
         //Functions
-
     static function_routeBackups = MyExpressRouter.routeFunctions + MyExpressRouter.function_backup_routeIdentifier;
     static function_routeBackupCreate = MyExpressRouter.function_routeBackups + "create";
     static function_routeBackup = MyExpressRouter.function_routeBackups + "/:" + MyExpressRouter.function_backup_resource_id_parameter;
@@ -212,17 +123,6 @@ export default class MyExpressRouter {
     static function_routeBackupRestore = MyExpressRouter.function_routeBackup + "/restore";
 
     // Tables
-
-    static building_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.building_routeIdentifier;
-    static building_routeResource = MyExpressRouter.building_routeResources + "/:" + MyExpressRouter.building_resource_id_parameter;
-    static building_routeResourcePhotos = MyExpressRouter.building_routeResource + "/photos";
-
-    static canteen_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.canteen_routeIdentifier;
-    static canteen_routeResource = MyExpressRouter.canteen_routeResources + "/:" + MyExpressRouter.canteen_resource_id_parameter;
-    static canteen_routeCanteenAtDay = MyExpressRouter.canteen_routeResource + "/days/:" + MyExpressRouter.days_parameter;
-    static canteen_routeCanteenMealsAtDay = MyExpressRouter.canteen_routeCanteenAtDay + "/meals";
-    static canteen_routeCanteenPopularTimeAtDay = MyExpressRouter.canteen_routeCanteenAtDay + "/populartimes";
-
     static device_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.device_routeIdentifier;
     static device_routeResource = MyExpressRouter.device_routeResources + "/:" + MyExpressRouter.device_resource_id_parameter;
     static device_routeStreamViews = MyExpressRouter.device_routeResource + MyExpressRouter.streamview_routeIdentifier;
@@ -232,50 +132,11 @@ export default class MyExpressRouter {
 
     static friend_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.friend_routeIdentifier;
 
-    static information_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.information_routeIdentifier;
-    static information_routeResource = MyExpressRouter.information_routeResources + "/:" + MyExpressRouter.information_resource_id_parameter;
-
     static login_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.login_routeIdentifier;
     static login_routeResource = MyExpressRouter.login_routeResources + "/:" + MyExpressRouter.login_resource_id_parameter;
 
-    static marking_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.marking_routeIdentifier;
-    static marking_routeResource = MyExpressRouter.marking_routeResources + "/:" + MyExpressRouter.marking_resource_id_parameter;
-    static marking_routeAssociationUsers = MyExpressRouter.marking_routeResource + "/users";
-
-    static tableUpdateTimes_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.tableUpdateTimes_routeIdentifier;
-
-    static meal_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.meal_routeIdentifier;
-    static meal_routeResource = MyExpressRouter.meal_routeResources + "/:" + MyExpressRouter.meal_resource_id_parameter;
-    static meal_routeResourcePhotos = MyExpressRouter.meal_routeResource + "/photos";
-    static meal_routeResourceUsersFavorite = MyExpressRouter.meal_routeResource + "/usersFavorite"; //TODO Implement to see for a meal, which users like it
-
-    static mealcomment_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.mealcomment_routeIdentifier;
-    static mealcomment_routeResource = MyExpressRouter.mealcomment_routeResources + "/:" + MyExpressRouter.mealcomment_resource_id_parameter;
-
-    static mealrating_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.mealrating_routeIdentifier;
-    static mealrating_routeResource = MyExpressRouter.mealrating_routeResources + "/:" + MyExpressRouter.mealrating_resource_id_parameter;
-
-    static meeting_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.meeting_routeIdentifier;
-    static meeting_routeResource = MyExpressRouter.meeting_routeResources + "/:" + MyExpressRouter.meeting_resource_id_parameter;
-    static meeting_routeResourcFind = MyExpressRouter.urlAPI + MyExpressRouter.meeting_resourceFindIdentifier;
-
-    static news_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.news_routeIdentifier;
-    static news_routeResource = MyExpressRouter.news_routeResources + "/:" + MyExpressRouter.news_resource_id_parameter;
-
-    static order_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.order_routeIdentifier;
-    static order_routeResource = MyExpressRouter.order_routeResources + "/:" + MyExpressRouter.order_resource_id_parameter;
-
-    static orderdetail_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.orderdetail_routeIdentifier;
-    static orderdetail_routeResource = MyExpressRouter.orderdetail_routeResources + "/:" + MyExpressRouter.orderdetail_resource_id_parameter;
-
     static permission_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.permissions_routeIdentifier;
     static permission_routeOwn = MyExpressRouter.permission_routeResources + "/own";
-
-    static residence_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.residence_routeIdentifier;
-    static residence_routeResource = MyExpressRouter.residence_routeResources + "/:" + MyExpressRouter.residence_resource_id_parameter;
-    static residence_routeResourceWashers = MyExpressRouter.residence_routeResource + "/washers";
-    static residence_routeAssociationUsersAccessControll = "ResidenceUsers";
-    static residence_routeAssociationUsers = MyExpressRouter.residence_routeResource + "/users";
 
     static role_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.role_routeIdentifier;
     static role_routeResource = MyExpressRouter.role_routeResources + "/:" + MyExpressRouter.role_resource_id_parameter;
@@ -289,34 +150,14 @@ export default class MyExpressRouter {
     static user_routeUserGetNewToken = MyExpressRouter.user_routeResource + "/newToken";
     static user_routeUserPrivacyPolicyRead = MyExpressRouter.user_routeResource + "/privacyPoliceRead";
     static user_routeUsersDevice = MyExpressRouter.user_routeResource + "/device";
-    static user_routeUsersFavoriteMeals = MyExpressRouter.user_routeResource + "/favoriteMeals";
-    static user_routeUsersFavoriteMeal = MyExpressRouter.user_routeUsersFavoriteMeals + "/:" + MyExpressRouter.meal_resource_id_parameter;
     static user_routeUsersFriends = MyExpressRouter.user_routeResource + "/friends";
     static user_routeUsersFriend = MyExpressRouter.user_routeUsersFriends + "/:" + MyExpressRouter.friend_resource_id_parameter;
     static user_routeUsersFriendRequests = MyExpressRouter.user_routeResource + "/friendrequests";
     static user_routeUsersFriendRequest = MyExpressRouter.user_routeUsersFriendRequests + "/:" + MyExpressRouter.friendrequest_resource_id_parameter;
-    static user_routeMarkings = MyExpressRouter.user_routeResource + MyExpressRouter.marking_routeIdentifier;
-    static user_routeMarking = MyExpressRouter.user_routeMarkings + "/:" + MyExpressRouter.marking_resource_id_parameter;
-    static user_routeWasherNotifications = MyExpressRouter.user_routeResource + MyExpressRouter.userWasherNotification_routeIdentifier;
-    static user_routeWasherNotification = MyExpressRouter.user_routeWasherNotifications + "/:" + MyExpressRouter.washer_resource_id_parameter;
 
     static userrole_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.userrole_routeIdentifier;
     static userrole_routeResource = MyExpressRouter.userrole_routeResources + "/user/:" + MyExpressRouter.user_resource_id_parameter + "/role/:" + MyExpressRouter.role_resource_id_parameter;
     static userrole_routeResourceForUser = MyExpressRouter.userrole_routeResources + "/user/:" + MyExpressRouter.user_resource_id_parameter;
-
-    static university_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.university_routeIdentifier;
-    static university_routeResource = MyExpressRouter.university_routeResources + "/:" + MyExpressRouter.university_resource_id_parameter;
-    static university_routeResourceBuildings = MyExpressRouter.university_routeResource + MyExpressRouter.building_routeIdentifier;
-    static university_routeResourceBuilding = MyExpressRouter.university_routeResourceBuildings + "/:" + MyExpressRouter.building_resource_id_parameter;
-
-    static washer_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.washer_routeIdentifier;
-    static washer_routeResource = MyExpressRouter.washer_routeResources + "/:" + MyExpressRouter.washer_resource_id_parameter;
-    static washer_routeAssociationWasherJobAccessControll = "WasherWasherJobs";
-    static washer_routeAssociationWasherJobs = MyExpressRouter.washer_routeResource + MyExpressRouter.washerjob_routeIdentifier;
-
-    static washerjob_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.washerjob_routeIdentifier;
-    static washerjob_routeResource = MyExpressRouter.washerjob_routeResources + "/:" + MyExpressRouter.washerjob_resource_id_parameter;
-
     /**
      * Custom Routes
      */
@@ -328,7 +169,6 @@ export default class MyExpressRouter {
 
     static custom_routeMetrics = MyExpressRouter.custom_routeResources + "/metrics";
     static custom_bugReport = MyExpressRouter.custom_routeResources + "/bugReport";
-    static custom_mealPhotoOfSchnellerTellerWesterberg = MyExpressRouter.custom_routeResources + "/photoSchnellerTellerWesterberg";
     static custom_showAllEndpoints = MyExpressRouter.custom_routeResources + "/showAllEndpoints";
     static custom_routeSystemInformation = MyExpressRouter.custom_routeResources + "/systemInformation";
     static custom_routeSendPushNotification = MyExpressRouter.custom_routeResources + "/sendNotification";
@@ -453,7 +293,6 @@ export default class MyExpressRouter {
         /**
          * Pulic Routes
          */
-        this.expressApp.get(MyExpressRouter.custom_mealPhotoOfSchnellerTellerWesterberg, this.handleCustomWesterbergSchnellerTellerPhoto.bind(this));
         this.expressApp.post(MyExpressRouter.custom_bugReport, this.handleSendBugReport.bind(this));
         this.expressApp.get(MyExpressRouter.custom_showAllEndpoints, this.handleCustomShowAllEndpoints.bind(this));
 
@@ -463,7 +302,7 @@ export default class MyExpressRouter {
         this.expressApp.get(MyExpressRouter.routeVersion, this.handleVersionRequest.bind(this));
         this.expressApp.get(MyExpressRouter.custom_routeSystemInformation, this.handleSystemInformationGetRequest.bind(this));
         this.expressApp.post(MyExpressRouter.custom_routeSendPushNotification, this.handleSendPushNotificationPostRequest.bind(this));
-	this.expressApp.get(MyExpressRouter.custom_routeMetrics, this.handleMetricsRequest.bind(this));
+	    this.expressApp.get(MyExpressRouter.custom_routeMetrics, this.handleMetricsRequest.bind(this));
     }
 
     /**
@@ -917,7 +756,7 @@ export default class MyExpressRouter {
         .readAny(MyExpressRouter.adminRoutes_accessControlResource);
 
         if (permission.granted) { //can read system informations
-            MyExpressRouter.redisClient.get(SystemInformationHelper.redisKey, (err, cachedStringData) => {
+            MyExpressRouter.redisClient.get(SystemInformationSchedule.redisKey, (err, cachedStringData) => {
                 let answer = JSON.parse(cachedStringData);
                 MyExpressRouter.responseWithJSON(res, HttpStatus.OK, answer);
             });

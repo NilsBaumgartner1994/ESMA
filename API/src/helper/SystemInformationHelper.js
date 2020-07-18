@@ -5,22 +5,19 @@ const si = require('systeminformation');
  */
 export default class SystemInformationHelper {
 
-    static redisKey = "AllSystemData"; //key for local caching
-    static redisCacheSeconds = 30;
-
     /**
      * Get all informations about the Machine
-     * @param redisClient the redis client
      * @returns {*}
      */
-    static async getAllSystemData(redisClient) {
+    static async getAllSystemData() {
         let cpuDataJSON = await SystemInformationHelper.cpuDataJSON();
         let cpuCurrentSpeedDataJSON = await SystemInformationHelper.cpuCurrentSpeedDataJSON();
         let cpuTemperatureDataJSON = await SystemInformationHelper.cpuTemperatureDataJSON();
         let memDataJSON = await SystemInformationHelper.memDataJSON();
         let currentLoadDataJSON = await SystemInformationHelper.currentLoadDataJSON();
         let processesDataJSON = await SystemInformationHelper.processesDataJSON();
-        let uptimeDataJSON = await SystemInformationHelper.uptimeDataJSON();
+        let uptimeServerDataJSON = await SystemInformationHelper.uptimeServerDataJSON();
+        let uptimeMachineDataJSON = await SystemInformationHelper.uptimeMachineDataJSON();
         let fsSize = await SystemInformationHelper.getFsSize();
         let networkStatsJSON = await SystemInformationHelper.getNetworkStatsJSON();
         let networkInterfacesJSON = await SystemInformationHelper.getNetworkInterfacesJSON();
@@ -33,7 +30,8 @@ export default class SystemInformationHelper {
             memDataJSON,
             currentLoadDataJSON,
             processesDataJSON,
-            uptimeDataJSON,
+            uptimeServerDataJSON,
+            uptimeMachineDataJSON,
             networkInterfacesJSON,
             networkStatsJSON,
         );
@@ -42,8 +40,6 @@ export default class SystemInformationHelper {
             "allInformations": allInformations,
             "allInformationsLastUpdateTime": new Date()
         };
-
-        redisClient.setex(SystemInformationHelper.redisKey, SystemInformationHelper.redisCacheSeconds, JSON.stringify(data));
         return data;
     }
 
@@ -192,15 +188,22 @@ export default class SystemInformationHelper {
         }
     }
 
+    static async uptimeServerDataJSON(){
+        let uptime = process.uptime();
+        return {
+            "uptimeServer": uptime
+        };
+    }
+
     /**
      * Gets information about the uptime of the machine itself
      * @returns {Promise<{uptime: string}>}
      */
-    static async uptimeDataJSON() {
+    static async uptimeMachineDataJSON() {
         let timeData = si.time();
         let uptime = timeData.uptime;
         return {
-            "uptime": uptime
+            "uptimeMachine": uptime
         };
     }
 

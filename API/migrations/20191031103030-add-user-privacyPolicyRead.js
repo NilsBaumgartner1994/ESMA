@@ -11,7 +11,7 @@ module.exports = {
     */
     return queryInterface.addColumn(
         'Users',
-        'privacyPoliceReadDate',
+        'privacyPolicyReadDate',
         {
           allowNull: false,
           type:Sequelize.DATE,
@@ -30,7 +30,7 @@ module.exports = {
     */
     return queryInterface.removeColumn(
         "Users",
-        "privacyPoliceReadDate"
+        "privacyPolicyReadDate"
     );
   }
 };

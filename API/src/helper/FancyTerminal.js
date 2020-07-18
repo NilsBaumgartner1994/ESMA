@@ -103,7 +103,7 @@ export default class FancyTerminal {
     static async pollSystemInformation() {
         FancyTerminal.cpuData = await SystemInformationHelper.cpuDataJSON(); //get cpu
         FancyTerminal.currentLoadData = await SystemInformationHelper.currentLoadDataJSON(); //get ram
-        FancyTerminal.uptimeData = await SystemInformationHelper.uptimeDataJSON(); //get uptime
+        FancyTerminal.uptimeData = await SystemInformationHelper.uptimeMachineDataJSON(); //get uptime
         await FancyTerminal.sleep(500); //wait 500ms
         if (FancyTerminal.loopEnabled) { //if still alive
             FancyTerminal.pollSystemInformation(); //restart the polling

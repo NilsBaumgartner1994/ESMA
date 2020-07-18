@@ -1,6 +1,7 @@
 import DateHelper from "../helper/DateHelper";
 
 const schedule = require("node-schedule");
+import config from "../../config/config.json"; //static configs
 /**
  *    *    *    *    *    *
  ┬    ┬    ┬    ┬    ┬    ┬
@@ -17,9 +18,9 @@ const schedule = require("node-schedule");
  * User Incacitivity Schedule will delete old users when they are inactive
  */
 export default class UserInactivitySchedule {
-    static minutesOfInactivityUntilDeletion = 60 * 24 * 182; // half year
-    static minutesOfInactiviyAfterInactivityMessage =
-        UserInactivitySchedule.minutesOfInactivityUntilDeletion - 60 * 24 * 2; //2 Days before
+
+    static minutesOfInactivityUntilDeletion = 60 * 24 * config.users.DaysOfInactivityUntilDeletion;
+    static minutesOfInactiviyAfterInactivityMessage = 60 * 24 * config.users.DaysOfInactivityUntilWarningOfDeletion;
 
 
     /**

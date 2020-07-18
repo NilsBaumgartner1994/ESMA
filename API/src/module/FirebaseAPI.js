@@ -5,8 +5,6 @@ import path from "path";
 
 const ownPath = fs.realpathSync('.');
 const pathToFirebasePrivateKey = path.resolve(ownPath,"certificates","firebasePrivateKey.json");
-const serviceAccount = require("/root/ESMA/API/certificates/firebasePrivateKey.json");
-//const serviceAccount = require(pathToFirebasePrivateKey);
 
 /** SUBSCRIBING TO TOPICS needs to be implemented
  https://firebase.google.com/docs/cloud-messaging/manage-topics
@@ -30,12 +28,13 @@ export default class FirebaseAPI {
         this.logger.info("[FirebaseAPI] Load Private Key");
         try {
             this.firebasePrivateKey = this.loadFireBasePrivateKey(); //load private key
+            console.log(this.firebasePrivateKey);
             firebase.initializeApp({
-		  credential: firebase.credential.cert(serviceAccount),
-		  databaseURL: "https://swosy-284f0.firebaseio.com"
+                  credential: firebase.credential.cert(this.firebasePrivateKey),
+                  databaseURL: "https://esma-f663e.firebaseio.com"
             });
         } catch (err) {
-            this.logger.error("[FirebaseAPI] coulnt find the private key!");
+            this.logger.error("[FirebaseAPI] couldn't find the private key!");
         }
         this.logger.info("[FirebaseAPI] initialised");
     }

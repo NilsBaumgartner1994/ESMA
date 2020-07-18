@@ -68,7 +68,7 @@
     "sequelize-cli": "^5.5.0",
     "sharp": "^0.23.0",
     "smartcrop-sharp": "^2.0.3",
-    "sqlite3": "^4.0.9",
+    "sqlite3": "^4.2.0",
     "systeminformation": "^4.26.9",
     "tls": "0.0.1",
     "util": "^0.12.0",
