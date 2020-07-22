@@ -11,6 +11,7 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import 'prismjs/themes/prism-coy.css';
 import './sass/App.scss';
+import config from './config';
 
 
 import {HomeComponent} from './screens/home/HomeComponent';
@@ -177,7 +178,7 @@ export class App extends Component {
                         <i className="pi pi-bars"/>
                     </span>
                     <Link to="/" className="logo">
-                        <img alt="logo" src="showcase/resources/images/swosyLogo.png" style={{width: "auto" ,height: 55}} />
+                        <img alt="data" src="showcase/resources/images/esmaLogo.svg" style={{width: "auto" ,height: 55}}/>
                     </Link>
 
                     <ul className="topbar-menu p-unselectable-text">
@@ -200,7 +201,7 @@ export class App extends Component {
                     <Route path="/systeminformationview" component={SystemInformationView}/>
 
                     <div className="content-section layout-footer clearfix">
-                        <span>Swosy 1.0</span>
+                        <span>{config.title} {config.version}</span>
                     </div>
                 </div>
 

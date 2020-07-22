@@ -1,12 +1,18 @@
 @charset "UTF-8";
 
-@mixin background-gradient-left2right($start-color, $end-color) {
+$_Background_Dark: #000000;
+$_Background_Light: #20272a;
+$_Hightlight_Dark: #30373a;
+
+$_FontColor: #ffffff;
+
+@mixin background-gradient-top2down($start-color, $end-color) {
     background-color: $start-color;
-    background-image: -webkit-linear-gradient(left, $start-color, $end-color);
-    background-image: -moz-linear-gradient(left, $start-color, $end-color);
-    background-image: -ms-linear-gradient(left, $start-color, $end-color);
-    background-image: -o-linear-gradient(left, $start-color, $end-color);
-    background-image: linear-gradient(to right, $start-color, $end-color);
+    background-image: -webkit-linear-gradient(top, $start-color, $end-color);
+    background-image: -moz-linear-gradient(top, $start-color, $end-color);
+    background-image: -ms-linear-gradient(top, $start-color, $end-color);
+    background-image: -o-linear-gradient(top, $start-color, $end-color);
+    background-image: linear-gradient(to down, $start-color, $end-color);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$start-color}', endColorStr='#{$end-color}', gradientType='1');
 }
 
@@ -39,16 +45,16 @@ body {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: #f6f6f6;
+    background-color: $_Background_Dark;
     font-family: "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: normal;
-    color: #333333;
+    color: $_FontColor;
     -webkit-font-smoothing: antialiased;
     font-size: 14px;
 }
 
 .layout-topbar {
-    background-color: #20272a;
+    background-color: $_Background_Light;
     display: block;
     padding: 0;
     height: 70px;
@@ -107,7 +113,7 @@ body {
 
             > span, > a  {
                 text-decoration: none;
-                color: #ffffff;
+                color: $_FontColor;
                 min-width: 120px;
                 display: inline-block;
                 text-align: center;
@@ -123,7 +129,7 @@ body {
                     z-index: 1;
                     outline: 0 none;
                     transition: box-shadow .3s;
-                    box-shadow: inset 0 0 0 0.2em #00c4e8;
+                    box-shadow: inset 0 0 0 0.2em $_FontColor;
                 }
             }
 
@@ -169,7 +175,7 @@ body {
                         font-weight: bold;
                         text-align: left;
                         color: #ffffff;
-                        @include background-gradient-left2right(#008fba, #03c4e8);
+                        @include background-gradient-top2down($_Background_Dark, $_Background_Light);
                     }
 
                     &.active-top-menu {
@@ -185,7 +191,7 @@ body {
                             @include transition(all .5s ease);
     
                             &:hover {
-                                background-color: #eeeeee;
+                                background-color: $_Hightlight_Dark;
                                 cursor: pointer;
                             }
 
@@ -193,7 +199,7 @@ body {
                                 z-index: 1;
                                 outline: 0 none;
                                 transition: box-shadow .3s;
-                                box-shadow: inset 0 0 0 0.2em #00c4e8;
+                                box-shadow: inset 0 0 0 0.2em $_FontColor;
                             }
     
                             img {
@@ -253,7 +259,7 @@ body {
     left: 0;
     top: 70px;
     height: 100%;
-    background-color: #ffffff;
+    background-color: $_Background_Dark;
     width: 300px;
     overflow: auto;
     -moz-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
@@ -267,7 +273,7 @@ body {
             height: 48px;
             display: block;
             padding: 0px 24px;
-            color: #333333;
+            color: $_FontColor;
             background-color: transparent;
             cursor: pointer;
             user-select: none;
@@ -278,14 +284,14 @@ body {
             cursor: pointer;
 
             &:hover {
-                background-color: #eeeeee;
+                background-color: $_Hightlight_Dark;
             }
 
             &:focus {
                 z-index: 1;
                 outline: 0 none;
                 transition: box-shadow .3s;
-                box-shadow: inset 0 0 0 0.2em #00c4e8;
+                box-shadow: inset 0 0 0 0.2em $_FontColor;
             }
 
             span {
@@ -310,8 +316,8 @@ body {
             }
             
             &.active-menuitem {
-                background-color: #ffffff;
-                color: #03c4e8;
+                background-color: $_Background_Light;
+                color: $_FontColor;
                 
                 img {
                     &.layout-menu-icon-active {
@@ -328,7 +334,7 @@ body {
             width: auto;
             overflow: hidden;
             display: none;
-            background-color: #ffffff;
+            background-color: $_Background_Light;
             
             > div {
                 overflow: hidden;
@@ -368,17 +374,17 @@ body {
                 border-radius: 4px;
                 -webkit-border-radius: 4px;
                 font-size: 14px;
-                color: #494c52;
+                color: $_FontColor;
 
                 &:hover {
-                    background-color: #eeeeee;
+                    background-color: $_Hightlight_Dark;
                 }
 
                 &:focus {
                     z-index: 1;
                     outline: 0 none;
                     transition: box-shadow .3s;
-                    box-shadow: inset 0 0 0 0.2em #00c4e8;
+                    box-shadow: inset 0 0 0 0.2em $_FontColor;
                 }
 
                 .menuitem-badge {
@@ -422,7 +428,7 @@ body {
     .content-section {
         display: block;
         padding: 30px;
-        background-color: #f5f7f8;
+        background-color: $_Background_Dark;
 
         &:first-of-type > div > span {
             line-height: 1.5em;
@@ -433,7 +439,7 @@ body {
         }
         
         &.introduction {
-            @include background-gradient-left2right(#008fba, #03c4e8);
+            @include background-gradient-top2down($_Background_Dark, $_Background_Light);
             color: #ffffff;
             
             .feature-intro {
@@ -467,7 +473,7 @@ body {
         }
         
         &.implementation {
-            background-color: #ffffff;
+            background-color: $_Background_Dark;
 
             > h3 {
                 font-weight: 400;
@@ -533,7 +539,7 @@ body {
                         &:focus {
                             outline: 0 none;
                             transition: box-shadow .3s;
-                            box-shadow: 0 0 0 0.2em #00c4e8;
+                            box-shadow: 0 0 0 0.2em $_FontColor;
                         }
                     }
                 }
@@ -542,7 +548,7 @@ body {
         
         &.documentation {
             h3 {
-                color:  #333333;
+                color:  $_FontColor;
                 margin-top: 25px;
                 margin-bottom: 0px;
                 font-size: 22px;
@@ -556,7 +562,7 @@ body {
             }
 
             p {
-                color:  #333333;
+                color:  $_FontColor;
                 font-size: 16px;
                 line-height: 24px;
                 margin: 10px 0;
@@ -608,7 +614,7 @@ body {
                 .p-tabview-nav {
                     border-radius: 3px 3px 0 0;
                     padding: 4px 4px 0px 4px;
-                    @include background-gradient-left2right(#008fba, #03c4e8);
+                    @include background-gradient-top2down($_Background_Dark, $_Background_Light);
 
                     li {    
                         a {
@@ -617,7 +623,7 @@ body {
                             color: #ffffff;
                             text-shadow: none;
                             height: inherit;
-                            background-color: #0080a7;
+                            background-color: $_Background_Dark;
                             padding-top: 8px;
                             @include border-radius-top(3px);
                             @include transition(background-color .2s);
@@ -628,8 +634,8 @@ body {
                         }
 
                         &.p-highlight a {
-                            background: #f5f7f8;
-                            color: #333333;
+                            background: $_Background_Dark;
+                            color: $_FontColor;
                         }
                         
                         &:not(.p-highlight) a:hover {
@@ -811,13 +817,13 @@ body {
 
     /* Features */
     .features {
-        background-color: #f5f7f8;
+        background-color: $_Background_Dark;
         text-align: center;
         padding: 30px;
 
         h3 {
              font-size:24px;
-             color: #333333;
+             color: $_FontColor;
              margin-bottom: 25px;
         }
 
@@ -848,13 +854,13 @@ body {
             margin-bottom: 30px;
 
             &.features-tagline {
-                color: #333333;
+                color: $_FontColor;
                 margin-bottom: 0;
                 margin-top: -5px;
             }
 
             &.features-description {
-                color: #333333;
+                color: $_FontColor;
                 text-align: left;
 
 
@@ -898,14 +904,14 @@ body {
     }
     
     .templates {
-        background-color: #f5f7f8;
+        background-color: $_Background_Dark;
         text-align: center;
         padding: 30px;
         border-bottom: 1px solid #c4c5c6;
         
         h3 {
              font-size:24px;
-             color: #333333;
+             color: $_FontColor;
              margin-bottom: 25px;
         }
 
@@ -922,7 +928,7 @@ body {
     /* PRO */
     .prosupport {
         border-bottom: 1px solid #dcdedf;
-        background-color: #f5f7f8;
+        background-color: $_Background_Dark;
         padding: 30px;
         color: #222222;
 
@@ -1070,7 +1076,7 @@ body {
         top: 98px;
         left: 0;
         opacity: .7;
-        background-color: #333333;
+        background-color: $_FontColor;
         -webkit-animation: layoutMaskFade .3s;
         animation: layoutMaskFade .3s;
     }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
+import config from './../../config';
 
 export class HomeComponent extends Component {
 
@@ -7,16 +8,15 @@ export class HomeComponent extends Component {
         return (
             <div className="home">
                 <div className="introduction">
-                    <h1>Die App für Mensa und mehr !</h1>
-                    <h2>SWOSY</h2>
+                    <h1>Easy Skeleton Mobile Application</h1>
+                    <h2>{config.title}</h2>
                 </div>
                 <div className="features">
-                    <h3>Warum SWOSY?</h3>
-                    <p className="features-tagline">Glückwunsch! <span role="img" aria-label="celebrate">🎉</span> Die
-                        Suche nach dem perfekten Tool ist vorüber.</p>
+                    <h3>Why ESMA?</h3>
+                    <p className="features-tagline">Congratulation! <span role="img" aria-label="celebrate">🎉</span> Die
+                        The search for the simple tool is over.</p>
 
-                    <p className="features-description">SWOSY ist eine Kollektion reichhaltigter Komonenten (MobileApp,
-                        BackendServer, FrontendServer, AlexaApp, ...).</p>
+                    <p className="features-description">{config.title} is a collection of a mobile-, backend- and frontend-application.</p>
                 </div>
             </div>
         );
