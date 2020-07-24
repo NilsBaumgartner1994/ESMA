@@ -1,5 +1,5 @@
 import FileSystemHelper from "../helper/FileSystemHelper";
-import config from "../../config/databaseConfig.json"; //static configs
+import config from "../../config/config.json"; //static configs
 import DateHelper from "./../helper/DateHelper";
 
 const compressing = require('compressing');

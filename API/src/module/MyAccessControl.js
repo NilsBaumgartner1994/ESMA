@@ -1,4 +1,5 @@
 import MyExpressRouter from "./MyExpressRouter";
+import SequelizeHelper from "../helper/SequelizeHelper";
 
 const AccessControl = require('accesscontrol');
 
@@ -128,7 +129,7 @@ export default class MyAccessControl {
 
         ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.permissions_accessControlResource, ['*']);
 
-        ac.grant(MyAccessControl.roleNameGuest).createOwn(MyExpressRouter.user_accessControlResource, ["plaintextSecret"]);
+        ac.grant(MyAccessControl.roleNameGuest).createOwn(this.models.User.tableName, ["plaintextSecret"]);
 
         ac.grant(MyAccessControl.roleNameGuest).readAny(MyExpressRouter.adminRoutes_accessControlResource, ['*']);
     }
@@ -146,10 +147,10 @@ export default class MyAccessControl {
 
         ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.user_accessToken_accessControlResource); // Something which is not saved in DB
 
-        ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.device_accessControlResource, ['pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.device_accessControlResource, ['id', 'pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.device_accessControlResource, ['pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.device_accessControlResource);
+        ac.grant(MyAccessControl.roleNameUser).createOwn(this.models.Device.tableName, ['pushNotificationToken', "os", 'version']);
+        ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.Device.tableName, ['id', 'pushNotificationToken', "os", 'version']);
+        ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.Device.tableName, ['pushNotificationToken', "os", 'version']);
+        ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.Device.tableName);
 
         ac.grant(MyAccessControl.roleNameUser).updateOwn('Login', ['plaintextSecret']);
 
@@ -162,9 +163,9 @@ export default class MyAccessControl {
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.streamview_accessControlResource);
 
         //TODO Rename privacyPoliceReadDate to privacyPolicyReadDate
-        ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.user_accessControlResource, ['id', 'online_time', 'privacyPolicyReadDate', 'pseudonym', 'avatar', 'typefood', 'language', 'ResidenceId', "CanteenId"]);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(MyExpressRouter.user_accessControlResource, ['pseudonym', 'avatar', '!privacyPolicyReadDate', 'typefood', 'language', 'ResidenceId', "CanteenId"]); // user is not allowed to change privacyPoliceReadDate manualy
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.user_accessControlResource);
+        ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.User.tableName, ['id', 'online_time', 'privacyPolicyReadDate', 'pseudonym', 'avatar', 'typefood', 'language', 'ResidenceId', "CanteenId"]);
+        ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.User.tableName, ['pseudonym', 'avatar', '!privacyPolicyReadDate', 'typefood', 'language', 'ResidenceId', "CanteenId"]); // user is not allowed to change privacyPoliceReadDate manualy
+        ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.User.tableName);
 
         ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.friend_accessControlResource, ['id', 'pseudonym', 'avatar', 'createdAt','UserFriends']); //Friend is here a User
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.friend_accessControlResource);
@@ -210,21 +211,18 @@ export default class MyAccessControl {
         let ac = this.getAccessControlInstance();
         ac.grant(MyAccessControl.roleNameAdmin).extend(MyAccessControl.roleNameSuperModerator);
 
-        let totalAdminPermission = [
-            MyExpressRouter.device_accessControlResource,
-            MyExpressRouter.friend_accessControlResource,
-            MyExpressRouter.feedback_accessControlResource,
-            MyExpressRouter.friendrequest_accessControlResource,
-            MyExpressRouter.function_backup_accessControlResouce,
-            MyExpressRouter.function_database_accessControlResource,
-            MyExpressRouter.login_accessControlResource,
-            MyExpressRouter.permissions_accessControlResource,
-            MyExpressRouter.role_accessControlResource,
-            MyExpressRouter.streamview_accessControlResource,
-            MyExpressRouter.user_accessControlResource,
-            MyExpressRouter.user_accessToken_accessControlResource,
-            MyExpressRouter.userrole_accessControlResource,
-        ];
+        let tableNames = [];
+
+        let modelJSON = SequelizeHelper.getModelJSON(this.models);
+        let modelNames = Object.keys(modelJSON);
+        console.log(modelNames);
+        for(let i=0; i<modelNames.length; i++) {
+            let modelName = modelNames[i];
+            let model = modelJSON[modelName];
+            tableNames.push(SequelizeHelper.getTableName(model));
+        }
+
+        let totalAdminPermission = tableNames;
 
         totalAdminPermission.push(MyExpressRouter.adminRoutes_accessControlResource); //for any general not resource based
 

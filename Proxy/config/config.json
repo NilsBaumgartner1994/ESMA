@@ -1,9 +1,6 @@
 {
-  "auth": {
-    "username": "admin",
-    "password": "keksesinddasbesteaufderwelt"
-  },
   "server": {
+    "realm": "nilsbaumgartner.de",
     "api_server_domain": "localhost:3001",
     "server_test_domain": "localhost:5000",
     "server_api_metrics": "https://swosy.sw-os.de:9999/metrics/metrics",

@@ -3,6 +3,8 @@ const config = require("./../../config/config.json")["server"];
 import HttpStatus from 'http-status-codes';
 import SystemInformationSchedule from '../schedules/SystemInformationSchedule'
 
+import SequelizeController from "../controllers/SequelizeController";
+
 import DeviceController from "../controllers/DeviceController";
 import FriendController from "../controllers/FriendController";
 import LoginController from "../controllers/LoginController";
@@ -201,7 +203,6 @@ export default class MyExpressRouter {
 
         this.tokenHelper = new MyTokenHelper(logger); //create the token helper
         this.configureExpressApp(); //configure parameters like which requests are allowed
-        this.configureController(); //configure the routes
         this.logger.info("[MyExpressRouter] initialised");
     }
 
@@ -308,7 +309,7 @@ export default class MyExpressRouter {
     /**
      * Configure all Controllers which then will register the routes and handle requests
      */
-    configureController() {
+    async configureController() {
         let logger = this.logger;
         let models = this.models;
         let expressApp = this.expressApp;
@@ -323,7 +324,11 @@ export default class MyExpressRouter {
         this.defaultControllerHelper = new DefaultControllerHelper(logger, models, instance);
         this.photoHelper = new DefaultPhotoHelper(logger, models, instance);
 
+        this.sequelizeController = new SequelizeController(logger,models,expressApp,myAccessControl,instance);
+        await this.sequelizeController.configureRoutes();
+
         //Tables
+        /**
         this.deviceController = new DeviceController(logger, models, expressApp, myAccessControl, instance);
         this.friendController = new FriendController(logger, models, expressApp, myAccessControl, instance);
         this.loginController = new LoginController(logger, models, expressApp, myAccessControl, instance);
@@ -333,6 +338,7 @@ export default class MyExpressRouter {
         this.userController = new UserController(logger, models, expressApp, myAccessControl, instance);
         this.userroleController = new UserRoleController(logger, models, expressApp, myAccessControl, instance);
         this.feedbackController = new FeedbackController(logger, models, expressApp, myAccessControl, instance);
+         */
     }
 
     /**

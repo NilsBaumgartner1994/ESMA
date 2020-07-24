@@ -66,6 +66,8 @@ export default class DefaultControllerHelper {
      * @returns [{*}] List of Json object of the filtered resources
      */
     static filterResourcesWithPermission(resources, permission) {
+        console.log("filterResourcesWithPermission");
+        console.log(resources);
         let dataJSON = resources.map((resource) => //for every item
             DefaultControllerHelper.filterResourceWithPermission(resource, permission)); //lets filter them
         return dataJSON;
@@ -78,6 +80,9 @@ export default class DefaultControllerHelper {
      * @returns {*} JSOB Object with filtered attributes
      */
     static filterResourceWithPermission(resource, permission) {
+        console.log("filterResourceWithPermission");
+        console.log(resource);
+        console.log(DefaultControllerHelper.getResourceAsJSON(resource));
         let dataJSON = permission.filter(DefaultControllerHelper.getResourceAsJSON(resource)); //get the json resource, then filter
         return dataJSON;
     }
@@ -252,6 +257,7 @@ export default class DefaultControllerHelper {
 
                 //lets find all resources with query
                 sequelizeModel.findAll(sequelizeQuery).then(resources => {
+                    console.log(resources);
                     this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query));
 		    //console.log("[DefaultControllerHelper] handleIndex found: "+resources.length);
                     DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, resources, permission);

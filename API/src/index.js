@@ -220,7 +220,7 @@ async function prepareWorkerServer() {
     prepareSharedLoggerAndModules(workerID);
     createWorkerLoggers(workerID); //keep this order
     createWorkerExpressApp(workerID);
-    createWorkerModules(workerID);
+    await createWorkerModules(workerID);
     startWorkerServer();
 }
 
@@ -346,7 +346,7 @@ function createRedisClient() {
  * Create worker Modules
  * @param workerID the worker ID
  */
-function createWorkerModules(workerID) {
+async function createWorkerModules(workerID) {
     addWorkerOutput(workerID, "creating Modules");
     myAccessControl = new MyAccessControl(serverAPILogger, models);
     myExpressRouter = new MyExpressRouter(
@@ -359,6 +359,7 @@ function createWorkerModules(workerID) {
         myAccessControl.getAccessControlInstance(),
         redisClient
     );
+    await myExpressRouter.configureController(); //configure the routes
 }
 
 /***********************************************************************************************************************

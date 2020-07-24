@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "seed": "export NODE_ENV=production && npx sequelize-cli db:seed:all",
     "start": "npm run build && node src/bundle.js",
     "start:dev": "webpack-dev-server --open --mode development",
     "build": "webpack --mode production",

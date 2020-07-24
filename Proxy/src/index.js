@@ -7,6 +7,7 @@
  */
 
 const config = require("./../config/config.json");
+const credentials = require("./../config/credentials.json");
 
 import path from "path";
 import Express from "express";
@@ -45,8 +46,8 @@ function getUnauthorizedResponse(req) {
 }
 
 function myAuthorizer(username, password) {
-    const userMatches = basicAuth.safeCompare(username, config.auth.username);
-    const passwordMatches = basicAuth.safeCompare(password, config.auth.password);
+    const userMatches = basicAuth.safeCompare(username, credentials.auth.username);
+    const passwordMatches = basicAuth.safeCompare(password, credentials.auth.password);
 
     return userMatches & passwordMatches;
 }
@@ -74,8 +75,6 @@ async function main() {
         return contentTypeHeader && contentTypeHeader.indexOf("multipart") > -1;
     };
 
-    const ownPath = fs.realpathSync(".");
-
     const proxyMiddleware = (req, res, next) =>
         proxy(backend, {
             parseReqBody: !isMultipartRequest(req),
@@ -99,11 +98,6 @@ async function main() {
         proxyReqPathResolver: req => url.parse(req.baseUrl).path
     });
 
-    const testend = config.server.server_test_domain;
-    const apiTestend = proxy(testend, {
-        proxyReqPathResolver: req => url.parse(req.baseUrl).path
-    });
-
     const myLogger = new MyLogger();
     const logger = myLogger.getLogger();
 
@@ -122,7 +116,7 @@ async function main() {
             authorizer: myAuthorizer,
             unauthorizedResponse: getUnauthorizedResponse,
             challenge: true,
-            realm: "swosy.sw-os"
+            realm: config.server.realm
         })
     );
 
