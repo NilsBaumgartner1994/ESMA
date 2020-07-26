@@ -66,8 +66,6 @@ export default class DefaultControllerHelper {
      * @returns [{*}] List of Json object of the filtered resources
      */
     static filterResourcesWithPermission(resources, permission) {
-        console.log("filterResourcesWithPermission");
-        console.log(resources);
         let dataJSON = resources.map((resource) => //for every item
             DefaultControllerHelper.filterResourceWithPermission(resource, permission)); //lets filter them
         return dataJSON;
@@ -80,8 +78,6 @@ export default class DefaultControllerHelper {
      * @returns {*} JSOB Object with filtered attributes
      */
     static filterResourceWithPermission(resource, permission) {
-        console.log("filterResourceWithPermission");
-        console.log(resource);
         console.log(DefaultControllerHelper.getResourceAsJSON(resource));
         let dataJSON = permission.filter(DefaultControllerHelper.getResourceAsJSON(resource)); //get the json resource, then filter
         return dataJSON;
@@ -208,6 +204,53 @@ export default class DefaultControllerHelper {
      * Routes
      */
 
+    getSequelizeQuery(req,permission,includeModels){
+        let queryCopy = JSON.parse(JSON.stringify(req.query)); //create a copy on that we work
+        delete queryCopy.limit;
+        delete queryCopy.order;
+        let queryFiltered = permission.filter(queryCopy); //filter all now allowed query variables
+        queryFiltered = this.parseOperatorContent(queryFiltered);
+        //console.log("queryFiltered:");
+        //console.log(JSON.stringify(queryFiltered));
+
+        let sequelizeQuery = {include: includeModels, where: queryFiltered};
+
+        if(req.query.limit){ //check for limit
+            sequelizeQuery.limit = parseInt(req.query.limit);
+        }
+        if(req.query.order){ //check for order
+            sequelizeQuery.order = JSON.parse(req.query.order);
+        }
+        return sequelizeQuery;
+    }
+
+    isQueryInRequest(req){
+        let queryKeyLength = Object.keys(req.query).length;
+        return queryKeyLength !== 0;
+    }
+
+    async handleAssociationIndex(req,res,sequelizeModel,myAccessControl,accessControlResource,resourceName,functionNameToCall,isOwn,includeModels = []){
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"read",isOwn);
+        if(permission.granted){
+            let sequelizeQuery = this.getSequelizeQuery(req,permission,includeModels);
+
+            sequelizeModel[functionNameToCall](sequelizeQuery).then(resources => { //get resources
+                let dataJSON = DefaultControllerHelper.filterResourcesWithPermission(resources, permission); //filter
+                this.logger.info("[DefaultControllerHelper] handleAssociationIndex - " + resourceName);
+                MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
+            }).catch(err => {
+                this.logger.error("[DefaultControllerHelper] handleAssociationIndex - " + resourceName + " - " + err.toString());
+                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
+
+            });
+        } else {
+            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
+                errorCode: HttpStatus.FORBIDDEN,
+                error: 'Forbidden to get Resource: ' + resourceName
+            });
+        }
+    }
+
     /**
      * Default Function to Handle Index Requests for Resources.
      * @param req The request object
@@ -218,6 +261,7 @@ export default class DefaultControllerHelper {
      * @param resourceName The resource name for logging
      * @param includeModels Optional include models which should be added too. Beware ! No Permission filtering for these
      * @param redisKey Optional a Redis Key, for to look up in cache.
+     * @param customPermission use custom permission instead
      * @returns {Promise<Promise<* | *>|*>}
      *
      * @apiDefine DefaultControllerIndex
@@ -225,48 +269,15 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {String} error A description of the error
      */
     async handleIndex(req, res, sequelizeModel, myAccessControl, accessControlResource, resourceName, includeModels = [], redisKey, customPermission) {
-        let redisClient = MyExpressRouter.redisClient; //get the client
-        let role = req.locals.current_user.role; //get users role
-
-        let permission = myAccessControl.can(req.locals.current_user.role).readAny(accessControlResource);
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"read",false);
         if(!!customPermission){
             permission = customPermission;
         }
         if (permission.granted) { //can you read any of this resource ?
-            let queryKeyLength = Object.keys(req.query).length;
-            let queryGiven = queryKeyLength !== 0;
-            if (queryGiven) { // if query given, we cant save in cache, too special to cache
-                //console.log("req.query");
-                //console.log(JSON.stringify(req.query));
-                let queryCopy = JSON.parse(JSON.stringify(req.query)); //create a copy on that we work
-		delete queryCopy.limit;
-		delete queryCopy.order;
-                let queryFiltered = permission.filter(queryCopy); //filter all now allowed query variables
-		queryFiltered = this.parseOperatorContent(queryFiltered);
-                //console.log("queryFiltered:");
-                //console.log(JSON.stringify(queryFiltered));
+            if(!!redisKey & !this.isQueryInRequest(req)){
+                let redisClient = MyExpressRouter.redisClient; //get the client
+                let role = req.locals.current_user.role; //get users role
 
-		let sequelizeQuery = {include: includeModels, where: queryFiltered};
-
-		if(req.query.limit){ //check for limit
-		    sequelizeQuery.limit = parseInt(req.query.limit);
-		}
-		if(req.query.order){ //check for order
-                    sequelizeQuery.order = JSON.parse(req.query.order);
-                }
-
-                //lets find all resources with query
-                sequelizeModel.findAll(sequelizeQuery).then(resources => {
-                    console.log(resources);
-                    this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query));
-		    //console.log("[DefaultControllerHelper] handleIndex found: "+resources.length);
-                    DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, resources, permission);
-                }).catch(err => {
-                    this.logger.error("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query) + " - " + err.toString());
-                    MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-
-                });
-            } else if (!!redisKey) { //we could cache cause no query is given
                 redisClient.get(role + ":" + redisKey, (err, cachedStringData) => { //search in cache
                     if (!!cachedStringData) { //if something saved in cache
                         let cachedJSONData = JSON.parse(cachedStringData); //parse to json
@@ -288,11 +299,17 @@ export default class DefaultControllerHelper {
                         });
                     }
                 });
-            } else { //not using caching, then we need the old way
-                return sequelizeModel.findAll({include: includeModels}).then(resources => { //get the resources
+            } else {
+                let sequelizeQuery = this.getSequelizeQuery(req,permission,includeModels);
+
+                //lets find all resources with query
+                sequelizeModel.findAll(sequelizeQuery).then(resources => {
+                    console.log(resources);
+                    this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query));
+                    //console.log("[DefaultControllerHelper] handleIndex found: "+resources.length);
                     DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, resources, permission);
                 }).catch(err => {
-                    this.logger.error("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleIndex - " + err.toString());
+                    this.logger.error("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query) + " - " + err.toString());
                     MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
                 });
             }
@@ -322,10 +339,7 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {String} error A description of the error
      */
     async handleCreate(req, res, sequelizeResource, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false,customAnswer=false) {
-        let permission = myAccessControl.can(req.locals.current_user.role).createAny(accessControlResource);
-        if (isOwn) {
-            permission = myAccessControl.can(req.locals.current_user.role).createOwn(accessControlResource);
-        }
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"create",isOwn);
 
         this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleCreate - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //check if allowed to create the resource
@@ -375,10 +389,7 @@ export default class DefaultControllerHelper {
     async handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn) {
         let sequelizeResource = req.locals[resourceName]; //get the found resource, found by paramcheckers
 
-        let permission = myAccessControl.can(req.locals.current_user.role).readAny(accessControlResource);
-        if (isOwn) {
-            permission = myAccessControl.can(req.locals.current_user.role).readOwn(accessControlResource);
-        }
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"read",isOwn);
         if (permission.granted) { //can read/get resource
             DefaultControllerHelper.respondWithPermissionFilteredResource(req, res, sequelizeResource, permission);
         } else {
@@ -410,10 +421,7 @@ export default class DefaultControllerHelper {
      */
     async handleUpdate(req, res, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false) {
         let sequelizeResource = req.locals[resourceName]; //get the resource
-        let permission = myAccessControl.can(req.locals.current_user.role).updateAny(accessControlResource);
-        if (isOwn) {
-            permission = myAccessControl.can(req.locals.current_user.role).updateOwn(accessControlResource);
-        }
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"update",isOwn);
         this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //can update resource
             this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user:" + req.locals.current_user.id + " body: " + JSON.stringify(req.body));
@@ -455,13 +463,10 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {String} error A description of the error
      */
     async handleDelete(req, res, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false) {
-	//console.log("Helper handleDelete");
+	    //console.log("Helper handleDelete");
         let sequelizeResource = req.locals[resourceName]; //get the resource which should be deleted
-	//console.log("Found Resource: "+!!sequelizeResource);
-        let permission = myAccessControl.can(req.locals.current_user.role).deleteAny(accessControlResource);
-        if (isOwn) {
-            permission = myAccessControl.can(req.locals.current_user.role).deleteOwn(accessControlResource);
-        }
+    	//console.log("Found Resource: "+!!sequelizeResource);
+        let permission = this.getPermission(req,myAccessControl,accessControlResource,"delete",isOwn);
         this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleDelete - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //can delete resource
             let constructor = sequelizeResource.constructor; //get constructor for table update times
@@ -484,5 +489,13 @@ export default class DefaultControllerHelper {
             });
 
         }
+    }
+
+    getPermission(req,myAccessControl,accessControlResource,crudOperation,isOwn=false){
+        let permission = myAccessControl.can(req.locals.current_user.role)[crudOperation+"Any"](accessControlResource);
+        if (isOwn) {
+            permission = myAccessControl.can(req.locals.current_user.role)[crudOperation+"Own"](accessControlResource);
+        }
+        return permission;
     }
 }
