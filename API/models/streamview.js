@@ -27,14 +27,27 @@ module.exports = (sequelize, DataTypes) => {
     event: DataTypes.STRING,
     props: DataTypes.JSON,
     eventTime: {type: DataTypes.DATE, allowNull: false} //required
-  }, {});
+  }, { });
   StreamView.associate = function(models) {
     // associations can be defined here
+      StreamView.belongsTo(models.User, {
+          through: models.Device,
+          foreignKey: 'id',
+      });
     StreamView.belongsTo(models.Device,
         {
           onUpdate: "CASCADE",
           onDelete: "CASCADE" // is user deletes device, then we better delete all corresponding streamviews
         });
   };
+  StreamView.prototype.isOwn = async function(current_user) {
+      let owner = await this.getUser();
+      if(!!owner && !!current_user){
+          console.log(owner);
+          return owner.id === current_user.id;
+      }
+      return false;
+  };
+
   return StreamView;
 };

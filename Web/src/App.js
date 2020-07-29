@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Route, Link} from 'react-router-dom';
+import {Route, Link, Switch} from 'react-router-dom';
+import {withRouter} from 'react-router';
 import {AppMenu} from './AppMenu';
 import classNames from 'classnames';
 import 'babel-polyfill';
@@ -15,8 +16,9 @@ import config from './config';
 
 
 import {HomeComponent} from './screens/home/HomeComponent';
-import {Users} from "./screens/dataview/Users";
+import {ResourceIndex} from "./screens/dataview/ResourceIndex";
 import {SystemInformationView} from "./screens/systemInformation/SystemInformationView";
+import {RequestHelper} from "./module/RequestHelper";
 
 export class App extends Component {
 
@@ -196,10 +198,10 @@ export class App extends Component {
                 <div className={classNames({'layout-mask': this.state.mobileMenuActive})}/>
 
                 <div id="layout-content">
-                    <Route exact path="/" component={HomeComponent}/>
-                    <Route path="/users" component={Users}/>
-                    <Route path="/systeminformationview" component={SystemInformationView}/>
-
+                    <Switch>
+                        <Route exact path="/" component={HomeComponent}/>
+                        <Route path={"/models/:tableName"} component={withRouter(ResourceIndex)}/>
+                    </Switch>
                     <div className="content-section layout-footer clearfix">
                         <span>{config.title} {config.version}</span>
                     </div>

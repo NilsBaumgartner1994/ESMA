@@ -30,5 +30,13 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'SET NULL' //when the user is destroyed, we want to keep the feedback
         });
     };
+    Feedback.prototype.isOwn = async function(current_user) {
+        let owner = await this.getUser();
+        if(!!owner && !!current_user){
+            console.log(owner);
+            return owner.id === current_user.id;
+        }
+        return false;
+    };
     return Feedback;
 };

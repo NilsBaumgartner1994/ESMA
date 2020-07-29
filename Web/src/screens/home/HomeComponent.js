@@ -8,7 +8,7 @@ export class HomeComponent extends Component {
         return (
             <div className="home">
                 <div className="introduction">
-                    <h1>Easy Skeleton Mobile Application</h1>
+                    <h1>{config.titleLong}</h1>
                     <h2>{config.title}</h2>
                 </div>
                 <div className="features">

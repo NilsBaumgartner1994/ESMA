@@ -1,3 +1,5 @@
+import SequelizeSchemeController from "../controllers/SequelizeSchemeController";
+
 const config = require("./../../config/config.json")["server"];
 
 import HttpStatus from 'http-status-codes';
@@ -5,15 +7,7 @@ import SystemInformationSchedule from '../schedules/SystemInformationSchedule'
 
 import SequelizeController from "../controllers/SequelizeController";
 
-import DeviceController from "../controllers/DeviceController";
-import FriendController from "../controllers/FriendController";
 import LoginController from "../controllers/LoginController";
-import PermissionController from "../controllers/PermissionController";
-import RoleController from "../controllers/RoleController";
-import StreamViewController from "../controllers/StreamViewController";
-import UserController from "../controllers/UserController";
-import UserRoleController from "../controllers/UserRoleController";
-import FeedbackController from "../controllers/FeedbackController";
 
 import MyTokenHelper from "../helper/MyTokenHelper";
 import MetricsHelper from "../helper/MetricsHelper";
@@ -47,6 +41,8 @@ export default class MyExpressRouter {
      **************************************/
     static routeVersion = MyExpressRouter.urlAPI + "/version";
     static routeFunctions = MyExpressRouter.urlAPI + "/functions";
+    static routeModels = MyExpressRouter.urlAPI+"/models";
+    static routeSchemes = MyExpressRouter.urlAPI+"/schemes";
 
     /**
      * 1. Declare a new Resource Name, a Parameter, AccessControll Resource, and RouteIdentifier
@@ -62,57 +58,6 @@ export default class MyExpressRouter {
     static function_database_resourceName = "database";
     static function_database_accessControlResource = "Function_Database";
 
-
-    // Tables
-    static device_resource_id_parameter = "device_id";
-    static device_routeIdentifier = "/devices";
-    static device_resourceName = "device";
-    static device_accessControlResource = "Device";
-
-    static friend_resource_id_parameter = "friend_id";
-    static friend_routeIdentifier = "/friends";
-    static friend_resourceName = "friend";
-    static friend_accessControlResource = "Friend";
-
-    static feedback_resource_id_parameter = "feedback_id";
-    static feedback_routeIdentifier = "/feedbacks";
-    static feedback_resourceName = "feedback";
-    static feedback_accessControlResource = "Feedback";
-
-    static friendrequest_resource_id_parameter = "friendrequest_id";
-    static friendrequest_routeIdentifier = "/friendrequests";
-    static friendrequest_resourceName = "friendrequest";
-    static friendrequest_accessControlResource = "FriendRequest";
-
-    static login_resource_id_parameter = "login_id";
-    static login_routeIdentifier = "/logins";
-    static login_resourceName = "login";
-    static login_accessControlResource = "Login";
-
-    static permissions_routeIdentifier = "/permissions";
-    static permissions_resourceName = "permissions";
-    static permissions_accessControlResource = "Permissions";
-
-    static role_resource_id_parameter = "role_id";
-    static role_routeIdentifier = "/roles";
-    static role_resourceName = "role";
-    static role_accessControlResource = "Role";
-
-    static streamview_resource_id_parameter = "streamview_id";
-    static streamview_routeIdentifier = "/streamviews";
-    static streamview_resourceName = "streamview";
-    static streamview_accessControlResource = "StreamView";
-
-    static user_resource_id_parameter = "user_id";
-    static user_routeIdentifier = "/users";
-    static user_resourceName = "user";
-    static user_accessControlResource = "User";
-    static user_accessToken_accessControlResource = "AccessToken";
-
-    static userrole_routeIdentifier = "/userroles";
-    static userrole_resourceName = "userrole";
-    static userrole_accessControlResource = "UserRole";
-
     /**
      * 2. Create the Route and Associations
      */
@@ -124,42 +69,6 @@ export default class MyExpressRouter {
     static function_routeBackupDownload = MyExpressRouter.function_routeBackup + "/download";
     static function_routeBackupRestore = MyExpressRouter.function_routeBackup + "/restore";
 
-    // Tables
-    static device_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.device_routeIdentifier;
-    static device_routeResource = MyExpressRouter.device_routeResources + "/:" + MyExpressRouter.device_resource_id_parameter;
-    static device_routeStreamViews = MyExpressRouter.device_routeResource + MyExpressRouter.streamview_routeIdentifier;
-
-    static feedback_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.feedback_routeIdentifier;
-    static feedback_routeResource = MyExpressRouter.feedback_routeResources + "/:" + MyExpressRouter.feedback_resource_id_parameter;
-
-    static friend_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.friend_routeIdentifier;
-
-    static login_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.login_routeIdentifier;
-    static login_routeResource = MyExpressRouter.login_routeResources + "/:" + MyExpressRouter.login_resource_id_parameter;
-
-    static permission_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.permissions_routeIdentifier;
-    static permission_routeOwn = MyExpressRouter.permission_routeResources + "/own";
-
-    static role_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.role_routeIdentifier;
-    static role_routeResource = MyExpressRouter.role_routeResources + "/:" + MyExpressRouter.role_resource_id_parameter;
-
-    static streamview_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.streamview_routeIdentifier;
-    static streamview_routeResource = MyExpressRouter.streamview_routeResources + "/:" + MyExpressRouter.streamview_resource_id_parameter;
-
-    static user_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.user_routeIdentifier;
-    static user_routeResource = MyExpressRouter.user_routeResources + "/:" + MyExpressRouter.user_resource_id_parameter;
-    static user_routeAmount = MyExpressRouter.urlAPI + "/usersAmount";
-    static user_routeUserGetNewToken = MyExpressRouter.user_routeResource + "/newToken";
-    static user_routeUserPrivacyPolicyRead = MyExpressRouter.user_routeResource + "/privacyPoliceRead";
-    static user_routeUsersDevice = MyExpressRouter.user_routeResource + "/device";
-    static user_routeUsersFriends = MyExpressRouter.user_routeResource + "/friends";
-    static user_routeUsersFriend = MyExpressRouter.user_routeUsersFriends + "/:" + MyExpressRouter.friend_resource_id_parameter;
-    static user_routeUsersFriendRequests = MyExpressRouter.user_routeResource + "/friendrequests";
-    static user_routeUsersFriendRequest = MyExpressRouter.user_routeUsersFriendRequests + "/:" + MyExpressRouter.friendrequest_resource_id_parameter;
-
-    static userrole_routeResources = MyExpressRouter.urlAPI + MyExpressRouter.userrole_routeIdentifier;
-    static userrole_routeResource = MyExpressRouter.userrole_routeResources + "/user/:" + MyExpressRouter.user_resource_id_parameter + "/role/:" + MyExpressRouter.role_resource_id_parameter;
-    static userrole_routeResourceForUser = MyExpressRouter.userrole_routeResources + "/user/:" + MyExpressRouter.user_resource_id_parameter;
     /**
      * Custom Routes
      */
@@ -325,7 +234,8 @@ export default class MyExpressRouter {
         this.photoHelper = new DefaultPhotoHelper(logger, models, instance);
 
         this.sequelizeController = new SequelizeController(logger,models,expressApp,myAccessControl,instance);
-        await this.sequelizeController.configureRoutes();
+        this.sequelizeSchemeController = new SequelizeSchemeController(logger,models,expressApp,myAccessControl,instance);
+
 
         //Tables
         /**

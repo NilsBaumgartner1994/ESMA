@@ -13,7 +13,7 @@ import {ProgressBar} from '../../components/progressbar/ProgressBar';
 
 import {Button} from '../../components/button/Button';
 
-export class User extends Component {
+export class ResourceInstance extends Component {
 
     constructor() {
         super();

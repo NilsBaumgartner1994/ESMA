@@ -48,6 +48,5 @@ module.exports = (sequelize, DataTypes) => {
         );
 
   };
-
   return UserRole;
 };

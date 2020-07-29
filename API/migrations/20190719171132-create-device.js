@@ -11,6 +11,12 @@ module.exports = {
       pushNotificationToken: {
         type: Sequelize.STRING
       },
+      version: {
+        type: Sequelize.STRING,
+      },
+      os: {
+        type:Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

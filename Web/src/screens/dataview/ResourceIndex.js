@@ -10,8 +10,9 @@ import {Link} from 'react-router-dom';
 import {Button} from '../../components/button/Button';
 
 import {InputSwitch} from "../../components/inputswitch/InputSwitch";
+import {RequestHelper} from "../../module/RequestHelper";
 
-export class Users extends Component {
+export class ResourceIndex extends Component {
 
     constructor() {
         super();
@@ -22,17 +23,23 @@ export class Users extends Component {
     }
 
     componentDidMount() {
-        this.loadUsers();
+        const { match: { params } } = this.props;
+        let tableName = params.tableName;
+
+        this.loadResources(tableName);
     }
 
-    async loadUsers() {
-        const users = [];
-        console.log("Users: "+users.length);
+    async loadResources(tableName) {
+        let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName);
+        let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName);
+
+        let resources = resourcesAnswer || [];
 
         this.setState({
             isLoading: false,
-            users: users,
-	    resources: users,
+	        resources: resources,
+            scheme: scheme,
+            tableName: tableName
         });
     }
 
@@ -46,12 +53,33 @@ export class Users extends Component {
         );
     }
 
+    renderColumns(){
+        let columns = [];
+
+        let scheme = this.state.scheme;
+        if(!!scheme){
+            let attributeKeys = Object.keys(scheme);
+            columns = attributeKeys.map(attributeKey => (
+                <Column field={attributeKey} header={attributeKey} filter={true} sortable={true}/>
+            ));
+            return columns;
+        } else {
+            return (<div></div>);
+        }
+    }
+
+    renderColumn(field,header){
+        return (<Column field={field} header={header} filter={true} sortable={true}/>);
+    }
+
+
     renderDataTable(){
         let emptyMessage = "No records found";
         if (this.state.isLoading) {
             emptyMessage = <ProgressSpinner/>
         }
 
+        let columns = this.renderColumns();
 
         const header = this.renderHeader();
 
@@ -59,13 +87,10 @@ export class Users extends Component {
 
         } {
             return (
-                <DataTable ref={(el) => this.dt = el} responsive={true} value={this.state.users} paginator={true} rows={10}
+                <DataTable ref={(el) => this.dt = el} responsive={true} value={this.state.resources} paginator={true} rows={10}
                            header={header}
                            globalFilter={this.state.globalFilter} emptyMessage={emptyMessage}>
-                    <Column field="id" header="ID" filter={true} sortable={true}/>
-                    <Column field="pseudonym" header="Pseudonym" filter={true} sortable={true}/>
-		            <Column field="avatar" header="Avatar" filter={true} sortable={true}/>
-                    <Column field="online_time" header="Zuletzt online" filter={true} sortable={true}/>
+                    {columns}
                 </DataTable>
             );
         }
@@ -74,16 +99,18 @@ export class Users extends Component {
     render() {
         let dataTable = this.renderDataTable();
 
-	let amountOfResources = "?";
-	if(this.state.resources!==undefined){
-	    amountOfResources = this.state.resources.length;
-	}
+        let amountOfResources = "?";
+        if(!!this.state.resources){
+            console.log("Resources Found: "+this.state.resources.length);
+            amountOfResources = this.state.resources.length;
+        }
+	    let tableName = this.state.tableName || "";
 
         return (
             <div>
                 <div className="content-section introduction">
                     <div className="feature-intro">
-                        <h1>Alle User ({amountOfResources})</h1>
+                        <h1>All {tableName} ({amountOfResources})</h1>
                         <p></p>
                         <table style={{width: "100%"}}>
                             <tr>

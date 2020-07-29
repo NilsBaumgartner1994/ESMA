@@ -12,5 +12,13 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: 'CASCADE' // destroy login when user is destroyed
         });
   };
+    Login.prototype.isOwn = async function(current_user) {
+        let owner = await this.getUser();
+        if(!!owner && !!current_user){
+            console.log(owner);
+            return owner.id === current_user.id;
+        }
+        return false;
+    };
   return Login;
 };

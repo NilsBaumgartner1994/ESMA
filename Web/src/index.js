@@ -4,16 +4,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import ScrollToTop from './showcase/scrolltotop/ScrollToTop';
-import {HashRouter} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import config from './config';
 
 document.title = config.title;
 
 ReactDOM.render(
-    <HashRouter>
+    <Router>
         <ScrollToTop>
             <App></App>
         </ScrollToTop>
-    </HashRouter>,
+    </Router>,
     document.getElementById('root')
 );

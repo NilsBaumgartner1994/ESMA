@@ -10,12 +10,17 @@ module.exports = {
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
     return queryInterface.addColumn(
-        'Users',
-        'privacyPolicyReadDate',
+        'Feedbacks',
+        'UserId',
         {
-          allowNull: false,
-          type:Sequelize.DATE,
-          defaultValue: new Date()
+          type:Sequelize.INTEGER,
+          allowNull: true,
+          references: {
+            model: "Users",
+            key: "id",
+          },
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
         }
     );
   },
@@ -29,8 +34,8 @@ module.exports = {
       return queryInterface.dropTable('users');
     */
     return queryInterface.removeColumn(
-        "Users",
-        "privacyPolicyReadDate"
+        "Feedbacks",
+        "UserId"
     );
   }
 };

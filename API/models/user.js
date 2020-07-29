@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     pseudonym: DataTypes.STRING,
     language: DataTypes.STRING,
     avatar: DataTypes.JSON,
-    online_time: DataTypes.DATE,
+    onlineTime: DataTypes.DATE,
     privacyPolicyReadDate: {type: DataTypes.DATE, allowNull: false} //required
   }, {});
   User.associate = function(models) {
@@ -92,5 +92,13 @@ module.exports = (sequelize, DataTypes) => {
           models.Feedback,
       );
   };
+    User.prototype.isOwn = async function(current_user) {
+        let owner = this;
+        if(!!owner && !!current_user){
+            console.log(owner);
+            return owner.id === current_user.id;
+        }
+        return false;
+    };
   return User;
 };

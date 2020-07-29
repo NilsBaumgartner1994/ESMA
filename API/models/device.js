@@ -34,5 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         });
       Device.hasMany(models.StreamView);
   };
+    Device.prototype.isOwn = async function(current_user) {
+        let owner = await this.getUser();
+        if(!!owner && !!current_user){
+            console.log(owner);
+            return owner.id === current_user.id;
+        }
+        return false;
+    };
   return Device;
 };

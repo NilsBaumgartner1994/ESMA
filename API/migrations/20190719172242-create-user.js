@@ -14,8 +14,16 @@ module.exports = {
       avatar: {
         type: Sequelize.JSON
       },
-      online_time: {
+      onlineTime: {
         type: Sequelize.DATE
+      },
+      privacyPolicyReadDate: {
+        allowNull: false,
+        type:Sequelize.DATE,
+        defaultValue: new Date()
+      },
+      language: {
+        type:Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

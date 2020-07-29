@@ -2,18 +2,42 @@ import React, {Component} from 'react';
 import classNames from 'classnames';
 import {Link} from 'react-router-dom';
 import {CSSTransition} from 'react-transition-group';
+import {RequestHelper} from "./module/RequestHelper";
 
 export class AppMenu extends Component {
 
     constructor() {
         super();
-        this.state = {activeMenu: -1};
+        this.state = {activeMenu: -1, loading: true};
+        this.loadInformations();
     }
 
     toggleMenu(val) {
         let active = this.state.activeMenu === val;
 
         this.setState({activeMenu: active ? -1 : val});
+    }
+
+    async loadInformations(){
+        let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
+        this.setState({
+            schemes: schemes,
+            loading: false,
+        })
+    }
+
+    renderSchemes(){
+        let schemes = this.state.schemes || [];
+
+        const LinkList = ({ schemes }) => (
+                <div>
+                    {schemes.map(tableName => (
+                            <Link to={'/models/'+tableName}>&#9679; {tableName}</Link>
+                    ))}
+                </div>
+        );
+
+        return <LinkList schemes={schemes} />;
     }
 
     render() {
@@ -31,9 +55,7 @@ export class AppMenu extends Component {
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}
                                in={this.state.activeMenu === 0}>
                     <div className="layout-submenu">
-                        <div>
-                            <Link to="/users">&#9679; Users</Link>
-                        </div>
+                        {this.renderSchemes()}
                     </div>
                 </CSSTransition>
 
