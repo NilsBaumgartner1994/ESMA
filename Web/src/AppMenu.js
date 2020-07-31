@@ -20,24 +20,25 @@ export class AppMenu extends Component {
 
     async loadInformations(){
         let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
+        let tableNames = Object.keys(schemes);
         this.setState({
-            schemes: schemes,
+            tableNames: tableNames,
             loading: false,
         })
     }
 
     renderSchemes(){
-        let schemes = this.state.schemes || [];
+        let tableNames = this.state.tableNames || [];
 
-        const LinkList = ({ schemes }) => (
+        const LinkList = ({ tableNames }) => (
                 <div>
-                    {schemes.map(tableName => (
+                    {tableNames.map(tableName => (
                             <Link to={'/models/'+tableName}>&#9679; {tableName}</Link>
                     ))}
                 </div>
         );
 
-        return <LinkList schemes={schemes} />;
+        return <LinkList tableNames={tableNames} />;
     }
 
     render() {

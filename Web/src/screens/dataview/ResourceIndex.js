@@ -11,8 +11,12 @@ import {Button} from '../../components/button/Button';
 
 import {InputSwitch} from "../../components/inputswitch/InputSwitch";
 import {RequestHelper} from "../../module/RequestHelper";
+import {SchemeHelper} from "../../helper/SchemeHelper";
 
 export class ResourceIndex extends Component {
+
+    static searchLoopIcon = "\ud83d\udd0d";
+    static defaultDivStyle = {"textAlign":"center","wordBreak": "break-word"};
 
     constructor() {
         super();
@@ -31,6 +35,7 @@ export class ResourceIndex extends Component {
 
     async loadResources(tableName) {
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName);
+        let routes = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName+"/routes");
         let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName);
 
         let resources = resourcesAnswer || [];
@@ -39,6 +44,7 @@ export class ResourceIndex extends Component {
             isLoading: false,
 	        resources: resources,
             scheme: scheme,
+            routes: routes,
             tableName: tableName
         });
     }
@@ -53,23 +59,129 @@ export class ResourceIndex extends Component {
         );
     }
 
-    renderColumns(){
-        let columns = [];
+    filterUnimportantAttributeKeys(attributeKeys){
+        let unimportantKeys = ["createdAt","updatedAt"];
+        let filtered = attributeKeys.filter(function(value, index, arr){
+            return !unimportantKeys.includes(value);
+        });
+        return filtered;
+    }
 
+    getAttributeKeysToDisplay(){
+        let attributeKeys = SchemeHelper.getSortedAttributeKeys(this.state.scheme);
+        if(!this.state.advanced){
+            attributeKeys = this.filterUnimportantAttributeKeys(attributeKeys);
+        }
+        return attributeKeys;
+    }
+
+    renderColumns(){
         let scheme = this.state.scheme;
         if(!!scheme){
-            let attributeKeys = Object.keys(scheme);
-            columns = attributeKeys.map(attributeKey => (
-                <Column field={attributeKey} header={attributeKey} filter={true} sortable={true}/>
+            let attributeKeys = this.getAttributeKeysToDisplay();
+
+            let columns = [];
+            let attributeColumns = attributeKeys.map(attributeKey => (
+                this.renderColumn(attributeKey,attributeKey)
             ));
+
+            columns.push(this.renderActionColumn());
+            columns.push(attributeColumns);
             return columns;
         } else {
             return (<div></div>);
         }
     }
 
-    renderColumn(field,header){
-        return (<Column field={field} header={header} filter={true} sortable={true}/>);
+    renderActionColumn(){
+        let body = this.actionTemplate.bind(this);
+        return (<Column key={"actionColumn"} body={body} style={{textAlign:'center', width: '4em'}}/>);
+    }
+
+    actionTemplate(rowData, column) {
+        let route = this.getInstanceRoute(rowData);
+        if(!route){
+           return (<div></div>);
+        }
+
+        return <div>
+            <Link to={route}>
+            <Button type="button" icon="pi pi-search" className="p-button-success"></Button>
+            </Link>
+        </div>;
+    }
+
+    getInstanceRoute(rowData){
+        let schemeRouteGET = this.state.routes["GET"];
+        schemeRouteGET = schemeRouteGET.replace("/api","");
+
+        let tableName = this.state.tableName;
+        let attributeKeys = SchemeHelper.getAttributeKeys(this.state.scheme);
+        for(let i=0;i<attributeKeys.length; i++){
+            let key = attributeKeys[i];
+            if(SchemeHelper.isPrimaryKey(this.state.scheme, key)){
+                let value = rowData[key];
+                if(!!value){
+                    let routeParamKey = ":"+tableName+"_"+key;
+                    schemeRouteGET = schemeRouteGET.replace(routeParamKey,value);
+                }
+            }
+        }
+
+        if(schemeRouteGET.includes(":")){ //if there are still unresolved params, we have no complete route
+            return undefined;
+        }
+
+        let route = schemeRouteGET;
+        return route;
+    }
+
+    renderColumn(field,headerText){
+        let customStyles = ResourceIndex.defaultDivStyle;
+        let keyIcon = "";
+
+        if(SchemeHelper.isPrimaryKey(this.state.scheme, field)){
+            keyIcon = (<div style={{"color": "#FBE64A"}}> <i className="pi pi-key"></i></div>);
+        }
+        let header = (<div style={customStyles}>{headerText}{keyIcon}</div>);
+
+        let body = null;
+        if(SchemeHelper.isReferenceField(this.state.scheme,field)){
+            body = this.getReferenceFieldBody(field);
+        }
+
+        return this.renderDefaultColumn(field,header,body);
+    }
+
+    renderDefaultColumn(field,header,body){
+        if(!body){
+            body = this.defaultBodyTemplate.bind(this, field);
+        }
+        return (<Column key={field} field={field} header={header} body={body} sortable filterMatchMode="contains" filter filterPlaceholder={ResourceIndex.searchLoopIcon+" search"}/>);
+    }
+
+    defaultBodyTemplate(field, rowData, column){
+        return <div style={ResourceIndex.defaultDivStyle}>{rowData[field]}</div>;
+    }
+
+    getReferenceFieldBody(field){
+        return this.referenceFieldBodyTemplate.bind(this, field);
+    }
+
+    referenceFieldBodyTemplate(field, rowData, column) {
+        let referenceId = rowData[field];
+        if(!referenceId){
+            return (<div></div>);
+        }
+
+        let referenceTableName = this.state.scheme[field].references.model;
+        let route = '/models/'+referenceTableName+"/"+referenceId;
+
+        return <div style={ResourceIndex.defaultDivStyle}>
+            <Link to={route}>
+                <Button type="button" className="p-button-success" label={""+referenceId} iconPos="right" icon="pi pi-search" style={{"width":"100%"}} ></Button>
+            </Link>
+        </div>;
     }
 
 
@@ -83,9 +195,6 @@ export class ResourceIndex extends Component {
 
         const header = this.renderHeader();
 
-        if(this.state.advanced){
-
-        } {
             return (
                 <DataTable ref={(el) => this.dt = el} responsive={true} value={this.state.resources} paginator={true} rows={10}
                            header={header}
@@ -93,7 +202,6 @@ export class ResourceIndex extends Component {
                     {columns}
                 </DataTable>
             );
-        }
     }
 
     render() {

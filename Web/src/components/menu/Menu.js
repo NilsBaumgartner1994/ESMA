@@ -1,286 +1,367 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import DomHandler from '../utils/DomHandler';
-import classNames from 'classnames';
+"use strict";
 
-export class Menu extends Component {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Menu = void 0;
 
-    static defaultProps = {
-        id: null,
-        model: null,
-        popup: false,
-        style: null,
-        className: null,
-        autoZIndex: true,
-        baseZIndex: 0,
-        appendTo: null,
-        onShow: null,
-        onHide: null
-    };
+var _react = _interopRequireWildcard(require("react"));
 
-    static propTypes = {
-        id: PropTypes.string,
-        model: PropTypes.array,
-        popup: PropTypes.bool,
-        style: PropTypes.object,
-        className: PropTypes.string,
-        autoZIndex: PropTypes.bool,
-        baseZIndex: PropTypes.number,
-        appendTo: PropTypes.any,
-        onShow: PropTypes.func,
-        onHide: PropTypes.func
-    };
+var _reactDom = _interopRequireDefault(require("react-dom"));
 
-    constructor(props) {
-        super(props);
-        this.onMenuClick = this.onMenuClick.bind(this);
-    }
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-    onMenuClick() {
-        if (this.documentClickListener) {
-            this.selfClick = true;
-        }
-    }
+var _DomHandler = _interopRequireDefault(require("../utils/DomHandler"));
 
-    onItemClick(event, item){
-        if (item.disabled) {
-            event.preventDefault();
-            return;
-        }
+var _classnames = _interopRequireDefault(require("classnames"));
 
-        if (!item.url) {
-            event.preventDefault();
-        }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-        if (item.command) {
-            item.command({
-                originalEvent: event,
-                item: item
-            });
-        }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-        if (this.props.popup) {
-            this.hide(event);
-        }
-    }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-    onItemKeyDown(event, item) {
-        let listItem = event.currentTarget.parentElement;
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-        switch(event.which) {
-            //down
-            case 40:
-                var nextItem = this.findNextItem(listItem);
-                if(nextItem) {
-                    nextItem.children[0].focus();
-                }
-                
-                event.preventDefault();
-            break;
-            
-            //up
-            case 38:
-                var prevItem = this.findPrevItem(listItem);
-                if(prevItem) {
-                    prevItem.children[0].focus();
-                }
-                
-                event.preventDefault();
-            break;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-            default:
-            break;
-        }
-    }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-    findNextItem(item) {
-        let nextItem = item.nextElementSibling;
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-        if (nextItem)
-            return DomHandler.hasClass(nextItem, 'p-disabled') || !DomHandler.hasClass(nextItem, 'p-menuitem') ? this.findNextItem(nextItem) : nextItem;
-        else
-            return null;
-    }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-    findPrevItem(item) {
-        let prevItem = item.previousElementSibling;
-        
-        if (prevItem)
-            return DomHandler.hasClass(prevItem, 'p-disabled') || !DomHandler.hasClass(prevItem, 'p-menuitem') ? this.findPrevItem(prevItem) : prevItem;
-        else
-            return null;
-    }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-    toggle(event) {
-        if (this.props.popup) {
-            if (this.documentClickListener) {
-                this.selfClick = true;
-            }
-    
-            if (this.container.offsetParent)
-                this.hide(event);
-            else
-                this.show(event);
-        }
-    }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-    show(event) {
-        this.container.style.zIndex = String(this.props.baseZIndex + DomHandler.generateZIndex());
-        this.container.style.display = 'block';
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-        setTimeout(() => {
-            DomHandler.addClass(this.container, 'p-menu-overlay-visible');
-            DomHandler.removeClass(this.container, 'p-menu-overlay-hidden');
-        }, 1);
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-        DomHandler.absolutePosition(this.container,  event.currentTarget);
-        this.bindDocumentListeners();
-        
-        if (this.props.onShow) {
-            this.props.onShow(event);
-        }
-    }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
-    hide(event) {
-        if (this.container) {
-            DomHandler.addClass(this.container, 'p-menu-overlay-hidden');
-            DomHandler.removeClass(this.container, 'p-menu-overlay-visible');
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-            setTimeout(() => {
-                if (this.container) {
-                    this.container.style.display = 'none';
-                    DomHandler.removeClass(this.container, 'p-menu-overlay-hidden');
-                }
-            }, 150);
-        }
-            
-        if (this.props.onHide) {
-            this.props.onHide(event);
-        }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-        this.unbindDocumentListeners();
-        this.selfClick = false;
-    }
+var Menu = /*#__PURE__*/function (_Component) {
+  _inherits(Menu, _Component);
 
-    bindDocumentListeners() {
-        if (!this.documentClickListener) {
-            this.documentClickListener = (event) => {
-                if (this.selfClick)
-                    this.selfClick = false;
-                else
-                    this.hide(event);
-            };
+  var _super = _createSuper(Menu);
 
-            document.addEventListener('click', this.documentClickListener);
-        }
+  function Menu() {
+    _classCallCheck(this, Menu);
 
-        if (!this.documentResizeListener) {
-            this.documentResizeListener = (event) => {
-                if(this.container.offsetParent) {
-                    this.hide(event);
-                }
-            };
+    return _super.apply(this, arguments);
+  }
 
-            window.addEventListener('resize', this.documentResizeListener);
-        }
-    }
+  _createClass(Menu, [{
+    key: "onItemClick",
+    value: function onItemClick(event, item) {
+      if (item.disabled) {
+        event.preventDefault();
+        return;
+      }
 
-    unbindDocumentListeners() {
-        if(this.documentClickListener) {
-            document.removeEventListener('click', this.documentClickListener);
-            this.documentClickListener = null;
-        }
+      if (!item.url) {
+        event.preventDefault();
+      }
 
-        if(this.documentResizeListener) {
-            window.removeEventListener('resize', this.documentResizeListener);
-            this.documentResizeListener = null;
-        }
-    }
-
-    componentWillUnmount() {
-        this.unbindDocumentListeners();
-    }
-
-    renderSubmenu(submenu, index) {
-        const className = classNames('p-submenu-header', submenu.className,  {'p-disabled': submenu.disabled});
-        const items = submenu.items.map((item, index)=> {
-            return this.renderMenuitem(item, index);
+      if (item.command) {
+        item.command({
+          originalEvent: event,
+          item: item
         });
+      }
 
-        return (
-            <React.Fragment key={submenu.label + '_' + index}>
-                <li className={className} style={submenu.style}>{submenu.label}</li>
-                {items}
-            </React.Fragment>
-        );
+      if (this.props.popup) {
+        this.hide(event);
+      }
     }
+  }, {
+    key: "onItemKeyDown",
+    value: function onItemKeyDown(event, item) {
+      var listItem = event.currentTarget.parentElement;
 
-    renderSeparator(index) {
-        return (
-            <li key={'separator_' + index} className="p-menu-separator"></li>
-        );
+      switch (event.which) {
+        //down
+        case 40:
+          var nextItem = this.findNextItem(listItem);
+
+          if (nextItem) {
+            nextItem.children[0].focus();
+          }
+
+          event.preventDefault();
+          break;
+        //up
+
+        case 38:
+          var prevItem = this.findPrevItem(listItem);
+
+          if (prevItem) {
+            prevItem.children[0].focus();
+          }
+
+          event.preventDefault();
+          break;
+
+        default:
+          break;
+      }
     }
-
-    renderMenuitem(item, index) {
-        const className = classNames('p-menuitem', item.className, {'p-disabled': item.disabled});
-        const iconClassName = classNames(item.icon, 'p-menuitem-icon');
-        const icon = item.icon ? <span className={iconClassName}></span>: null;
-
-        return (
-            <li key={item.label + '_' + index} className={className} style={item.style}>
-                <a href={item.url||'#'} className="p-menuitem-link" target={item.target} onClick={e => this.onItemClick(e, item)} onKeyDown={e => this.onItemKeyDown(e, item)}>
-                    {icon}
-                    <span className="p-menuitem-text">{item.label}</span>
-                </a>
-            </li>
-        );
+  }, {
+    key: "findNextItem",
+    value: function findNextItem(item) {
+      var nextItem = item.nextElementSibling;
+      if (nextItem) return _DomHandler.default.hasClass(nextItem, 'p-disabled') || !_DomHandler.default.hasClass(nextItem, 'p-menuitem') ? this.findNextItem(nextItem) : nextItem;else return null;
     }
+  }, {
+    key: "findPrevItem",
+    value: function findPrevItem(item) {
+      var prevItem = item.previousElementSibling;
+      if (prevItem) return _DomHandler.default.hasClass(prevItem, 'p-disabled') || !_DomHandler.default.hasClass(prevItem, 'p-menuitem') ? this.findPrevItem(prevItem) : prevItem;else return null;
+    }
+  }, {
+    key: "toggle",
+    value: function toggle(event) {
+      if (this.props.popup) {
+        if (this.container.offsetParent) this.hide(event);else this.show(event);
+      }
+    }
+  }, {
+    key: "show",
+    value: function show(event) {
+      var _this = this;
 
-    renderItem(item, index) {
-        if (item.separator) {
-            return this.renderSeparator(index);
+      this.container.style.zIndex = String(this.props.baseZIndex + _DomHandler.default.generateZIndex());
+      this.container.style.display = 'block';
+      setTimeout(function () {
+        _DomHandler.default.addClass(_this.container, 'p-menu-overlay-visible');
+
+        _DomHandler.default.removeClass(_this.container, 'p-menu-overlay-hidden');
+      }, 1);
+
+      _DomHandler.default.absolutePosition(this.container, event.currentTarget);
+
+      this.bindDocumentListeners();
+
+      if (this.props.onShow) {
+        this.props.onShow(event);
+      }
+    }
+  }, {
+    key: "hide",
+    value: function hide(event) {
+      var _this2 = this;
+
+      if (this.container) {
+        _DomHandler.default.addClass(this.container, 'p-menu-overlay-hidden');
+
+        _DomHandler.default.removeClass(this.container, 'p-menu-overlay-visible');
+
+        setTimeout(function () {
+          if (_this2.container) {
+            _this2.container.style.display = 'none';
+
+            _DomHandler.default.removeClass(_this2.container, 'p-menu-overlay-hidden');
+          }
+        }, 150);
+      }
+
+      if (this.props.onHide) {
+        this.props.onHide(event);
+      }
+
+      this.unbindDocumentListeners();
+    }
+  }, {
+    key: "bindDocumentListeners",
+    value: function bindDocumentListeners() {
+      var _this3 = this;
+
+      if (!this.documentClickListener) {
+        this.documentClickListener = function (event) {
+          if (_this3.isOutsideClicked(event)) {
+            _this3.hide();
+          }
+        };
+
+        document.addEventListener('click', this.documentClickListener);
+      }
+
+      if (!this.documentResizeListener) {
+        this.documentResizeListener = function (event) {
+          if (_this3.container.offsetParent) {
+            _this3.hide(event);
+          }
+        };
+
+        window.addEventListener('resize', this.documentResizeListener);
+      }
+    }
+  }, {
+    key: "isOutsideClicked",
+    value: function isOutsideClicked(event) {
+      return this.container && !(this.container.isSameNode(event.target) || this.container.contains(event.target));
+    }
+  }, {
+    key: "unbindDocumentListeners",
+    value: function unbindDocumentListeners() {
+      if (this.documentClickListener) {
+        document.removeEventListener('click', this.documentClickListener);
+        this.documentClickListener = null;
+      }
+
+      if (this.documentResizeListener) {
+        window.removeEventListener('resize', this.documentResizeListener);
+        this.documentResizeListener = null;
+      }
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      this.unbindDocumentListeners();
+    }
+  }, {
+    key: "renderSubmenu",
+    value: function renderSubmenu(submenu, index) {
+      var _this4 = this;
+
+      var className = (0, _classnames.default)('p-submenu-header', submenu.className, {
+        'p-disabled': submenu.disabled
+      });
+      var items = submenu.items.map(function (item, index) {
+        return _this4.renderMenuitem(item, index);
+      });
+      return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, {
+        key: submenu.label + '_' + index
+      }, /*#__PURE__*/_react.default.createElement("li", {
+        className: className,
+        style: submenu.style,
+        role: "presentation"
+      }, submenu.label), items);
+    }
+  }, {
+    key: "renderSeparator",
+    value: function renderSeparator(index) {
+      return /*#__PURE__*/_react.default.createElement("li", {
+        key: 'separator_' + index,
+        className: "p-menu-separator",
+        role: "separator"
+      });
+    }
+  }, {
+    key: "renderMenuitem",
+    value: function renderMenuitem(item, index) {
+      var _this5 = this;
+
+      var className = (0, _classnames.default)('p-menuitem', item.className, {
+        'p-disabled': item.disabled
+      });
+      var iconClassName = (0, _classnames.default)(item.icon, 'p-menuitem-icon');
+      var icon = item.icon ? /*#__PURE__*/_react.default.createElement("span", {
+        className: iconClassName
+      }) : null;
+      return /*#__PURE__*/_react.default.createElement("li", {
+        key: item.label + '_' + index,
+        className: className,
+        style: item.style,
+        role: "none"
+      }, /*#__PURE__*/_react.default.createElement("a", {
+        href: item.url || '#',
+        className: "p-menuitem-link",
+        role: "menuitem",
+        target: item.target,
+        onClick: function onClick(e) {
+          return _this5.onItemClick(e, item);
+        },
+        onKeyDown: function onKeyDown(e) {
+          return _this5.onItemKeyDown(e, item);
         }
-        else {
-            if (item.items)
-                return this.renderSubmenu(item, index);
-            else
-                return this.renderMenuitem(item, index);
-        }
+      }, icon, /*#__PURE__*/_react.default.createElement("span", {
+        className: "p-menuitem-text"
+      }, item.label)));
     }
+  }, {
+    key: "renderItem",
+    value: function renderItem(item, index) {
+      if (item.separator) {
+        return this.renderSeparator(index);
+      } else {
+        if (item.items) return this.renderSubmenu(item, index);else return this.renderMenuitem(item, index);
+      }
+    }
+  }, {
+    key: "renderMenu",
+    value: function renderMenu() {
+      var _this6 = this;
 
-    renderMenu() {
-        return (
-            this.props.model.map((item, index) => {
-                return this.renderItem(item, index);
-            })
-        );
+      return this.props.model.map(function (item, index) {
+        return _this6.renderItem(item, index);
+      });
     }
-  
-    renderElement() {
-        if (this.props.model) {
-            const className = classNames('p-menu p-component', this.props.className, {'p-menu-dynamic p-menu-overlay': this.props.popup});
-            const menuitems = this.renderMenu();
+  }, {
+    key: "renderElement",
+    value: function renderElement() {
+      var _this7 = this;
 
-            return (
-                <div id={this.props.id} className={className} style={this.props.style} ref={el => this.container = el} onClick={this.onMenuClick}>
-                    <ul className="p-menu-list p-reset">
-                        {menuitems}
-                    </ul>
-                </div>
-            );
-        }
-        else {
-            return null;
-        }
+      if (this.props.model) {
+        var className = (0, _classnames.default)('p-menu p-component', this.props.className, {
+          'p-menu-dynamic p-menu-overlay': this.props.popup
+        });
+        var menuitems = this.renderMenu();
+        return /*#__PURE__*/_react.default.createElement("div", {
+          id: this.props.id,
+          className: className,
+          style: this.props.style,
+          ref: function ref(el) {
+            return _this7.container = el;
+          }
+        }, /*#__PURE__*/_react.default.createElement("ul", {
+          className: "p-menu-list p-reset",
+          role: "menu"
+        }, menuitems));
+      } else {
+        return null;
+      }
     }
+  }, {
+    key: "render",
+    value: function render() {
+      var element = this.renderElement();
+      if (this.props.appendTo) return _reactDom.default.createPortal(element, this.props.appendTo);else return element;
+    }
+  }]);
 
-    render() {
-        const element = this.renderElement();
-        
-        if (this.props.appendTo)
-            return ReactDOM.createPortal(element, this.props.appendTo);
-        else
-            return element;
-    }
-}
+  return Menu;
+}(_react.Component);
+
+exports.Menu = Menu;
+
+_defineProperty(Menu, "defaultProps", {
+  id: null,
+  model: null,
+  popup: false,
+  style: null,
+  className: null,
+  autoZIndex: true,
+  baseZIndex: 0,
+  appendTo: null,
+  onShow: null,
+  onHide: null
+});
+
+_defineProperty(Menu, "propTypes", {
+  id: _propTypes.default.string,
+  model: _propTypes.default.array,
+  popup: _propTypes.default.bool,
+  style: _propTypes.default.object,
+  className: _propTypes.default.string,
+  autoZIndex: _propTypes.default.bool,
+  baseZIndex: _propTypes.default.number,
+  appendTo: _propTypes.default.any,
+  onShow: _propTypes.default.func,
+  onHide: _propTypes.default.func
+});

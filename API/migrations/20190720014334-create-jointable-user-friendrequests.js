@@ -23,7 +23,7 @@ module.exports = {
             type: Sequelize.DATE,
             defaultValue: new Date()
           },
-          UserID: {
+          UserId: {
             type: Sequelize.INTEGER,
             primaryKey: true,
               references: {

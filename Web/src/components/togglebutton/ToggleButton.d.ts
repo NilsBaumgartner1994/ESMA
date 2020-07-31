@@ -10,9 +10,13 @@ interface ToggleButtonProps {
     style?: object;
     className?: string;
     checked?: boolean;
+    tabIndex?: number;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
-    onChange?(e: {originalEvent: Event, value: boolean}): void;
+    ariaLabelledBy?:string;
+    onChange?(e: {originalEvent: Event, value: boolean, target: {type: string, name: string, id: string, value: boolean}}): void;
+    onFocus?(event: Event): void;
+    onBlur?(event: Event): void;
 }
 
 export class ToggleButton extends React.Component<ToggleButtonProps,any> {}

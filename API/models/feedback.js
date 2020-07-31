@@ -20,8 +20,18 @@
  */
 module.exports = (sequelize, DataTypes) => {
     const Feedback = sequelize.define('Feedback', {
-        message: DataTypes.STRING,
-        label: DataTypes.STRING
+        message: {
+            type: DataTypes.STRING(2048),
+            validate: {
+                len: [2,2048],
+            }
+        },
+        label: {
+            type: DataTypes.STRING(255),
+            validate: {
+                len: [2,2048],
+            }
+        },
     }, {});
     Feedback.associate = function(models) {
         // associations can be defined here

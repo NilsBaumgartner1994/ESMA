@@ -134,8 +134,9 @@ button {
 }
 
 .p-link {
-	text-align: left;
-	background-color: transparent;
+    text-align: left;
+    background-color: transparent;
+    background: transparent;
 	margin: 0;
 	padding: 0;
 	border: none;
@@ -176,4 +177,37 @@ button {
 
 .p-toggleable-content-exit-done {
     display: none;
+}
+
+/* Floating Label */
+.p-float-label {
+    display: block;
+    position:relative;
+}
+
+.p-float-label > label {
+  font-weight:normal;
+  position:absolute;
+  pointer-events:none;
+  left: .25em;
+  top: 50%;
+  margin-top: -.5em;
+  transition: 0.3s ease all;
+  -moz-transition: 0.3s ease all;
+  -webkit-transition: 0.3s ease all;
+  color: #898989;
+  line-height: 1;
+}
+
+.p-sr-only {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    word-wrap: normal !important;
 }

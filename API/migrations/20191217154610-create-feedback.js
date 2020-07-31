@@ -13,7 +13,8 @@ module.exports = {
       },
       message: {
         allowNull: false,
-        type: Sequelize.STRING(2048)
+        type: Sequelize.STRING(2048),
+        validate: { len: [0,32] }
       },
       createdAt: {
         allowNull: false,

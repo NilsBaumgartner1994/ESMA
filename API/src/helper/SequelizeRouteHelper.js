@@ -10,6 +10,7 @@ export default class SequelizeRouteHelper {
      * @return {string} a unique composition of modelname and primary key
      */
     static getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute){
+        //we need the tablename, otherwise it would be ambigous for example UserRoles and UserFriends
         return SequelizeHelper.getTableName(model)+"_"+primaryKeyAttribute;
     }
 
@@ -43,6 +44,27 @@ export default class SequelizeRouteHelper {
         }
 
         return route;
+    }
+
+    static getModelRoutes(model){
+        let getRoute = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
+        let routes = {
+            "GET": getRoute
+        };
+        return routes;
+    }
+
+    static getAllModelRoutes(models){
+        let allModelRoutes = {};
+
+        let modelList = SequelizeHelper.getModelList(models); //first get all models
+        for(let i=0; i<modelList.length; i++) { //for every model
+            let model = modelList[i];
+            let modelRoutes = SequelizeRouteHelper.getModelRoutes(model);
+            let tableName = SequelizeHelper.getTableName(model);
+            allModelRoutes[tableName] = modelRoutes;
+        }
+        return allModelRoutes;
     }
 
 

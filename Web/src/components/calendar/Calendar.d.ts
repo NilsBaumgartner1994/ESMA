@@ -35,6 +35,7 @@ interface CalendarProps {
     inputClassName?: string;
     required?: boolean;
     readOnlyInput?: boolean;
+    keepInvalid?: boolean;
     disabled?: boolean;
     tabIndex?: string;
     placeholder?: string;
@@ -47,12 +48,15 @@ interface CalendarProps {
     showTime?: boolean;
     timeOnly?: boolean;
     showSeconds?: boolean;
+    showMillisec?: boolean;
     hourFormat?: string;
     stepHour?: number;
     stepMinute?: number;
     stepSecond?: number;
+    stepMillisec?: number;
     shortYearCutoff?: string;
     hideOnDateTimeSelect?: boolean;
+    showWeek?: boolean;
     locale?: LocaleSettings;
     dateFormat?: string;
     panelStyle?: object;
@@ -68,12 +72,13 @@ interface CalendarProps {
     selectOtherMonths?: boolean;
     showButtonBar?: boolean;
     todayButtonClassName?: string;
-    clearButtonStyleClass?: string;
+    clearButtonClassName?: string;
     autoZIndex?: boolean;
     baseZIndex?: number;
     appendTo?: any;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
+    ariaLabelledBy?: string;
     yearRange?: string;
     dateTemplate?(dateMeta:DateMetaData): React.ReactNode;
     headerTemplate?(): React.ReactNode;
@@ -82,7 +87,7 @@ interface CalendarProps {
     onBlur?(event: Event): void;
     onInput?(event: Event): void;
     onSelect?(e: {originalEvent: Event, value: Date}): void;
-    onChange?(e: {originalEvent: Event, value: Date|Date[]}): void;
+    onChange?(e: {originalEvent: Event, value: Date|Date[], target: {name: string, id: string, value: Date|Date[]}}): void;
     onTodayButtonClick?(event: Event): void;
     onClearButtonClick?(event: Event): void;
     onViewDateChange?(e: {originalEvent: Event, value: Date}): void;

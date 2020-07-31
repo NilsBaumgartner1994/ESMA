@@ -4,6 +4,7 @@ interface ColumnProps {
     columnKey?: string;
     field?: string;
     sortField?: string;
+    filterField?: string;
     header?: any;
     body?: any;
     loadingBody?: any;
@@ -15,6 +16,8 @@ interface ColumnProps {
     filterType?: string;
     filterMaxLength?: number;
     filterElement?: object;
+    filterHeaderStyle?: object;
+    filterHeaderClassName?: string;
     style?: object;
     className?: string;
     headerStyle?: object;
@@ -31,8 +34,13 @@ interface ColumnProps {
     rowReorder?: boolean;
     rowReorderIcon?: string;
     editorValidatorEvent?: string;
+    rowEditor?: boolean;
+    exportable?: boolean;
+    reorderable?: boolean;
+    onEditorSubmit?(props: any): void;
+    onEditorCancel?(props: any): void;
     excludeGlobalFilter?: boolean;
-    sortFunction?(): void;
+    sortFunction?(e: {field: string, order: number}): void;
     filterFunction?(value: any, filter: any): void;
     editor?(props: any): JSX.Element | undefined;
     editorValidator?(props: any): boolean;

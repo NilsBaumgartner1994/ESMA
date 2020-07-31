@@ -8,7 +8,14 @@ interface SpinnerProps {
     step?: number;
     min?: number;
     max?: number;
+    formatInput?: boolean;
+    decimalSeparator?: string;
+    thousandSeparator?: string;
     disabled?: boolean;
+    required?: boolean;
+    tabIndex?: number;
+    pattern?: string;
+    placeholder?: string;
     readonly?: boolean;
     maxlength?: number;
     size?: number;
@@ -19,7 +26,9 @@ interface SpinnerProps {
     inputClassName?: string;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
-    onChange?(e: {value: number}): void;
+    ariaLabelledBy?: string;
+    onChange?(e: {originalEvent: Event, value: number, target: {name: string, id: string, value: number}}): void;
+    onBlur?(e: Event): void;
 }
 
 export class Spinner extends React.Component<SpinnerProps,any> {}

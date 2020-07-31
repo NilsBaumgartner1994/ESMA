@@ -4,6 +4,7 @@ import TreeNode from "../treenode/TreeNode";
 interface TreeProps {
     id?: string;
     value?: TreeNode[];
+    disabled?: boolean;
     selectionMode?: string;
     selectionKeys?: any;
     onSelectionChange?(e: {originalEvent: Event, value: any}): void;
@@ -24,6 +25,7 @@ interface TreeProps {
     filterBy?: any;
     filterMode?: string;
     filterPlaceholder?: string;
+    filterLocale?: string;
     nodeTemplate?(node: any): JSX.Element;
     onSelect?(e: {originalEvent: Event, node: TreeNode}): void;
     onUnselect?(e: {originalEvent: Event, node: TreeNode}): void;

@@ -5,20 +5,24 @@
 
 .p-growl.p-growl-topright {
 	top: 20px;
+	bottom: auto;
 	right: 20px;
 }
 
 .p-growl.p-growl-topleft {
 	top: 20px;
+	bottom: auto;
 	left: 20px;
 }
 
 .p-growl.p-growl-bottomleft {
+	top: auto;
 	bottom: 20px;
 	left: 20px;
 }
 
 .p-growl.p-growl-bottomright {
+	top: auto;
 	bottom: 20px;
 	right: 20px;
 }
@@ -30,8 +34,10 @@
 
 .p-growl-item {
 	position: relative;
-	display: block;
-	padding: .5em 1em;
+    padding: .5em 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
 }
 
 .p-growl-item p {
@@ -48,22 +54,20 @@
 
 .p-growl-title {
 	font-weight: bold;
-	padding: 0 0 .5em 0;
 	display: block;
 }
 
+.p-growl-details {
+    margin-top: .5em;
+}
+
 .p-growl-image {
-    position: absolute;
-    display: inline-block;
-    left: .5em;
-    top: .25em;
-    padding: 0;
 	font-size: 2em;
 }
 
 .p-growl-message {
-	padding: 0 0 .25em 0;
-    margin-left: 2.5em;
+    margin-left: 1em;
+    align-self: center;
 }
 
 .p-growl-message p {

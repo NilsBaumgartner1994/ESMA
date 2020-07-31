@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
           {
               through: 'UserFriends',
               as: "Friends",
-              foreignKey: {name: 'UserId'},
+              foreignKey: {name: 'UserId', allowNull: false},
               otherKey: 'FriendId',
               onUpdate: "CASCADE",
               onDelete: 'CASCADE'
@@ -51,8 +51,8 @@ module.exports = (sequelize, DataTypes) => {
           {
               through: 'UserFriendRequests',
               as: "OutgoingFriendRequests",
-              foreignKey: {name: 'UserId'},
-              otherKey: {name: 'FriendId'},
+              foreignKey: {name: 'UserId', allowNull: false},
+              otherKey: {name: 'FriendId', allowNull: false},
               onUpdate: "CASCADE",
               onDelete: 'CASCADE'
           }
@@ -62,8 +62,8 @@ module.exports = (sequelize, DataTypes) => {
           {
               through: 'UserFriendRequests',
               as: "IncommingFriendRequests",
-              foreignKey: {name: 'FriendId'},
-              otherKey: {name: 'UserId'},
+              foreignKey: {name: 'FriendId', allowNull: false},
+              otherKey: {name: 'UserId', allowNull: false},
               onUpdate: "CASCADE",
               onDelete: 'CASCADE'
           }

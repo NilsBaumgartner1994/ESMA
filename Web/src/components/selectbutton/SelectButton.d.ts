@@ -6,6 +6,7 @@ interface SelectButtonProps {
     value?: any;
     options?: any[];
     optionLabel?: string;
+    optionValue?: string;
     tabIndex?: string;
     multiple?: boolean;
     disabled?: boolean;
@@ -14,7 +15,9 @@ interface SelectButtonProps {
     dataKey?: string;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
-    onChange?(e: {originalEvent: Event, value: any}): void;
+    ariaLabelledBy?: string;
+    itemTemplate?(option:any): React.ReactNode;
+    onChange?(e: {originalEvent: Event, value: any, target: {name: string, id: string, value: any}}): void;
 }
 
 export class SelectButton extends React.Component<SelectButtonProps,any> {}

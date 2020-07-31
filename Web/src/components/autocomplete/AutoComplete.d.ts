@@ -5,6 +5,7 @@ interface AutoCompleteProps {
     id?: string;
     value?: any;
     name?: string;
+    type?: string;
     suggestions?: any[];
     field?: string;
     scrollHeight?: string;
@@ -25,12 +26,14 @@ interface AutoCompleteProps {
     size?: number;
     appendTo?: any;
     tabindex?: number;
+    autoFocus?: boolean;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
+    ariaLabelledBy?: string;
     completeMethod?(e: {originalEvent: Event, query: string}): void;
     itemTemplate?(data: any): JSX.Element | undefined;
-    selectedItemTemplate?(data: any): JSX.Element | undefined;
-    onChange?(e: {originalEvent: Event, value: any}): void;
+    selectedItemTemplate?(data: any): string;
+    onChange?(e: {originalEvent: Event, value: any, target: {name: string, id: string, value: any}}): void;
     onFocus?(event: Event): void;
     onBlur?(event: Event): void;
     onSelect?(e: {originalEvent: Event, value: any}): void;

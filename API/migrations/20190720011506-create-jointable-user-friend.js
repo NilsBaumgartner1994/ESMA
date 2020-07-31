@@ -23,9 +23,10 @@ module.exports = {
             type: Sequelize.DATE,
             defaultValue: new Date()
           },
-          UserID: {
+          UserId: {
             type: Sequelize.INTEGER,
             primaryKey: true,
+            allowNull: false,
               references: {
                   model: "Users",
                   key: "id",
@@ -36,6 +37,7 @@ module.exports = {
           FriendId: {
             type: Sequelize.INTEGER,
             primaryKey: true,
+            allowNull: false,
               references: {
                   model: "Users",
                   key: "id",

@@ -1,419 +1,514 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import DomHandler from '../utils/DomHandler';
+"use strict";
 
-export class MegaMenu extends Component {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MegaMenu = void 0;
 
-    static defaultProps = {
-        id: null,
-        model: null,
-        style: null,
-        className: null,
-        orientation: 'horizontal'
+var _react = _interopRequireWildcard(require("react"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _classnames = _interopRequireDefault(require("classnames"));
+
+var _DomHandler = _interopRequireDefault(require("../utils/DomHandler"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var MegaMenu = /*#__PURE__*/function (_Component) {
+  _inherits(MegaMenu, _Component);
+
+  var _super = _createSuper(MegaMenu);
+
+  function MegaMenu(props) {
+    var _this;
+
+    _classCallCheck(this, MegaMenu);
+
+    _this = _super.call(this, props);
+    _this.state = {
+      activeItem: null
     };
+    _this.onLeafClick = _this.onLeafClick.bind(_assertThisInitialized(_this));
+    return _this;
+  }
 
-    static propTypes = {
-        id: PropTypes.string,
-        model: PropTypes.array,
-        style: PropTypes.object,
-        className: PropTypes.string,
-        orientation: PropTypes.string
-    };
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeItem: null
-        }
-        this.onLeafClick = this.onLeafClick.bind(this);
-    }
-
-    onLeafClick(event, item) {
-        if (item.disabled) {
-            event.preventDefault();
-            return;
-        }
-
-        if (!item.url) {
-            event.preventDefault();
-        }
-
-        if (item.command) {
-            item.command({
-                originalEvent: event,
-                item: item
-            });
-        }
-
-        this.setState({
-            activeItem: null
-        });
-    }
-
-    componentDidMount() {
-        if (!this.documentClickListener) {
-            this.documentClickListener = (event) => {
-                if (this.container && !this.container.contains(event.target)) {
-                    this.setState({activeItem: null});
-                }
-            };
-
-            document.addEventListener('click', this.documentClickListener);
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.documentClickListener) {
-            document.removeEventListener('click', this.documentClickListener);
-            this.documentClickListener = null;
-        }
-    }
-
-    onCategoryMouseEnter(event, item) {
-        if (item.disabled) {
-            event.preventDefault();
-            return;
-        }
-        
-        if (this.state.activeItem) {
-            this.setState({
-                activeItem: item
-            });
-        }
-    }
-
-    onCategoryClick(event, item) {
-        if (item.disabled) {
-            event.preventDefault();
-            return;
-        }
-
-        if (!item.url) {
-            event.preventDefault();
-        }
-
-        if (item.command) {
-            item.command({
-                originalEvent: event,
-                item: this.props.item
-            });
-        }
-
-        if (item.items) {
-            if (this.state.activeItem && this.state.activeItem === item) {
-                this.setState({
-                    activeItem: null
-                });
-            }
-            else {
-                this.setState({
-                    activeItem: item
-                });
-            }
-        }
-
+  _createClass(MegaMenu, [{
+    key: "onLeafClick",
+    value: function onLeafClick(event, item) {
+      if (item.disabled) {
         event.preventDefault();
+        return;
+      }
+
+      if (!item.url) {
+        event.preventDefault();
+      }
+
+      if (item.command) {
+        item.command({
+          originalEvent: event,
+          item: item
+        });
+      }
+
+      this.setState({
+        activeItem: null
+      });
     }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
 
-    onCategoryKeyDown(event, item) {
-        let listItem = event.currentTarget.parentElement;
-
-        switch(event.which) {
-            //down
-            case 40:
-                if (this.isHorizontal())
-                    this.expandMenu(item);
-                else
-                    this.navigateToNextItem(listItem);
-
-                event.preventDefault();
-            break;
-
-            //up
-            case 38:
-                if (this.isVertical())
-                    this.navigateToPrevItem(listItem);
-                else if (item.items && item === this.state.activeItem)
-                    this.collapseMenu();
-            
-                event.preventDefault();
-            break;
-
-            //right
-            case 39:
-                if (this.isHorizontal())
-                    this.navigateToNextItem(listItem);
-                else
-                    this.expandMenu(item);
-               
-                event.preventDefault()
-            break;
-
-            //left
-            case 37:
-                if (this.isHorizontal())
-                    this.navigateToPrevItem(listItem);
-                else if (item.items && item === this.state.activeItem)
-                    this.collapseMenu();
-
-                event.preventDefault();
-            break;
-            
-            default:
-            break;
-        }
-    }
-
-    expandMenu(item) {
-        if (item.items) {
-            this.setState({
-                activeItem: item
+      if (!this.documentClickListener) {
+        this.documentClickListener = function (event) {
+          if (_this2.container && !_this2.container.contains(event.target)) {
+            _this2.setState({
+              activeItem: null
             });
-        }
-    }
+          }
+        };
 
-    collapseMenu(item) {
+        document.addEventListener('click', this.documentClickListener);
+      }
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      if (this.documentClickListener) {
+        document.removeEventListener('click', this.documentClickListener);
+        this.documentClickListener = null;
+      }
+    }
+  }, {
+    key: "onCategoryMouseEnter",
+    value: function onCategoryMouseEnter(event, item) {
+      if (item.disabled) {
+        event.preventDefault();
+        return;
+      }
+
+      if (this.state.activeItem) {
         this.setState({
+          activeItem: item
+        });
+      }
+    }
+  }, {
+    key: "onCategoryClick",
+    value: function onCategoryClick(event, item) {
+      if (item.disabled) {
+        event.preventDefault();
+        return;
+      }
+
+      if (!item.url) {
+        event.preventDefault();
+      }
+
+      if (item.command) {
+        item.command({
+          originalEvent: event,
+          item: this.props.item
+        });
+      }
+
+      if (item.items) {
+        if (this.state.activeItem && this.state.activeItem === item) {
+          this.setState({
             activeItem: null
+          });
+        } else {
+          this.setState({
+            activeItem: item
+          });
+        }
+      }
+
+      event.preventDefault();
+    }
+  }, {
+    key: "onCategoryKeyDown",
+    value: function onCategoryKeyDown(event, item) {
+      var listItem = event.currentTarget.parentElement;
+
+      switch (event.which) {
+        //down
+        case 40:
+          if (this.isHorizontal()) this.expandMenu(item);else this.navigateToNextItem(listItem);
+          event.preventDefault();
+          break;
+        //up
+
+        case 38:
+          if (this.isVertical()) this.navigateToPrevItem(listItem);else if (item.items && item === this.state.activeItem) this.collapseMenu();
+          event.preventDefault();
+          break;
+        //right
+
+        case 39:
+          if (this.isHorizontal()) this.navigateToNextItem(listItem);else this.expandMenu(item);
+          event.preventDefault();
+          break;
+        //left
+
+        case 37:
+          if (this.isHorizontal()) this.navigateToPrevItem(listItem);else if (item.items && item === this.state.activeItem) this.collapseMenu();
+          event.preventDefault();
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "expandMenu",
+    value: function expandMenu(item) {
+      if (item.items) {
+        this.setState({
+          activeItem: item
         });
+      }
     }
-
-    findNextItem(item) {
-        let nextItem = item.nextElementSibling;
-
-        if (nextItem)
-            return DomHandler.hasClass(nextItem, 'p-disabled') || !DomHandler.hasClass(nextItem, 'p-menuitem') ? this.findNextItem(nextItem) : nextItem;
-        else
-            return null;
+  }, {
+    key: "collapseMenu",
+    value: function collapseMenu(item) {
+      this.setState({
+        activeItem: null
+      });
     }
-
-    findPrevItem(item) {
-        let prevItem = item.previousElementSibling;
-        
-        if (prevItem)
-            return DomHandler.hasClass(prevItem, 'p-disabled') || !DomHandler.hasClass(prevItem, 'p-menuitem') ? this.findPrevItem(prevItem) : prevItem;
-        else
-            return null;
+  }, {
+    key: "findNextItem",
+    value: function findNextItem(item) {
+      var nextItem = item.nextElementSibling;
+      if (nextItem) return _DomHandler.default.hasClass(nextItem, 'p-disabled') || !_DomHandler.default.hasClass(nextItem, 'p-menuitem') ? this.findNextItem(nextItem) : nextItem;else return null;
     }
-
-    navigateToNextItem(listItem) {
-        var nextItem = this.findNextItem(listItem);
-        if (nextItem) {
-            nextItem.children[0].focus();
-        }
+  }, {
+    key: "findPrevItem",
+    value: function findPrevItem(item) {
+      var prevItem = item.previousElementSibling;
+      if (prevItem) return _DomHandler.default.hasClass(prevItem, 'p-disabled') || !_DomHandler.default.hasClass(prevItem, 'p-menuitem') ? this.findPrevItem(prevItem) : prevItem;else return null;
     }
+  }, {
+    key: "navigateToNextItem",
+    value: function navigateToNextItem(listItem) {
+      var nextItem = this.findNextItem(listItem);
 
-    navigateToPrevItem(listItem) {
-        var prevItem = this.findPrevItem(listItem);
-        if (prevItem) {
-            prevItem.children[0].focus();
-        }
+      if (nextItem) {
+        nextItem.children[0].focus();
+      }
     }
+  }, {
+    key: "navigateToPrevItem",
+    value: function navigateToPrevItem(listItem) {
+      var prevItem = this.findPrevItem(listItem);
 
-    isHorizontal() {
-        return this.props.orientation === 'horizontal';
+      if (prevItem) {
+        prevItem.children[0].focus();
+      }
     }
-
-    isVertical() {
-        return this.props.orientation === 'vertical';
+  }, {
+    key: "isHorizontal",
+    value: function isHorizontal() {
+      return this.props.orientation === 'horizontal';
     }
-
-    getColumnClassName(category) {
-        let length = category.items ? category.items.length: 0;
-        let columnClass;
-
-        switch(length) {
-            case 2:
-                columnClass= 'p-col-6';
-            break;
-            
-            case 3:
-                columnClass= 'p-col-4';
-            break;
-            
-            case 4:
-                columnClass= 'p-col-3';
-            break;
-            
-            case 6:
-                columnClass= 'p-col-2';
-            break;
-                        
-            default:
-                columnClass= 'p-col-12';
-            break;
-        }
-        
-        return columnClass;
+  }, {
+    key: "isVertical",
+    value: function isVertical() {
+      return this.props.orientation === 'vertical';
     }
+  }, {
+    key: "getColumnClassName",
+    value: function getColumnClassName(category) {
+      var length = category.items ? category.items.length : 0;
+      var columnClass;
 
-    renderSeparator(index) {
-        return (
-            <li key={'separator_' + index} className="p-menu-separator"></li>
-        );
+      switch (length) {
+        case 2:
+          columnClass = 'p-col-6';
+          break;
+
+        case 3:
+          columnClass = 'p-col-4';
+          break;
+
+        case 4:
+          columnClass = 'p-col-3';
+          break;
+
+        case 6:
+          columnClass = 'p-col-2';
+          break;
+
+        default:
+          columnClass = 'p-col-12';
+          break;
+      }
+
+      return columnClass;
     }
-
-    renderSubmenuIcon(item) {
-        if (item.items) {
-            const className = classNames('p-submenu-icon pi pi-fw', {'pi-caret-down': this.isHorizontal(),'pi-caret-right': this.isVertical()});
-            
-            return (
-                <span className={className}></span>
-            );
-        }
-        else {
-            return null;
-        }
+  }, {
+    key: "renderSeparator",
+    value: function renderSeparator(index) {
+      return /*#__PURE__*/_react.default.createElement("li", {
+        key: 'separator_' + index,
+        className: "p-menu-separator"
+      });
     }
-
-    renderSubmenuItem(item, index) {
-        if (item.separator) {
-            return (
-                <li key={'separator_' + index} className="p-menu-separator"></li>
-            );
-        }
-        else {
-            const className = classNames('p-menuitem', item.className, {'p-disabled': item.disabled});
-            const iconClassName = classNames(item.icon, 'p-menuitem-icon');
-            const icon = item.icon ? <span className={iconClassName}></span>: null;
-
-            return (
-                <li key={item.label + '_' + index} className={className} style={item.style}>
-                    <a href={item.url || '#'} className="p-menuitem-link" target={item.target} onClick={(event) => this.onLeafClick(event, item)}>
-                        {icon}
-                        <span className="p-menuitem-text">{item.label}</span>
-                    </a>
-                </li>
-            );
-        }
-    }
-
-    renderSubmenu(submenu) {
-        const className = classNames('p-megamenu-submenu-header', submenu.className, {'p-disabled': submenu.disabled});
-        const items = submenu.items.map((item, index) => {
-            return this.renderSubmenuItem(item, index);
+  }, {
+    key: "renderSubmenuIcon",
+    value: function renderSubmenuIcon(item) {
+      if (item.items) {
+        var className = (0, _classnames.default)('p-submenu-icon pi pi-fw', {
+          'pi-caret-down': this.isHorizontal(),
+          'pi-caret-right': this.isVertical()
         });
-        
-        return (
-            <React.Fragment key={submenu.label}>
-                <li className={className} style={submenu.style}>{submenu.label}</li>
-                {items}
-            </React.Fragment>
-        );
+        return /*#__PURE__*/_react.default.createElement("span", {
+          className: className
+        });
+      } else {
+        return null;
+      }
     }
+  }, {
+    key: "renderSubmenuItem",
+    value: function renderSubmenuItem(item, index) {
+      var _this3 = this;
 
-    renderSubmenus(column) {  
-        return (
-            column.map((submenu, index) => {
-                return this.renderSubmenu(submenu, index);
-            })
-        );
+      if (item.separator) {
+        return /*#__PURE__*/_react.default.createElement("li", {
+          key: 'separator_' + index,
+          className: "p-menu-separator",
+          role: "separator"
+        });
+      } else {
+        var className = (0, _classnames.default)('p-menuitem', item.className, {
+          'p-disabled': item.disabled
+        });
+        var iconClassName = (0, _classnames.default)(item.icon, 'p-menuitem-icon');
+        var icon = item.icon ? /*#__PURE__*/_react.default.createElement("span", {
+          className: iconClassName
+        }) : null;
+        return /*#__PURE__*/_react.default.createElement("li", {
+          key: item.label + '_' + index,
+          className: className,
+          style: item.style,
+          role: "none"
+        }, /*#__PURE__*/_react.default.createElement("a", {
+          href: item.url || '#',
+          className: "p-menuitem-link",
+          target: item.target,
+          onClick: function onClick(event) {
+            return _this3.onLeafClick(event, item);
+          },
+          role: "menuitem"
+        }, icon, /*#__PURE__*/_react.default.createElement("span", {
+          className: "p-menuitem-text"
+        }, item.label)));
+      }
     }
+  }, {
+    key: "renderSubmenu",
+    value: function renderSubmenu(submenu) {
+      var _this4 = this;
 
-    renderColumn(category, column, index, columnClassName) {
-        const submenus = this.renderSubmenus(column);
-
-        return (
-            <div key={category.label + '_column_' + index} className={columnClassName}>
-                <ul className="p-megamenu-submenu">
-                    {submenus}
-                </ul>
-            </div>
-        );
+      var className = (0, _classnames.default)('p-megamenu-submenu-header', submenu.className, {
+        'p-disabled': submenu.disabled
+      });
+      var items = submenu.items.map(function (item, index) {
+        return _this4.renderSubmenuItem(item, index);
+      });
+      return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, {
+        key: submenu.label
+      }, /*#__PURE__*/_react.default.createElement("li", {
+        className: className,
+        style: submenu.style,
+        role: "presentation"
+      }, submenu.label), items);
     }
+  }, {
+    key: "renderSubmenus",
+    value: function renderSubmenus(column) {
+      var _this5 = this;
 
-    renderColumns(category) {
-        if (category.items) {
-            const columnClassName = this.getColumnClassName(category);
-            
-            return (
-                category.items.map((column, index) => {
-                    return this.renderColumn(category, column, index, columnClassName);
-                })
-            );
-        }
-        else {
-            return null;
-        }
+      return column.map(function (submenu, index) {
+        return _this5.renderSubmenu(submenu, index);
+      });
     }
-
-    renderCategoryPanel(category) {
-        if (category.items) {
-            const columns = this.renderColumns(category);
-
-            return (
-                <div className="p-megamenu-panel">
-                    <div className="p-grid">
-                        {columns}
-                    </div>
-                </div>
-            );
-        }
-        else {
-            return null;
-        }
+  }, {
+    key: "renderColumn",
+    value: function renderColumn(category, column, index, columnClassName) {
+      var submenus = this.renderSubmenus(column);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        key: category.label + '_column_' + index,
+        className: columnClassName
+      }, /*#__PURE__*/_react.default.createElement("ul", {
+        className: "p-megamenu-submenu",
+        role: "menu"
+      }, submenus));
     }
+  }, {
+    key: "renderColumns",
+    value: function renderColumns(category) {
+      var _this6 = this;
 
-    renderCategory(category, index) {
-        const className = classNames('p-menuitem', {'p-menuitem-active': category === this.state.activeItem, 'p-disabled': category.disabled}, category.className);
-        const iconClassName = classNames(category.icon, 'p-menuitem-icon');
-        const icon = category.icon ? <span className={iconClassName}></span>: null;
-        const submenuIcon = this.renderSubmenuIcon(category);
-        const panel = this.renderCategoryPanel(category);
-
-        return (
-            <li key={category.label + '_' + index} className={className} style={category.style} onMouseEnter={e => this.onCategoryMouseEnter(e, category)}>
-                <a href={category.url || '#'} className="p-menuitem-link" target={category.target} onClick={e => this.onCategoryClick(e, category)} onKeyDown={e => this.onCategoryKeyDown(e, category)}>
-                    {icon}
-                    <span className="p-menuitem-text">{category.label}</span>
-                    {submenuIcon}
-                </a>
-                {panel}
-            </li>
-        );
+      if (category.items) {
+        var columnClassName = this.getColumnClassName(category);
+        return category.items.map(function (column, index) {
+          return _this6.renderColumn(category, column, index, columnClassName);
+        });
+      } else {
+        return null;
+      }
     }
-
-    renderMenu() {
-        if (this.props.model) {
-            return (
-                this.props.model.map((item, index) => {
-                    return this.renderCategory(item, index, true);
-                })
-            );
-        }
-        else {
-            return null;
-        }
+  }, {
+    key: "renderCategoryPanel",
+    value: function renderCategoryPanel(category) {
+      if (category.items) {
+        var columns = this.renderColumns(category);
+        return /*#__PURE__*/_react.default.createElement("div", {
+          className: "p-megamenu-panel"
+        }, /*#__PURE__*/_react.default.createElement("div", {
+          className: "p-grid"
+        }, columns));
+      } else {
+        return null;
+      }
     }
+  }, {
+    key: "renderCategory",
+    value: function renderCategory(category, index) {
+      var _this7 = this;
 
-    renderCustomContent() {
-        if(this.props.children) {
-            return (
-                <div className="p-megamenu-custom">
-                    {this.props.children}
-                </div>
-            );
-        }
-        else {
-            return null;
-        }
+      var className = (0, _classnames.default)('p-menuitem', {
+        'p-menuitem-active': category === this.state.activeItem,
+        'p-disabled': category.disabled
+      }, category.className);
+      var iconClassName = (0, _classnames.default)(category.icon, 'p-menuitem-icon');
+      var icon = category.icon ? /*#__PURE__*/_react.default.createElement("span", {
+        className: iconClassName
+      }) : null;
+      var submenuIcon = this.renderSubmenuIcon(category);
+      var panel = this.renderCategoryPanel(category);
+      return /*#__PURE__*/_react.default.createElement("li", {
+        key: category.label + '_' + index,
+        className: className,
+        style: category.style,
+        onMouseEnter: function onMouseEnter(e) {
+          return _this7.onCategoryMouseEnter(e, category);
+        },
+        role: "none"
+      }, /*#__PURE__*/_react.default.createElement("a", {
+        href: category.url || '#',
+        className: "p-menuitem-link",
+        target: category.target,
+        onClick: function onClick(e) {
+          return _this7.onCategoryClick(e, category);
+        },
+        onKeyDown: function onKeyDown(e) {
+          return _this7.onCategoryKeyDown(e, category);
+        },
+        role: "menuitem",
+        "aria-haspopup": category.items != null
+      }, icon, /*#__PURE__*/_react.default.createElement("span", {
+        className: "p-menuitem-text"
+      }, category.label), submenuIcon), panel);
     }
+  }, {
+    key: "renderMenu",
+    value: function renderMenu() {
+      var _this8 = this;
 
-    render() {
-        const className = classNames('p-megamenu p-component', 
-                {'p-megamenu-horizontal': this.props.orientation === 'horizontal', 
-                'p-megamenu-vertical': this.props.orientation === 'vertical'}, this.props.className);
-        const menu = this.renderMenu();
-        const customContent = this.renderCustomContent();
-
-        return (
-            <div ref={el => this.container = el} id={this.props.id} className={className} style={this.props.style}>
-                <ul className="p-megamenu-root-list">
-                    {menu}
-                </ul>
-                {customContent}
-            </div>
-        );
+      if (this.props.model) {
+        return this.props.model.map(function (item, index) {
+          return _this8.renderCategory(item, index, true);
+        });
+      } else {
+        return null;
+      }
     }
-}
+  }, {
+    key: "renderCustomContent",
+    value: function renderCustomContent() {
+      if (this.props.children) {
+        return /*#__PURE__*/_react.default.createElement("div", {
+          className: "p-megamenu-custom"
+        }, this.props.children);
+      } else {
+        return null;
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this9 = this;
+
+      var className = (0, _classnames.default)('p-megamenu p-component', {
+        'p-megamenu-horizontal': this.props.orientation === 'horizontal',
+        'p-megamenu-vertical': this.props.orientation === 'vertical'
+      }, this.props.className);
+      var menu = this.renderMenu();
+      var customContent = this.renderCustomContent();
+      return /*#__PURE__*/_react.default.createElement("div", {
+        ref: function ref(el) {
+          return _this9.container = el;
+        },
+        id: this.props.id,
+        className: className,
+        style: this.props.style
+      }, /*#__PURE__*/_react.default.createElement("ul", {
+        className: "p-megamenu-root-list",
+        role: "menubar"
+      }, menu), customContent);
+    }
+  }]);
+
+  return MegaMenu;
+}(_react.Component);
+
+exports.MegaMenu = MegaMenu;
+
+_defineProperty(MegaMenu, "defaultProps", {
+  id: null,
+  model: null,
+  style: null,
+  className: null,
+  orientation: 'horizontal'
+});
+
+_defineProperty(MegaMenu, "propTypes", {
+  id: _propTypes.default.string,
+  model: _propTypes.default.array,
+  style: _propTypes.default.object,
+  className: _propTypes.default.string,
+  orientation: _propTypes.default.string
+});

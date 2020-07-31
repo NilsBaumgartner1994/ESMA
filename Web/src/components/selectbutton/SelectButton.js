@@ -1,172 +1,276 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import ObjectUtils from '../utils/ObjectUtils';
-import {SelectButtonItem} from './SelectButtonItem';
-import Tooltip from "../tooltip/Tooltip";
+"use strict";
 
-export class SelectButton extends Component {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SelectButton = void 0;
 
-    static defaultProps = {
-        id: null,
-        value: null,
-        options: null,
-        optionLabel: null,
-        tabIndex: null,
-        multiple: null,
-        disabled: null,
-        style: null,
-        className: null,
-        dataKey: null,
-        tooltip: null,
-        tooltipOptions: null,
-        onChange: null
-    };
+var _react = _interopRequireWildcard(require("react"));
 
-    static propTypes = {
-        id: PropTypes.string,
-        value: PropTypes.any,
-        options: PropTypes.array,
-        optionLabel: PropTypes.string,
-        tabIndex: PropTypes.string,
-        multiple: PropTypes.bool,
-        disabled: PropTypes.bool,
-        style: PropTypes.object,
-        className: PropTypes.string,
-        dataKey: PropTypes.string,
-        tooltip: PropTypes.string,
-        tooltipOptions: PropTypes.object,
-        onChange: PropTypes.func
-    };
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.onOptionClick = this.onOptionClick.bind(this);
+var _classnames = _interopRequireDefault(require("classnames"));
+
+var _ObjectUtils = _interopRequireDefault(require("../utils/ObjectUtils"));
+
+var _SelectButtonItem = require("./SelectButtonItem");
+
+var _Tooltip = _interopRequireDefault(require("../tooltip/Tooltip"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var SelectButton = /*#__PURE__*/function (_Component) {
+  _inherits(SelectButton, _Component);
+
+  var _super = _createSuper(SelectButton);
+
+  function SelectButton(props) {
+    var _this;
+
+    _classCallCheck(this, SelectButton);
+
+    _this = _super.call(this, props);
+    _this.state = {};
+    _this.onOptionClick = _this.onOptionClick.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(SelectButton, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      if (this.props.tooltip) {
+        this.renderTooltip();
+      }
     }
-
-    componentDidMount() {
-        if (this.props.tooltip) {
-            this.renderTooltip();
-        }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.tooltip !== this.props.tooltip) {
+        if (this.tooltip) this.tooltip.updateContent(this.props.tooltip);else this.renderTooltip();
+      }
     }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.tooltip && prevProps.tooltip !== this.props.tooltip) {
-            if (this.tooltip)
-                this.tooltip.updateContent(this.props.tooltip);
-            else
-                this.renderTooltip();
-        }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      if (this.tooltip) {
+        this.tooltip.destroy();
+        this.tooltip = null;
+      }
     }
-
-    componentWillUnmount() {
-        if (this.tooltip) {
-            this.tooltip.destroy();
-            this.tooltip = null;
-        }
+  }, {
+    key: "renderTooltip",
+    value: function renderTooltip() {
+      this.tooltip = new _Tooltip.default({
+        target: this.element,
+        content: this.props.tooltip,
+        options: this.props.tooltipOptions
+      });
     }
+  }, {
+    key: "onOptionClick",
+    value: function onOptionClick(event) {
+      var _this2 = this;
 
-    renderTooltip() {
-        this.tooltip = new Tooltip({
-            target: this.element,
-            content: this.props.tooltip,
-            options: this.props.tooltipOptions
+      if (this.props.disabled) {
+        return;
+      }
+
+      var selected = this.isSelected(event.option);
+      var optionValue = this.getOptionValue(event.option);
+      var newValue;
+
+      if (this.props.multiple) {
+        var currentValue = this.props.value ? _toConsumableArray(this.props.value) : [];
+        if (selected) newValue = currentValue.filter(function (val) {
+          return !_ObjectUtils.default.equals(val, optionValue, _this2.props.dataKey);
+        });else newValue = [].concat(_toConsumableArray(currentValue), [optionValue]);
+      } else {
+        if (selected) newValue = null;else newValue = optionValue;
+      }
+
+      if (this.props.onChange) {
+        this.props.onChange({
+          originalEvent: event.originalEvent,
+          value: newValue,
+          stopPropagation: function stopPropagation() {},
+          preventDefault: function preventDefault() {},
+          target: {
+            name: this.props.name,
+            id: this.props.id,
+            value: newValue
+          }
         });
+      }
     }
+  }, {
+    key: "getOptionLabel",
+    value: function getOptionLabel(option) {
+      return this.props.optionLabel ? _ObjectUtils.default.resolveFieldData(option, this.props.optionLabel) : option['label'] !== undefined ? option['label'] : option;
+    }
+  }, {
+    key: "getOptionValue",
+    value: function getOptionValue(option) {
+      return this.props.optionValue ? _ObjectUtils.default.resolveFieldData(option, this.props.optionValue) : option['value'] !== undefined ? option['value'] : option;
+    }
+  }, {
+    key: "isSelected",
+    value: function isSelected(option) {
+      var selected = false;
+      var optionValue = this.getOptionValue(option);
 
-    onOptionClick(event) {
-        if (this.props.disabled) {
-            return;
-        }
-        
-        let selected = this.isSelected(event.option);
-        let optionValue = this.getOptionValue(event.option);
-        let newValue;
+      if (this.props.multiple) {
+        if (this.props.value && this.props.value.length) {
+          var _iterator = _createForOfIteratorHelper(this.props.value),
+              _step;
 
-        if(this.props.multiple) {
-            let currentValue = this.props.value ? [...this.props.value] : [];
-    
-            if(selected)
-                newValue = currentValue.filter((val) => !ObjectUtils.equals(val, optionValue, this.props.dataKey));
-            else
-                newValue = [...currentValue, optionValue];
-        }
-        else {
-            if(selected)
-                newValue = null;
-            else
-                newValue = optionValue;
-        }
-        
-        if(this.props.onChange) {
-            this.props.onChange({
-                originalEvent: event.originalEvent,
-                value: newValue,
-                stopPropagation : () =>{},
-                preventDefault : () =>{},
-                target: {
-                    name: this.props.name,
-                    id: this.props.id,
-                    value: newValue,
-                }
-            });
-        }
-    }
-    
-    getOptionValue(option) {
-        return this.props.optionLabel ? option : option.value;
-    }
-    
-    getOptionLabel(option) {
-        return this.props.optionLabel ? ObjectUtils.resolveFieldData(option, this.props.optionLabel) : option.label;
-    }
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var val = _step.value;
 
-    isSelected(option) {
-        let selected = false;
-        let optionValue = this.getOptionValue(option);
-        
-        if(this.props.multiple) {
-            if(this.props.value && this.props.value.length) {
-                for(let val of this.props.value) {
-                    if(ObjectUtils.equals(val, optionValue, this.props.dataKey)) {
-                        selected = true;
-                        break;
-                    }
-                }
+              if (_ObjectUtils.default.equals(val, optionValue, this.props.dataKey)) {
+                selected = true;
+                break;
+              }
             }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
         }
-        else {
-            selected = ObjectUtils.equals(this.props.value, optionValue, this.props.dataKey);
-        }
-        
-        return selected;
-    }
-    
-    renderItems() {
-        if(this.props.options && this.props.options.length) {
-            return this.props.options.map((option, index) => {
-                let optionLabel = this.getOptionLabel(option);
-                
-                return <SelectButtonItem key={optionLabel} label={optionLabel} option={option} onClick={this.onOptionClick}
-                            selected={this.isSelected(option)} tabIndex={this.props.tabIndex} disabled={this.props.disabled} />;
-            });
-        }
-        else {
-            return null;
-        }
-    }
+      } else {
+        selected = _ObjectUtils.default.equals(this.props.value, optionValue, this.props.dataKey);
+      }
 
-    render() {
-        let className = classNames('p-selectbutton p-buttonset p-component p-buttonset-3', this.props.className);
-        let items = this.renderItems();
-
-        return (
-            <div id={this.props.id} ref={(el) => this.element = el}>
-                <div className={className} style={this.props.style}>
-                    {items}
-                </div>
-            </div>
-        );
+      return selected;
     }
-}
+  }, {
+    key: "renderItems",
+    value: function renderItems() {
+      var _this3 = this;
+
+      if (this.props.options && this.props.options.length) {
+        return this.props.options.map(function (option, index) {
+          var optionLabel = _this3.getOptionLabel(option);
+
+          return /*#__PURE__*/_react.default.createElement(_SelectButtonItem.SelectButtonItem, {
+            key: optionLabel,
+            label: optionLabel,
+            className: option.className,
+            option: option,
+            onClick: _this3.onOptionClick,
+            template: _this3.props.itemTemplate,
+            selected: _this3.isSelected(option),
+            tabIndex: _this3.props.tabIndex,
+            disabled: _this3.props.disabled,
+            ariaLabelledBy: _this3.props.ariaLabelledBy
+          });
+        });
+      } else {
+        return null;
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this4 = this;
+
+      var className = (0, _classnames.default)('p-selectbutton p-buttonset p-component p-buttonset-3', this.props.className);
+      var items = this.renderItems();
+      return /*#__PURE__*/_react.default.createElement("div", {
+        id: this.props.id,
+        ref: function ref(el) {
+          return _this4.element = el;
+        },
+        role: "group"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        className: className,
+        style: this.props.style
+      }, items));
+    }
+  }]);
+
+  return SelectButton;
+}(_react.Component);
+
+exports.SelectButton = SelectButton;
+
+_defineProperty(SelectButton, "defaultProps", {
+  id: null,
+  value: null,
+  options: null,
+  optionLabel: null,
+  optionValue: null,
+  tabIndex: null,
+  multiple: null,
+  disabled: null,
+  style: null,
+  className: null,
+  dataKey: null,
+  tooltip: null,
+  tooltipOptions: null,
+  ariaLabelledBy: null,
+  itemTemplate: null,
+  onChange: null
+});
+
+_defineProperty(SelectButton, "propTypes", {
+  id: _propTypes.default.string,
+  value: _propTypes.default.any,
+  options: _propTypes.default.array,
+  optionLabel: _propTypes.default.string,
+  optionValue: _propTypes.default.string,
+  tabIndex: _propTypes.default.string,
+  multiple: _propTypes.default.bool,
+  disabled: _propTypes.default.bool,
+  style: _propTypes.default.object,
+  className: _propTypes.default.string,
+  dataKey: _propTypes.default.string,
+  tooltip: _propTypes.default.string,
+  tooltipOptions: _propTypes.default.object,
+  ariaLabelledBy: _propTypes.default.string,
+  itemTemplate: _propTypes.default.func,
+  onChange: _propTypes.default.func
+});

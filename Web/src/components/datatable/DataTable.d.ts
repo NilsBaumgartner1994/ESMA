@@ -27,7 +27,8 @@ interface DataTableProps {
     multiSortMeta?: any[];
     sortMode?: string;
     defaultSortOrder?: number;
-    emptyMessage?: string;
+    removableSort?: boolean;
+    emptyMessage?: any;
     selectionMode?: string;
     selection?: any;
     contextMenuSelection?: any;
@@ -45,6 +46,7 @@ interface DataTableProps {
     reorderableColumns?: boolean;
     filters?: object;
     globalFilter?: any;
+    filterLocale?: string;
     scrollable?: boolean;
     scrollHeight?: string;
     virtualScroll?: boolean;
@@ -62,6 +64,11 @@ interface DataTableProps {
     stateKey?:string;
     stateStorage?:string;
     groupField?:string;
+    editMode?:string;
+    expandableRowGroups?:boolean;
+    rowHover?:boolean;
+    showSelectionElement?(e: {data: any}): boolean;
+    showReorderElement?(e: {data: any}): boolean;
     onSelectionChange?(e: {originalEvent: Event, value: any}): void;
     onContextMenuSelectionChange?(e: {originalEvent: Event, value: any}): void;
     rowExpansionTemplate?(data: any): JSX.Element | undefined;
@@ -72,7 +79,7 @@ interface DataTableProps {
     onColumnResizeEnd?(e: {element: HTMLElement, delta: number}): void;
     onSort?(e: {sortField: string, sortOrder: number, multiSortMeta: any}): void;
     onPage?(e: {first: number, rows: number}): void;
-    onFilter?(filters: any[]): void;
+    onFilter?(e: {filters: any}): void;
     onVirtualScroll?(e: {first: number, rows: number}): void;
     onRowClick?(e: {originalEvent: Event, data: any, index: number}): void;
     onRowDoubleClick?(e: {originalEvent: Event, data: any, index: number}): void;
@@ -81,12 +88,24 @@ interface DataTableProps {
     onRowExpand?(e: {originalEvent: Event, data: any}): void;
     onRowCollapse?(e: {originalEvent: Event, data: any}): void;
     onContextMenu?(e: {originalEvent: Event, data: any}): void;
-    onColReorder?(e: {dragIndex: number, dropIndex: number, columns: any}): void;
+    onColReorder?(e: {originalEvent: Event, dragIndex: number, dropIndex: number, columns: any}): void;
     onRowReorder?(e: {originalEvent: Event, value: any, dragIndex: number, dropIndex: number}): void;
     onValueChange?(value: any[]): void;
+    rowEditorValidator?(rowData: any): boolean;
+    onRowEditInit?(e: {originalEvent: Event, data: any}): void;
+    onRowEditSave?(e: {originalEvent: Event, data: any}): void;
+    onRowEditCancel?(e: {originalEvent: Event, data: any, index: number}): void;
+    exportFunction?(e: {data: any, field: string}): any;
+    customSaveState?(state: any): void;
+    customRestoreState?(): any;
+    onStateSave?(state: any): void;
+    onStateRestore?(state: any): void;
 }
 
 export class DataTable extends React.Component<DataTableProps,any> {
+    public reset():void;
     public exportCSV():void;
     public filter<T>(value:T, field:string, mode:string):void;
+    public resetColumnOrder():void;
+    public closeEditingCell():void;
 }

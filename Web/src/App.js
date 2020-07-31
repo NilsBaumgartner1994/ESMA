@@ -17,6 +17,7 @@ import config from './config';
 
 import {HomeComponent} from './screens/home/HomeComponent';
 import {ResourceIndex} from "./screens/dataview/ResourceIndex";
+import {ResourceInstance} from "./screens/dataview/ResourceInstance";
 import {SystemInformationView} from "./screens/systemInformation/SystemInformationView";
 import {RequestHelper} from "./module/RequestHelper";
 
@@ -30,7 +31,7 @@ export class App extends Component {
             themeMenuVisited: false
         };
 
-        this.theme = 'nova-light';
+        this.theme = 'luna-amber';
         this.changeTheme = this.changeTheme.bind(this);
         this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
         this.onMenuButtonKeyDown = this.onMenuButtonKeyDown.bind(this);
@@ -39,6 +40,35 @@ export class App extends Component {
         this.onThemesLinkKeyDown = this.onThemesLinkKeyDown.bind(this);
         this.onThemeChangerKeyDown = this.onThemeChangerKeyDown.bind(this);
         this.onThemesMenuRouteChange = this.onThemesMenuRouteChange.bind(this);
+
+        this.loadInformations();
+    }
+
+    async loadInformations(){
+        let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
+        let tableNames = Object.keys(schemes);
+        this.setState({
+            tableNames: tableNames,
+            schemes: schemes,
+            loading: false,
+        })
+    }
+
+    renderRoutes(){
+        console.log("renderRoutes")
+        if(!!this.state.schemes && !!this.state.tableNames){
+            let divRoutes = this.state.tableNames.map(tableName => {
+                let getRoute = this.state.schemes[tableName]["GET"];
+                getRoute = getRoute.replace("/api","");
+                console.log("getRoute: "+getRoute);
+                return (<Route exact path={getRoute} component={withRouter(ResourceInstance.bind(this,this.state.schemes,tableName))} test={"Hallo"}/>)
+            });
+
+            console.log(divRoutes)
+            return divRoutes;
+        } else {
+            return (<div></div>)
+        }
     }
 
     changeTheme(event, theme, dark) {
@@ -200,7 +230,8 @@ export class App extends Component {
                 <div id="layout-content">
                     <Switch>
                         <Route exact path="/" component={HomeComponent}/>
-                        <Route path={"/models/:tableName"} component={withRouter(ResourceIndex)}/>
+                        <Route exact path={"/models/:tableName"} component={withRouter(ResourceIndex)}/>
+                        {this.renderRoutes()}
                     </Switch>
                     <div className="content-section layout-footer clearfix">
                         <span>{config.title} {config.version}</span>

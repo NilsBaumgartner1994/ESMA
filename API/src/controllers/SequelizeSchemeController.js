@@ -17,8 +17,6 @@ export default class SequelizeSchemeController {
     }
 
     configureRoutes() {
-        this.configureModelSchemesIndex();
-
         let modelList = SequelizeHelper.getModelList(this.models); //first get all models
         for(let i=0; i<modelList.length; i++) { //for every model
             let model = modelList[i];
@@ -26,16 +24,25 @@ export default class SequelizeSchemeController {
             this.configureModelSchemeAssociationsRoute(model);
             this.configureModelSchemeRoutesRoute(model);
         }
+
+        this.configureModelSchemesIndex();
     }
 
     configureModelSchemesIndex(){
         const grants = this.myAccessControl.getGrants();
         const tableNames = SequelizeHelper.getModelTableNames(this.models);
+        const allModelRoutes = SequelizeRouteHelper.getAllModelRoutes(this.models);
 
         let functionForModel = function(req, res){
-            let modelsWithPermission = Object.keys(grants[req.locals.current_user.role]);
-            let intersection = tableNames.filter(x => modelsWithPermission.includes(x));
-            MyExpressRouter.responseWithJSON(res, HttpStatus.OK, intersection);
+            let modelsWithPermission = Object.keys(grants[req.locals.current_user.role]); //all permission groups
+            let intersection = tableNames.filter(x => modelsWithPermission.includes(x)); //where it also is a table
+            let allowedModelRoutes = {};
+            for(let i=0; i<intersection.length;i++){
+                let tableName = intersection[i];
+                allowedModelRoutes[tableName] = allModelRoutes[tableName];
+            }
+
+            MyExpressRouter.responseWithJSON(res, HttpStatus.OK, allowedModelRoutes);
         }
 
         this.expressApp.get(MyExpressRouter.routeSchemes, functionForModel.bind(this)); // register route in express
@@ -93,10 +100,7 @@ export default class SequelizeSchemeController {
 
     configureModelSchemeRoutesRoute(model){
         let route = SequelizeRouteHelper.getSchemeRoute(model)+"/routes";
-        let getRoute = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
-        let routes = {
-            "GET": getRoute
-        };
+        let routes = SequelizeRouteHelper.getModelRoutes(model);
 
         let functionForModel = function(req, res){
             MyExpressRouter.responseWithJSON(res, HttpStatus.OK, routes);

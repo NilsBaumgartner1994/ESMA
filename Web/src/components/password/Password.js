@@ -1,209 +1,271 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
-import {InputText} from '../inputtext/InputText';
-import PropTypes from 'prop-types';
-import DomHandler from '../utils/DomHandler';
-import Tooltip from "../tooltip/Tooltip";
- 
-export class Password extends Component {
- 
-    static defaultProps = {
-        promptLabel: 'Enter a password',
-        weakLabel: 'Weak',
-        mediumLabel: 'Medium',
-        strongLabel: 'Strong',
-        feedback: true,
-        tooltip: null,
-        tooltipOptions: null
-    };
+"use strict";
 
-    static propTypes = {
-        promptLabel: PropTypes.string,
-        weakLabel: PropTypes.string,
-        mediumLabel: PropTypes.string,
-        strongLabel:PropTypes.string,
-        feedback: PropTypes.bool,
-        tooltip: PropTypes.string,
-        tooltipOptions: PropTypes.object
-    };
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Password = void 0;
 
-    constructor(props) {
-        super(props);
+var _react = _interopRequireWildcard(require("react"));
 
-        this.onFocus = this.onFocus.bind(this);
-        this.onBlur = this.onBlur.bind(this);
-        this.onKeyup = this.onKeyup.bind(this);
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+var _InputText = require("../inputtext/InputText");
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _DomHandler = _interopRequireDefault(require("../utils/DomHandler"));
+
+var _Tooltip = _interopRequireDefault(require("../tooltip/Tooltip"));
+
+var _ObjectUtils = _interopRequireDefault(require("../utils/ObjectUtils"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Password = /*#__PURE__*/function (_Component) {
+  _inherits(Password, _Component);
+
+  var _super = _createSuper(Password);
+
+  function Password(props) {
+    var _this;
+
+    _classCallCheck(this, Password);
+
+    _this = _super.call(this, props);
+    _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_this));
+    _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_this));
+    _this.onKeyup = _this.onKeyup.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(Password, [{
+    key: "onFocus",
+    value: function onFocus(e) {
+      var _this2 = this;
+
+      if (this.props.feedback) {
+        if (!this.panel) {
+          this.createPanel();
+        }
+
+        this.panel.style.zIndex = String(_DomHandler.default.generateZIndex());
+        this.panel.style.display = 'block';
+        setTimeout(function () {
+          _DomHandler.default.addClass(_this2.panel, 'p-input-overlay-visible');
+
+          _DomHandler.default.removeClass(_this2.panel, 'p-input-overlay-hidden');
+        }, 1);
+
+        _DomHandler.default.absolutePosition(this.panel, this.inputEl);
+      }
+
+      if (this.props.onFocus) {
+        this.props.onFocus(e);
+      }
     }
+  }, {
+    key: "onBlur",
+    value: function onBlur(e) {
+      var _this3 = this;
 
-    onFocus(e) {
-        if (this.props.feedback) {
-            if (!this.panel) {
-                this.createPanel();
-            }
-            
-            this.panel.style.zIndex = String(DomHandler.generateZIndex());
-            this.panel.style.display = 'block';
-            setTimeout(() => {
-                DomHandler.addClass(this.panel, 'p-input-overlay-visible');
-                DomHandler.removeClass(this.panel, 'p-input-overlay-hidden');
-            }, 1);
-            DomHandler.absolutePosition(this.panel, this.inputEl);
-        }
-        
-        if (this.props.onFocus) {
-            this.props.onFocus(e);
-        }
+      if (this.props.feedback) {
+        _DomHandler.default.addClass(this.panel, 'p-input-overlay-hidden');
+
+        _DomHandler.default.removeClass(this.panel, 'p-input-overlay-visible');
+
+        setTimeout(function () {
+          _this3.panel.style.display = 'none';
+
+          _DomHandler.default.removeClass(_this3.panel, 'p-input-overlay-hidden');
+        }, 150);
+      }
+
+      if (this.props.onBlur) {
+        this.props.onBlur(e);
+      }
     }
-  
-    onBlur(e) {
-        if (this.props.feedback) {
-            DomHandler.addClass(this.panel, 'p-input-overlay-hidden');
-            DomHandler.removeClass(this.panel, 'p-input-overlay-visible');
-
-            setTimeout(() => {
-                this.panel.style.display = 'none';
-                DomHandler.removeClass(this.panel, 'p-input-overlay-hidden');
-            }, 150);
-        }
-
-        if (this.props.onBlur) {
-            this.props.onBlur(e);
-        }
-    }
-
-    onKeyup(e) {
-        if(this.props.feedback) {
-            let value = e.target.value,
+  }, {
+    key: "onKeyup",
+    value: function onKeyup(e) {
+      if (this.props.feedback) {
+        var value = e.target.value,
             label = null,
             meterPos = null;
 
-            if(value.length === 0) {
-                label = this.props.promptLabel;
-                meterPos = '0px 0px';
-            }
-            else {
-                var score = this.testStrength(value);
+        if (value.length === 0) {
+          label = this.props.promptLabel;
+          meterPos = '0px 0px';
+        } else {
+          var score = this.testStrength(value);
 
-                if(score < 30) {
-                    label = this.props.weakLabel;
-                    meterPos = '0px -10px';
-                }
-                else if(score >= 30 && score < 80) {
-                    label = this.props.mediumLabel;
-                    meterPos = '0px -20px';
-                } 
-                else if(score >= 80) {
-                    label = this.props.strongLabel;
-                    meterPos = '0px -30px';
-                }
-            }
-
-            this.meter.style.backgroundPosition = meterPos;
-            this.info.textContent = label;
+          if (score < 30) {
+            label = this.props.weakLabel;
+            meterPos = '0px -10px';
+          } else if (score >= 30 && score < 80) {
+            label = this.props.mediumLabel;
+            meterPos = '0px -20px';
+          } else if (score >= 80) {
+            label = this.props.strongLabel;
+            meterPos = '0px -30px';
+          }
         }
 
-        if (this.props.onKeyUp) {
-            this.props.onKeyUp(e);
+        this.meter.style.backgroundPosition = meterPos;
+        this.info.textContent = label;
+      }
+
+      if (this.props.onKeyUp) {
+        this.props.onKeyUp(e);
+      }
+    }
+  }, {
+    key: "testStrength",
+    value: function testStrength(str) {
+      var grade = 0;
+      var val;
+      val = str.match('[0-9]');
+      grade += this.normalize(val ? val.length : 1 / 4, 1) * 25;
+      val = str.match('[a-zA-Z]');
+      grade += this.normalize(val ? val.length : 1 / 2, 3) * 10;
+      val = str.match('[!@#$%^&*?_~.,;=]');
+      grade += this.normalize(val ? val.length : 1 / 6, 1) * 35;
+      val = str.match('[A-Z]');
+      grade += this.normalize(val ? val.length : 1 / 6, 1) * 30;
+      grade *= str.length / 8;
+      return grade > 100 ? 100 : grade;
+    }
+  }, {
+    key: "normalize",
+    value: function normalize(x, y) {
+      var diff = x - y;
+      if (diff <= 0) return x / y;else return 1 + 0.5 * (x / (x + y / 4));
+    }
+  }, {
+    key: "createPanel",
+    value: function createPanel() {
+      this.panel = document.createElement('div');
+      this.panel.className = 'p-password-panel p-component p-highlight p-hidden p-password-panel-overlay p-input-overlay';
+      this.meter = document.createElement('div');
+      this.meter.className = 'p-password-meter';
+      this.info = document.createElement('div');
+      this.info.className = 'p-password-info';
+      this.info.textContent = this.props.promptLabel;
+      this.panel.style.minWidth = _DomHandler.default.getOuterWidth(this.inputEl) + 'px';
+      this.panel.appendChild(this.meter);
+      this.panel.appendChild(this.info);
+      document.body.appendChild(this.panel);
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      if (this.props.tooltip) {
+        this.renderTooltip();
+      }
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.tooltip !== this.props.tooltip) {
+        if (this.tooltip) this.tooltip.updateContent(this.props.tooltip);else this.renderTooltip();
+      }
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      if (this.feedback && this.panel) {
+        this.panel.removeChild(this.meter);
+        this.panel.removeChild(this.info);
+        document.body.removeChild(this.panel);
+        this.panel = null;
+        this.meter = null;
+        this.info = null;
+      }
+
+      if (this.tooltip) {
+        this.tooltip.destroy();
+        this.tooltip = null;
+      }
+    }
+  }, {
+    key: "renderTooltip",
+    value: function renderTooltip() {
+      this.tooltip = new _Tooltip.default({
+        target: this.inputEl,
+        content: this.props.tooltip,
+        options: this.props.tooltipOptions
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this4 = this;
+
+      var inputProps = _ObjectUtils.default.findDiffKeys(this.props, Password.defaultProps);
+
+      return /*#__PURE__*/_react.default.createElement(_InputText.InputText, _extends({
+        ref: function ref(el) {
+          return _this4.inputEl = _reactDom.default.findDOMNode(el);
         }
+      }, inputProps, {
+        type: "password",
+        onFocus: this.onFocus,
+        onBlur: this.onBlur,
+        onKeyUp: this.onKeyup
+      }));
     }
-    
-    testStrength(str) {
-        let grade = 0;
-        let val;
+  }]);
 
-        val = str.match('[0-9]');
-        grade += this.normalize(val ? val.length : 1/4, 1) * 25;
+  return Password;
+}(_react.Component);
 
-        val = str.match('[a-zA-Z]');
-        grade += this.normalize(val ? val.length : 1/2, 3) * 10;
+exports.Password = Password;
 
-        val = str.match('[!@#$%^&*?_~.,;=]');
-        grade += this.normalize(val ? val.length : 1/6, 1) * 35;
+_defineProperty(Password, "defaultProps", {
+  promptLabel: 'Enter a password',
+  weakLabel: 'Weak',
+  mediumLabel: 'Medium',
+  strongLabel: 'Strong',
+  feedback: true,
+  tooltip: null,
+  tooltipOptions: null
+});
 
-        val = str.match('[A-Z]');
-        grade += this.normalize(val ? val.length : 1/6, 1) * 30;
-
-        grade *= str.length / 8;
-
-        return grade > 100 ? 100 : grade;
-    }
-    
-    normalize(x, y) {
-        let diff = x - y;
-
-        if(diff <= 0)
-            return x / y;
-        else
-            return 1 + 0.5 * (x / (x + y/4));
-    }
-
-    createPanel() {
-        this.panel = document.createElement('div');
-        this.panel.className = 'p-password-panel p-component p-highlight p-hidden p-password-panel-overlay p-input-overlay';
-        this.meter = document.createElement('div');
-        this.meter.className = 'p-password-meter';
-        this.info = document.createElement('div');
-        this.info.className = 'p-password-info';
-        this.info.textContent = this.props.promptLabel;
-
-        this.panel.style.minWidth = DomHandler.getOuterWidth(this.inputEl) + 'px';
-        this.panel.appendChild(this.meter);
-        this.panel.appendChild(this.info);
-        document.body.appendChild(this.panel);
-    }
-
-    componentDidMount() {
-        if (this.props.tooltip) {
-            this.renderTooltip();
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.tooltip && prevProps.tooltip !== this.props.tooltip) {
-            if (this.tooltip)
-                this.tooltip.updateContent(this.props.tooltip);
-            else
-                this.renderTooltip();
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.feedback && this.panel) {
-            this.panel.removeChild(this.meter);
-            this.panel.removeChild(this.info);
-            document.body.removeChild(this.panel);
-            this.panel = null;
-            this.meter = null;
-            this.info = null;
-        }
-
-        if (this.tooltip) {
-            this.tooltip.destroy();
-            this.tooltip = null;
-        }
-    }
-
-    renderTooltip() {
-        this.tooltip = new Tooltip({
-            target: this.inputEl,
-            content: this.props.tooltip,
-            options: this.props.tooltipOptions
-        });
-    }
-
-    render() {
-        let inputProps = Object.assign({}, this.props);
-        delete inputProps.onFocus;
-        delete inputProps.onBlur;
-        delete inputProps.onKeyUp;
-        delete inputProps.promptLabel;
-        delete inputProps.weakLabel;
-        delete inputProps.mediumLabel;
-        delete inputProps.strongLabel;
-        delete inputProps.feedback;
-
-        return (
-            <InputText ref={(el) => this.inputEl = ReactDOM.findDOMNode(el)} {...inputProps} type="password" onFocus={this.onFocus} onBlur={this.onBlur} onKeyUp={this.onKeyup} />
-        );
-    }
-} 
+_defineProperty(Password, "propTypes", {
+  promptLabel: _propTypes.default.string,
+  weakLabel: _propTypes.default.string,
+  mediumLabel: _propTypes.default.string,
+  strongLabel: _propTypes.default.string,
+  feedback: _propTypes.default.bool,
+  tooltip: _propTypes.default.string,
+  tooltipOptions: _propTypes.default.object
+});

@@ -6,6 +6,7 @@ interface ListBoxProps {
     value?: any;
     options?: any[];
     optionLabel?: string;
+    optionValue?: string;
     style?: object;
     listStyle?: object;
     className?: string;
@@ -14,11 +15,16 @@ interface ListBoxProps {
     multiple?: boolean;
     metaKeySelection?: boolean;
     filter?: boolean;
+    filterBy?: string;
+    filterMatchMode?: string;
+    filterPlaceholder?: string;
+    filterLocale?: string;
     tabIndex?:string;
     tooltip?: any;
     tooltipOptions?: TooltipOptions;
+    ariaLabelledBy?: string,
     itemTemplate?(item: any): JSX.Element | undefined;
-    onChange?(e: {originalEvent: Event, value: any}): void;
+    onChange?(e: {originalEvent: Event, value: any, target: {name: string, id: string, value: any}}): void;
 }
 
 export class ListBox extends React.Component<ListBoxProps,any> {}

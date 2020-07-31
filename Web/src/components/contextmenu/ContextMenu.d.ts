@@ -9,7 +9,7 @@ interface ContextMenuProps {
     className?: string;
     global?: boolean;
     autoZIndex?: boolean;
-    bazeZIndex?: number;
+    baseZIndex?: number;
     appendTo?: any;
     onShow?(e: Event): void;
     onHide?(e: Event): void;
@@ -17,4 +17,5 @@ interface ContextMenuProps {
 
 export class ContextMenu extends React.Component<ContextMenuProps,any> {
     public show(event:SyntheticEvent):void;
+    public hide(event:SyntheticEvent):void;
 }

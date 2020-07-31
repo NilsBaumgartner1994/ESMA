@@ -78,7 +78,6 @@ export default class DefaultControllerHelper {
      * @returns {*} JSOB Object with filtered attributes
      */
     static filterResourceWithPermission(resource, permission) {
-        console.log(DefaultControllerHelper.getResourceAsJSON(resource));
         let dataJSON = permission.filter(DefaultControllerHelper.getResourceAsJSON(resource)); //get the json resource, then filter
         return dataJSON;
     }
@@ -177,22 +176,18 @@ export default class DefaultControllerHelper {
      * https://sequelize.org/v5/manual/querying.html#operators-aliases
      */
     parseOperatorContent(queryFiltered){
-	//console.log("parseOperatorContent");
         let queryFilteredKeys = Object.keys(queryFiltered); //for all available keys
         for(let i=0; i<queryFilteredKeys.length;i++){
             let key = queryFilteredKeys[i]; //get key like "id"
-	    //console.log("key: "+key);
             let content = queryFiltered[key];
-	    //console.log("content: "+content);
             if(!!content && content.startsWith("{") && content.endsWith("}")){ //check if we have search params
                 let parsedContent = JSON.parse(content); //well then parse it
-		let operatorKeys = Object.keys(parsedContent); //get all keys like: greater than: gte
-		for(let j=0; j<operatorKeys.length; j++){ //for all operators
-		    let operator = operatorKeys[i];
-		    //console.log("operator: "+operator);
-		    parsedContent[Op[operator]] = parsedContent[operator]; //replace specific operator
-		    delete parsedContent[operator]; //delete old string "operator"
-		}
+		        let operatorKeys = Object.keys(parsedContent); //get all keys like: greater than: gte
+                for(let j=0; j<operatorKeys.length; j++){ //for all operators
+                    let operator = operatorKeys[i];
+                    parsedContent[Op[operator]] = parsedContent[operator]; //replace specific operator
+                    delete parsedContent[operator]; //delete old string "operator"
+                }
                 queryFiltered[key] = parsedContent; //save
             }
         }
@@ -304,7 +299,7 @@ export default class DefaultControllerHelper {
 
                 //lets find all resources with query
                 sequelizeModel.findAll(sequelizeQuery).then(resources => {
-                    console.log(resources);
+                    //console.log(resources);
                     this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query));
                     //console.log("[DefaultControllerHelper] handleIndex found: "+resources.length);
                     DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, resources, permission);

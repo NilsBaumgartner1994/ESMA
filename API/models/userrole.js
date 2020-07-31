@@ -21,8 +21,8 @@
  */
 module.exports = (sequelize, DataTypes) => {
   const UserRole = sequelize.define('UserRole', {
-      RoleId: {type: DataTypes.INTEGER, allowNull: false}, //required
-      UserId: {type: DataTypes.INTEGER, allowNull: false}, //required
+      RoleId: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true}, //required
+      UserId: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true}, //required
       beginnAt: DataTypes.DATE,
       endAt: DataTypes.DATE,
   }, {});
