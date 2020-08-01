@@ -30,16 +30,19 @@ module.exports = (sequelize, DataTypes) => {
   }, { });
   StreamView.associate = function(models) {
     // associations can be defined here
-      StreamView.belongsTo(models.User, {
-          through: models.Device,
-          foreignKey: 'id',
-      });
     StreamView.belongsTo(models.Device,
         {
           onUpdate: "CASCADE",
           onDelete: "CASCADE" // is user deletes device, then we better delete all corresponding streamviews
         });
   };
+    StreamView.prototype.getUser = async function() {
+        let device = await this.getDevice();
+        if(!!device){
+            return await device.getUser();
+        }
+        return null;
+    };
   StreamView.prototype.isOwn = async function(current_user) {
       let owner = await this.getUser();
       if(!!owner && !!current_user){

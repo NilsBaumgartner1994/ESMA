@@ -5,6 +5,7 @@ var models = require('./../models');
 const resourceJSONs = [{
   pseudonym: 'Seed-Nils',
   language: "de",
+
   privacyPolicyReadDate: new Date(),
 }];
 

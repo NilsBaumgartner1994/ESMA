@@ -24,6 +24,10 @@ export class SchemeHelper extends Component {
 		return scheme[field].type._length;
 	}
 
+	static isTypeJSON(scheme, field){
+		return SchemeHelper.getType(scheme,field) === "JSON";
+	}
+
 	static isPrimaryKey(scheme, field){
 		return scheme[field].primaryKey;
 	}

@@ -157,7 +157,16 @@ export class ResourceIndex extends Component {
         if(!body){
             body = this.defaultBodyTemplate.bind(this, field);
         }
+
+        if(SchemeHelper.isTypeJSON(this.state.scheme,field)){
+            body = this.bodyTemplateJSON.bind(this,field);
+        }
+
         return (<Column key={field} field={field} header={header} body={body} sortable filterMatchMode="contains" filter filterPlaceholder={ResourceIndex.searchLoopIcon+" search"}/>);
+    }
+
+    bodyTemplateJSON(field, rowData, column){
+        return <div style={ResourceIndex.defaultDivStyle}>{JSON.stringify(rowData[field])}</div>;
     }
 
     defaultBodyTemplate(field, rowData, column){

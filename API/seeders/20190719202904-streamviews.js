@@ -4,8 +4,17 @@ var models = require('./../models');
 
 const resourceJSONs = [{
   screen: 'Home',
-  event: "Nothing",
-  props: null,
+  event: "Clicked",
+  props: {
+    fakeProps: {
+      payed: true,
+      name: "Rick Astley",
+      age: 42
+    },
+    more: true,
+    time: new Date(),
+    world: "Earth"
+  },
   eventTime: new Date()
 }];
 

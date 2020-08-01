@@ -9,6 +9,8 @@ import {SchemeHelper} from "../../helper/SchemeHelper";
 import {Button} from '../../components/button/Button';
 import {Calendar} from '../../components/calendar/Calendar';
 import {InputText} from '../../components/inputtext/InputText';
+import {InputTextarea} from '../../components/inputtextarea/InputTextarea';
+import {Dialog} from '../../components/dialog/Dialog';
 
 export class ResourceInstance extends Component {
 
@@ -19,6 +21,8 @@ export class ResourceInstance extends Component {
             tableName: tableName,
             isLoading: true,
             isEdited: false,
+            jsonEditorsVisible: {},
+            jsonEditorsValues: {},
             requestPending: false
         };
     }
@@ -144,7 +148,9 @@ export class ResourceInstance extends Component {
         let attributeType = SchemeHelper.getType(this.state.scheme,attributeKey);
         switch(attributeType){
             case "STRING": return this.renderEditableTextField(attributeKey);
+            case "INTEGER": return this.renderEditableIntegerField(attributeKey);
             case "DATE": return this.renderEditableDateField(attributeKey);
+            case "JSON": return this.renderEditableJSONField(attributeKey);
         }
 
         return <div style={{"background-color": "green"}}>{this.state.resource[attributeKey]}</div>;
@@ -152,11 +158,108 @@ export class ResourceInstance extends Component {
 
     renderEditableTextField(attributeKey){
         let maxLength = SchemeHelper.getTypeStringMaxLength(this.state.scheme,attributeKey);
+        let resourceValue = this.state.resource[attributeKey] || "";
 
         return(
             <div className="p-inputgroup">
-                <InputText id="float-input" type="text" size="30" value={this.state.resource[attributeKey] || ""} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
+                <InputText id="float-input" maxLength={maxLength} type="text" size="30" value={resourceValue} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
                 <Button icon="pi pi-times" className="p-button-danger" onClick={() => {this.state.resource[attributeKey] = null; this.saveResourceChange()}} />
+            </div>
+        );
+    }
+
+    renderEditableIntegerField(attributeKey){
+        let resourceValue = this.state.resource[attributeKey] || "";
+
+        return(
+            <div className="p-inputgroup">
+                <InputText id="float-input" keyfilter={"int"} type="text" size="30" value={resourceValue} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
+                <Button icon="pi pi-times" className="p-button-danger" onClick={() => {this.state.resource[attributeKey] = null; this.saveResourceChange()}} />
+            </div>
+        );
+    }
+
+    renderEditableJSONField(attributeKey){
+        let rawValue = this.state.resource[attributeKey];
+        let resourceValue = JSON.stringify(this.state.resource[attributeKey]);
+        if(!this.state.jsonEditorsValues[attributeKey]){
+            this.state.jsonEditorsValues[attributeKey] = resourceValue;
+        }
+
+        const onAbort = (e) => {
+            let editorState = this.state.jsonEditorsVisible;
+            editorState[attributeKey] = false;
+            let editorValues = this.state.jsonEditorsValues;
+            editorValues[attributeKey] = resourceValue;
+            this.setState({
+                jsonEditorsVisible: editorState,
+                jsonEditorsValues: editorValues
+            });
+        };
+
+        const onShow = (e) => {
+            let editorState = this.state.jsonEditorsVisible;
+            editorState[attributeKey] = true;
+            this.setState({
+                jsonEditorsVisible: editorState
+            });
+        };
+
+        const onValidate = (e) => {
+            try{
+
+                console.log("onValidate");
+                console.log("this.state.jsonEditorsValues[attributeKey]:");
+                console.log(this.state.jsonEditorsValues[attributeKey]);
+                let json = JSON.parse(this.state.jsonEditorsValues[attributeKey]);
+                let resource = this.state.resource;
+                resource[attributeKey] = json;
+
+                let editorValues = this.state.jsonEditorsValues;
+                editorValues[attributeKey] = JSON.stringify(json);
+
+                let editorState = this.state.jsonEditorsVisible;
+                editorState[attributeKey] = false;
+
+                this.setState({
+                    resource: resource,
+                    jsonEditorsVisible: editorState,
+                    jsonEditorsValues: editorValues
+                });
+            } catch(err){
+                console.log("JSON Validation Error");
+                console.log(err);
+            }
+        }
+
+        let isValid = true;
+        try{
+            JSON.parse(this.state.jsonEditorsValues[attributeKey]);
+        } catch(err){
+            isValid = false;
+        }
+
+        let finishButton = <Button label="Finish" icon="pi pi-check" onClick={onValidate} />
+        if(!isValid){
+            finishButton = <Button label="Invalid JSON" className="p-button-danger" />;
+        }
+
+        const footer = (
+            <div>
+                {finishButton}
+                <Button label="Abort" icon="pi pi-times" className="p-button-danger" onClick={onAbort} />
+            </div>
+        );
+
+        return(
+            <div>
+            <div className="p-inputgroup">
+                <InputTextarea id="float-input" autoResize={true} rows={5} cols={29} onClick={onShow} value={resourceValue} />
+                <Button icon="pi pi-times" className="p-button-danger" onClick={() => {this.state.resource[attributeKey] = null; this.saveResourceChange()}} />
+            </div>
+                <Dialog header={"JSON Editor: "+attributeKey} footer={footer} visible={this.state.jsonEditorsVisible[attributeKey]} modal={true} onHide={onAbort}>
+                    <InputTextarea id="float-input" autoResize={true} rows={20} cols={80} value={this.state.jsonEditorsValues[attributeKey]} onChange={(e) => {this.state.jsonEditorsValues[attributeKey] = e.target.value ;this.saveResourceChange()}}/>
+                </Dialog>
             </div>
         );
     }
@@ -167,7 +270,7 @@ export class ResourceInstance extends Component {
 
         return(
             <div className="p-inputgroup">
-                <Calendar size="30" value={value} showTime={true} showSeconds={true} monthNavigator={true} touchUI={true} yearNavigator={true} yearRange="1990:2030" showButtonBar={true} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
+                <Calendar value={value} showTime={true} showSeconds={true} monthNavigator={true} touchUI={true} yearNavigator={true} yearRange="1990:2030" showButtonBar={true} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
                 <Button icon="pi pi-times" className="p-button-danger" onClick={() => {this.state.resource[attributeKey] = null; this.saveResourceChange()}} />
             </div>
         );
