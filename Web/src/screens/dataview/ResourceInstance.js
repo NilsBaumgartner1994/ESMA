@@ -167,7 +167,7 @@ export class ResourceInstance extends Component {
 
         return(
             <div className="p-inputgroup">
-                <Calendar size="30" value={value} showTime={true} showSeconds={true} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
+                <Calendar size="30" value={value} showTime={true} showSeconds={true} monthNavigator={true} touchUI={true} yearNavigator={true} yearRange="1990:2030" showButtonBar={true} onChange={(e) => {this.state.resource[attributeKey] = e.target.value ;this.saveResourceChange()}} />
                 <Button icon="pi pi-times" className="p-button-danger" onClick={() => {this.state.resource[attributeKey] = null; this.saveResourceChange()}} />
             </div>
         );

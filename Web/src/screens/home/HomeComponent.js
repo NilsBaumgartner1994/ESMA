@@ -13,7 +13,7 @@ export class HomeComponent extends Component {
                 </div>
                 <div className="features">
                     <h3>Why ESMA?</h3>
-                    <p className="features-tagline">Congratulation! <span role="img" aria-label="celebrate">🎉</span> Die
+                    <p className="features-tagline">Congratulation! <span role="img" aria-label="celebrate">🎉</span>
                         The search for the simple tool is over.</p>
 
                     <p className="features-description">{config.title} is a collection of a mobile-, backend- and frontend-application.</p>

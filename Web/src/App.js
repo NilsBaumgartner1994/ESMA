@@ -16,6 +16,7 @@ import config from './config';
 
 
 import {HomeComponent} from './screens/home/HomeComponent';
+import {SupportComponent} from './screens/home/SupportComponent';
 import {ResourceIndex} from "./screens/dataview/ResourceIndex";
 import {ResourceInstance} from "./screens/dataview/ResourceInstance";
 import {SystemInformationView} from "./screens/systemInformation/SystemInformationView";
@@ -230,6 +231,7 @@ export class App extends Component {
                 <div id="layout-content">
                     <Switch>
                         <Route exact path="/" component={HomeComponent}/>
+                        <Route exact path="/support" component={SupportComponent}/>
                         <Route exact path={"/models/:tableName"} component={withRouter(ResourceIndex)}/>
                         {this.renderRoutes()}
                     </Switch>
