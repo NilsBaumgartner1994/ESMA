@@ -7,14 +7,11 @@ import SystemInformationSchedule from '../schedules/SystemInformationSchedule'
 
 import SequelizeController from "../controllers/SequelizeController";
 
-import LoginController from "../controllers/LoginController";
-
 import MyTokenHelper from "../helper/MyTokenHelper";
 import MetricsHelper from "../helper/MetricsHelper";
 import DateHelper from "../helper/DateHelper";
 import DefaultPhotoHelper from "../helper/DefaultPhotoHelper";
 import DefaultControllerHelper from "../helper/DefaultControllerHelper";
-import Function_BackupController from "../controllers/Function_BackupController";
 import MyAccessControl from "./MyAccessControl";
 
 const fileUpload = require('express-fileupload');
@@ -226,8 +223,6 @@ export default class MyExpressRouter {
         let instance = this;
 
         //Function
-
-        this.function_BackupController = new Function_BackupController(logger, models, expressApp, myAccessControl, instance);
 
         // Helper
         this.defaultControllerHelper = new DefaultControllerHelper(logger, models, instance);

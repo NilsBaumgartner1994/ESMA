@@ -78,16 +78,14 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: 'CASCADE',
         }
       );
-/**
-      User.hasOne(
+      User.belongsToMany(
           models.Role,
           {
-              through: 'UserRoles',
-	      onUpdate: 'CASCADE',
-	      onDelete: 'CASCADE',
+              through: models.UserRole,
+              onUpdate: 'CASCADE',
+              onDelete: 'CASCADE',
           }
       );
-*/
       User.hasMany(
           models.Feedback,
       );

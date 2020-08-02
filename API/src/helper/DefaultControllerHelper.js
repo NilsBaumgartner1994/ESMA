@@ -383,10 +383,19 @@ export default class DefaultControllerHelper {
      */
     async handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn) {
         let sequelizeResource = req.locals[resourceName]; //get the found resource, found by paramcheckers
+        if(!sequelizeResource){
+            MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {
+                error: 'No Resource found',
+                model: resourceName
+            });
+            return;
+        }
 
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"read",isOwn);
         if (permission.granted) { //can read/get resource
+            console.log("Permission Granted");
             DefaultControllerHelper.respondWithPermissionFilteredResource(req, res, sequelizeResource, permission);
+            console.log("Handle Get Finished");
         } else {
             MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
                 errorCode: HttpStatus.FORBIDDEN,

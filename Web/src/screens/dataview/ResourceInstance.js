@@ -23,7 +23,8 @@ export class ResourceInstance extends Component {
             isEdited: false,
             jsonEditorsVisible: {},
             jsonEditorsValues: {},
-            requestPending: false
+            requestPending: false,
+            visibleDialogDeleteResource: false,
         };
     }
 
@@ -37,22 +38,45 @@ export class ResourceInstance extends Component {
         let route = this.getInstanceRouteForResource(params);
         let resource = await RequestHelper.sendRequestNormal("GET",route);
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName);
+        let associations = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName+"/associations");
+        let associationResources = await this.loadAssociationResources(route,associations);
 
         console.log(resource);
 
         this.setState({
             isLoading: false,
             resource: resource,
+            resourceCopy: JSON.parse(JSON.stringify(resource)),
+            associations: associations,
+            associationResources: associationResources,
             route: route,
             scheme: scheme,
             params: params,
         });
     }
 
+    async loadAssociationResources(route,associations){
+        let associationResources = {};
+
+        let associationTableNames = Object.keys(associations);
+        for(let i=0; i<associationTableNames.length; i++){
+            let associationTableName = associationTableNames[i];
+            let associationName = associations[associationTableName]["associationName"];
+            associationResources[associationName] = await this.loadAssociation(route,associationName);
+        }
+        return associationResources;
+    }
+
+    async loadAssociation(route,associationName){
+        route = route+"/"+associationName;
+        let resource = await RequestHelper.sendRequestNormal("GET",route);
+        return resource;
+    }
+
     async updateResource(){
         let resource = this.state.resource;
         let payloadJSON = resource;
-        let answer = await RequestHelper.sendRequestNormal("POST",this.state.route,payloadJSON);
+        let answer = await RequestHelper.sendRequestNormal("PUT",this.state.route,payloadJSON);
         if(answer === undefined) {
             this.setState({
                 requestPending: false,
@@ -67,6 +91,7 @@ export class ResourceInstance extends Component {
             this.growl.show({severity: 'success', summary: 'Success', detail: 'Changes saved'});
             this.setState({
                 resource: answer,
+                resourceCopy: answer,
                 isEdited: false,
                 requestPending: false,
             });
@@ -96,17 +121,35 @@ export class ResourceInstance extends Component {
                     </table>
                     <br></br>
                     {this.renderUpdateButton()}
+                    {this.renderResetButton()}
                     {this.renderRequestPendingBar()}
                 </Card>
             </div>
         )
     }
 
+    resetResource(){
+        this.setState({
+            resource: JSON.parse(JSON.stringify(this.state.resourceCopy)),
+            isEdited: false,
+            jsonEditorsVisible: {},
+            jsonEditorsValues: {},
+        });
+    }
+
+    renderResetButton(){
+        if(this.state.isEdited && !this.state.requestPending){
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" iconPos="right" onClick={() => {this.resetResource()}} />);
+        } else {
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" iconPos="right" disabled="disabled" />);
+        }
+    }
+
     renderUpdateButton(){
         if(this.state.isEdited && !this.state.requestPending){
-            return(<Button className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" onClick={() => {this.updateResource()}} />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" onClick={() => {this.updateResource()}} />);
         } else {
-            return(<Button className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" disabled="disabled" />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" disabled="disabled" />);
         }
     }
 
@@ -284,8 +327,80 @@ export class ResourceInstance extends Component {
     }
 
 
-    renderAssociationCard(){
-        return <div></div>;
+    renderAssociationCards(){
+        let associationTableNames = Object.keys(this.state.associations);
+        let output = [];
+        for(let i=0; i<associationTableNames.length; i++){
+            let associationTableName = associationTableNames[i];
+            let associationName = this.state.associations[associationTableName]["associationName"];
+            output.push(this.renderAssociationCard(associationTableName,associationName));
+        }
+
+        return output;
+    }
+
+    renderAssociationCard(associationTableName,associationName){
+        let isPlural = associationTableName === associationName;
+
+        let resource = this.state.associationResources[associationTableName];
+
+        return(
+            <div className="p-col">
+                <Card title={"Association: "+associationName} style={{width: '500px'}}>
+                    <div>{}</div>
+                    <table style={{border:0}}>
+                        <tbody>
+                            <div>{JSON.stringify(resource)}</div>
+                        </tbody>
+                    </table>
+                    <br></br>
+                    <div>Insert New Association</div>
+                </Card>
+            </div>
+        )
+    }
+
+    openDialogDeleteResource(){
+        this.setState({visibleDialogDeleteResource: true});
+    }
+
+    async deleteResource(){
+        let route = this.state.route;
+        let answer = await RequestHelper.sendRequestNormal("DELETE",route);
+        console.log(answer);
+        if(answer!=false){
+            this.props.history.push('/models/'+ this.state.tableName);
+        }
+    }
+
+    renderDialogDeleteResource(){
+        const footer = (
+            <div>
+                <Button label="Yes" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setState({visibleDialogDeleteUser: false}); this.deleteResource(); }} />
+                <Button label="No" icon="pi pi-times" className="p-button-info p-button-raised" onClick={() => {this.setState({visibleDialogDeleteUser: false}); }} className="p-button-secondary" />
+            </div>
+        );
+
+        let tableNameSingle = this.state.tableName.slice(0,-1);
+
+        return(
+            <Dialog header={"Delete "+tableNameSingle} visible={this.state.visibleDialogDeleteResource} style={{width: '50vw'}} footer={footer} modal={true} onHide={() => this.setState({visibleDialogDeleteResource: false})}>
+                <div>Are you sure you want to delete this {tableNameSingle} ? This cannot be undone.</div>
+            </Dialog>
+        );
+    }
+
+    renderDangerZone(){
+        let tableNameSingle = this.state.tableName.slice(0,-1);
+
+        return(
+            <div className="p-col">
+                <Card title={"Danger Zone"} style={{width: '500px'}}>
+                    <Button label={"Delete "+tableNameSingle} icon="pi pi-times" className="p-button-danger p-button-raised" onClick={() => this.openDialogDeleteResource()} />
+                </Card>
+                {this.renderDialogDeleteResource()}
+            </div>
+        )
     }
 
     renderHeader(){
@@ -316,7 +431,8 @@ export class ResourceInstance extends Component {
 
                     <div className="p-grid">
                         {this.renderDataCard()}
-                        {this.renderAssociationCard()}
+                        {this.renderAssociationCards()}
+                        {this.renderDangerZone()}
                     </div>
                 </div>
             </div>

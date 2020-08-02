@@ -21,32 +21,9 @@
  */
 module.exports = (sequelize, DataTypes) => {
   const UserRole = sequelize.define('UserRole', {
-      RoleId: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true}, //required
-      UserId: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true}, //required
       beginnAt: DataTypes.DATE,
       endAt: DataTypes.DATE,
   }, {});
-    UserRole.removeAttribute('id');
-    UserRole.associate = function(models) {
-    // associations can be defined here
 
-        UserRole.belongsTo(
-          models.User,
-          {
-	      sourceKey: {name: "UserId"},
-              onUpdate: "CASCADE",
-              onDelete: 'CASCADE' //not sure if needed
-          }
-      );
-        UserRole.belongsTo(
-            models.Role,
-            {
-		sourceKey: {name: "RoleId"},
-                onUpdate: "CASCADE",
-                onDelete: 'CASCADE' //not sure if needed
-            }
-        );
-
-  };
   return UserRole;
 };

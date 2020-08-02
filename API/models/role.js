@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Role.associate = function(models) {
     // associations can be defined here
+    Role.belongsToMany(
+        models.User,
+        {
+          through: models.UserRole,
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        }
+    );
   };
   return Role;
 };

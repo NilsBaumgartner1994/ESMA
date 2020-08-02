@@ -79,7 +79,7 @@ export default class SequelizeSchemeController {
 
         let functionForModel = function(req, res){
             let modelsWithPermission = Object.keys(grants[req.locals.current_user.role]);
-            let filteredDataList = [];
+            let filteredAssociationData = {};
 
             for(let j=0; j<tableAssociations.length; j++) {
                 let associationObject = tableAssociations[j];
@@ -88,11 +88,13 @@ export default class SequelizeSchemeController {
 
                 let pluralName = associationObject[modelAssociationName]["name"]["plural"];
                 if(modelsWithPermission.includes(pluralName)){
-                    filteredDataList.push(modelAssociationName);
+                    filteredAssociationData[pluralName] = {
+                        "associationName": modelAssociationName
+                    }
                 }
             }
 
-            MyExpressRouter.responseWithJSON(res, HttpStatus.OK, filteredDataList);
+            MyExpressRouter.responseWithJSON(res, HttpStatus.OK, filteredAssociationData);
         }
 
         this.expressApp.get(route, functionForModel.bind(this)); // register route in express

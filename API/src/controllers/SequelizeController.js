@@ -2,6 +2,7 @@ import HttpStatus from "http-status-codes";
 import MyExpressRouter from "../module/MyExpressRouter";
 import SequelizeHelper from "../helper/SequelizeHelper";
 import SequelizeRouteHelper from "../helper/SequelizeRouteHelper";
+import SequelizeAssociationController from "./SequelizeAssociationController";
 
 export default class SequelizeController {
 
@@ -11,7 +12,7 @@ export default class SequelizeController {
         this.expressApp = expressApp;
         this.myAccessControl = myAccessControl;
         this.myExpressRouter = myExpressRouter;
-        this.functionsForModels = {};
+        this.associationController = new SequelizeAssociationController(logger, models, expressApp, myAccessControl, myExpressRouter);
         this.configureRoutes();
     }
 
@@ -24,50 +25,7 @@ export default class SequelizeController {
             let model = modelList[i];
 
             this.configureModelRoutes(model); //configure routes for the model
-            this.configureModelAssociationRoutes(model);
-        }
-    }
-
-    configureModelAssociationRoutes(model, level=1, maxLevel=2){
-        let tableAssociations = SequelizeHelper.getAssociationForModelJSON(model);
-        for(let j=0; j<tableAssociations.length; j++){
-            let associationObject = tableAssociations[j];
-            let modelAssociationObjects = Object.keys(associationObject);
-            let modelAssociationName = modelAssociationObjects[0];
-            //console.log("--".repeat(level)+" "+modelAssociationName);
-
-            let pluralName = associationObject[modelAssociationName]["name"]["plural"];
-
-            let isPlural = pluralName === modelAssociationName;
-            let associationRoute = SequelizeRouteHelper.getInstanceAssociationRoute(model,modelAssociationName);
-            let associationGetFunction = "get"+modelAssociationName;
-
-            let functionForModel = null;
-            if(isPlural){
-                functionForModel = async function(req, res){ //define the get function
-                    //just call the default GET
-                    console.log("Handle INDEX Association Request");
-
-                    let tableName = SequelizeHelper.getTableName(model);
-                    let resource = req.locals[tableName];
-
-                    this.myExpressRouter.defaultControllerHelper.handleAssociationIndex(req,res,resource,this.myAccessControl,pluralName,pluralName,associationGetFunction);
-                }
-            } else {
-                functionForModel = async function(req, res){ //define the get function
-                    //just call the default GET
-                    console.log("Handle GET Association Request");
-
-                    let tableName = SequelizeHelper.getTableName(model);
-                    let resource = req.locals[tableName];
-                    req.locals[modelAssociationName] = await resource[associationGetFunction]();
-                    await SequelizeController.setOwningState(req,modelAssociationName);
-
-                    this.myExpressRouter.defaultControllerHelper.handleGet(req, res, this.myAccessControl, pluralName, modelAssociationName, SequelizeController.getOwningState(req,tableName));
-                }
-            }
-
-            this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+            this.associationController.configureModelAssociationRoutes(model);
         }
     }
 
@@ -145,7 +103,7 @@ export default class SequelizeController {
         }
 
         let route = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
-        this.expressApp.post(route, functionForModel.bind(this)); // register route in express
+        this.expressApp.put(route, functionForModel.bind(this)); // register route in express
     }
 
     /**
