@@ -19,8 +19,10 @@ import {HomeComponent} from './screens/home/HomeComponent';
 import {SupportComponent} from './screens/home/SupportComponent';
 import {ResourceIndex} from "./screens/dataview/ResourceIndex";
 import {ResourceInstance} from "./screens/dataview/ResourceInstance";
+import {ResourceCreate} from "./screens/dataview/ResourceCreate";
 import {SystemInformationView} from "./screens/systemInformation/SystemInformationView";
 import {RequestHelper} from "./module/RequestHelper";
+import {RouteHelper} from "./helper/RouteHelper";
 
 export class App extends Component {
 
@@ -48,6 +50,7 @@ export class App extends Component {
     async loadInformations(){
         let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
         let tableNames = Object.keys(schemes);
+        console.log(tableNames);
         this.setState({
             tableNames: tableNames,
             schemes: schemes,
@@ -55,18 +58,34 @@ export class App extends Component {
         })
     }
 
-    renderRoutes(){
-        console.log("renderRoutes")
-        if(!!this.state.schemes && !!this.state.tableNames){
-            let divRoutes = this.state.tableNames.map(tableName => {
-                let getRoute = this.state.schemes[tableName]["GET"];
-                getRoute = getRoute.replace("/api","");
-                console.log("getRoute: "+getRoute);
-                return (<Route exact path={getRoute} component={withRouter(ResourceInstance.bind(this,this.state.schemes,tableName))} test={"Hallo"}/>)
-            });
+    renderInstanceRoute(path, tableName){
+        return <Route exact path={path} component={withRouter(ResourceInstance.bind(this,this.state.schemes,tableName))} />;
+    }
 
-            console.log(divRoutes)
-            return divRoutes;
+    renderInstanceCreateRoute(path, tableName){
+        return <Route exact path={path} component={withRouter(ResourceCreate.bind(this,this.state.schemes,tableName))} />;
+    }
+
+    renderIndexRoutes(){
+        return <Route exact path={"/models/:tableName"} component={withRouter(ResourceIndex.bind(this,this.state.schemes))}/>;
+    }
+
+    renderRoutes(){
+        console.log("renderRoutes");
+        if(!!this.state.schemes && !!this.state.tableNames){
+            let output = [];
+            output.push(this.renderIndexRoutes());
+
+            for(let i=0; i<this.state.tableNames.length; i++){
+                let tableName = this.state.tableNames[i];
+                let getRoute = RouteHelper.getInstanceRoute(this.state.schemes, tableName);
+                let createRoute = RouteHelper.getCreateRouteForResource(this.state.schemes, tableName);
+
+                output.push(this.renderInstanceRoute(getRoute,tableName));
+                output.push(this.renderInstanceCreateRoute(createRoute,tableName));
+            }
+
+            return output;
         } else {
             return (<div></div>)
         }
@@ -232,7 +251,6 @@ export class App extends Component {
                     <Switch>
                         <Route exact path="/" component={HomeComponent}/>
                         <Route exact path="/support" component={SupportComponent}/>
-                        <Route exact path={"/models/:tableName"} component={withRouter(ResourceIndex)}/>
                         {this.renderRoutes()}
                     </Switch>
                     <div className="content-section layout-footer clearfix">

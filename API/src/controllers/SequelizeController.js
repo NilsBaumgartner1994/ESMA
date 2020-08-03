@@ -67,29 +67,13 @@ export default class SequelizeController {
         let tableName = SequelizeHelper.getTableName(model);
 
         let functionForModel = async function(req, res) { //define the index function
-            //evalOwningState
+            let isOwn = false;
 
-            //sequelizeResource.setDevice(device, {save: false});
-
-            console.log("configureCreate function called");
-            let allowedAttributes = DefaultControllerHelper.getFilteredReqBodyByPermission(req,this.myAccessControl,tableName,"create","true");
-
-            allowedAttributes = {
-                pushNotificationToken: "DataTypes.STRING",
-                os: "DataTypes.STRING",
-                version: "DataTypes.STRING"
-            };
-
+            let allowedAttributes = DefaultControllerHelper.getFilteredReqBodyByPermission(req,this.myAccessControl,tableName,"create",isOwn);
             let sequelizeResource = model.build(allowedAttributes);
-            console.log(sequelizeResource);
-
-            req.locals.current_user.id = 1;
-            let isOwn = await sequelizeResource.willBeOwn(req.locals.current_user,sequelizeResource);
-            console.log("isOwn: "+isOwn);
-
-
-
             //just call the default index
+            //TODO What about his own Resource ?
+
             this.myExpressRouter.defaultControllerHelper.handleCreate(req, res, sequelizeResource, this.myAccessControl, tableName, tableName, isOwn)
         }
 

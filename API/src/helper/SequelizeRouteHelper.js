@@ -48,8 +48,10 @@ export default class SequelizeRouteHelper {
 
     static getModelRoutes(model){
         let getRoute = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
+        let indexRoute = SequelizeRouteHelper.getIndexRoute(model);
         let routes = {
-            "GET": getRoute
+            "GET": getRoute,
+            "INDEX": indexRoute
         };
         return routes;
     }

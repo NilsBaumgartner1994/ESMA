@@ -22,11 +22,11 @@ module.exports = {
     let user = await models.User.findOne();
     let role = await models.Role.findOne();
 
-    user.setRoles([role]);
-    role.addUser(user);
+    //await user.removeRole(role);
+    await user.addRole(role);
 
     let roles = await user.getRoles();
-    console.log(roles);
+    console.log(roles.length);
 
     return;
   },

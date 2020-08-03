@@ -43,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         }
         return null;
     };
+
   StreamView.prototype.isOwn = async function(current_user) {
       let owner = await this.getUser();
       if(!!owner && !!current_user){

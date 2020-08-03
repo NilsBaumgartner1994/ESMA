@@ -12,15 +12,17 @@ import {Button} from '../../components/button/Button';
 import {InputSwitch} from "../../components/inputswitch/InputSwitch";
 import {RequestHelper} from "../../module/RequestHelper";
 import {SchemeHelper} from "../../helper/SchemeHelper";
+import {RouteHelper} from "../../helper/RouteHelper";
 
 export class ResourceIndex extends Component {
 
     static searchLoopIcon = "\ud83d\udd0d";
     static defaultDivStyle = {"textAlign":"center","wordBreak": "break-word"};
 
-    constructor() {
+    constructor(schemes) {
         super();
         this.state = {
+            schemes: schemes,
             isLoading: true,
             advanced: false,
         };
@@ -34,6 +36,7 @@ export class ResourceIndex extends Component {
     }
 
     async loadResources(tableName) {
+        let createRoute = RouteHelper.getCreateRouteForResource(this.state.schemes,tableName);
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName);
         let routes = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName+"/routes");
         let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName);
@@ -45,6 +48,7 @@ export class ResourceIndex extends Component {
 	        resources: resources,
             scheme: scheme,
             routes: routes,
+            createRoute: createRoute,
             tableName: tableName
         });
     }
@@ -213,6 +217,21 @@ export class ResourceIndex extends Component {
             );
     }
 
+    renderCreateButton(){
+        let route = this.state.createRoute;
+
+        if(!!route) {
+            return (
+                <Link to={route} style={{"background-color":"transparent"}}>
+                    <Button type="button" className="p-button-success" label={"Create"} iconPos="right"
+                            icon="pi pi-plus" ></Button >
+                </Link >
+            );
+        } else {
+            return null;
+        }
+    }
+
     render() {
         let dataTable = this.renderDataTable();
 
@@ -232,7 +251,7 @@ export class ResourceIndex extends Component {
                         <table style={{width: "100%"}}>
                             <tr>
                                 <td align={"left"}>
-
+                                    {this.renderCreateButton()}
                                 </td>
                                 <td align="right">
                                     <p>Advanced: </p>

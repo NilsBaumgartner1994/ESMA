@@ -34,12 +34,6 @@ module.exports = (sequelize, DataTypes) => {
         });
       Device.hasMany(models.StreamView);
   };
-    Device.prototype.willBeOwn = async function(current_user,buildResource) {
-        if(!!buildResource && !!buildResource.UserId && !!current_user){
-            return buildResource.UserId=== current_user.id;
-        }
-        return false;
-    };
     Device.prototype.isOwn = async function(current_user) {
         let owner = await this.getUser();
         console.log("Owner searched");

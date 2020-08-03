@@ -48,7 +48,7 @@ function getUnauthorizedResponse(req) {
 function myAuthorizer(username, password) {
     const userMatches = basicAuth.safeCompare(username, credentials.auth.username);
     const passwordMatches = basicAuth.safeCompare(password, credentials.auth.password);
-´
+
     return userMatches & passwordMatches;
 }
 

@@ -13,7 +13,7 @@ import {InputTextarea} from '../../components/inputtextarea/InputTextarea';
 import {Dialog} from '../../components/dialog/Dialog';
 import {RouteHelper} from "../../helper/RouteHelper";
 
-export class ResourceInstance extends Component {
+export class ResourceCreate extends Component {
 
     constructor(schemes,tableName) {
         super();
@@ -30,55 +30,24 @@ export class ResourceInstance extends Component {
     }
 
     componentDidMount() {
-		const { match: { params } } = this.props;
-		console.log("Params");
-		console.log(params);
-        this.loadResources(params);
+        this.loadResources();
     }
 
-    async loadResources(params){
-        let route = RouteHelper.getInstanceRouteForResource(this.state.schemes,this.state.tableName,params);
-        let resource = await RequestHelper.sendRequestNormal("GET",route);
+    async loadResources(){
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName);
-        let associations = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName+"/associations");
-        let associationResources = await this.loadAssociationResources(route,associations);
-
-        console.log(resource);
+        let route = RouteHelper.getIndexRouteForResource(this.state.schemes,this.state.tableName);
 
         this.setState({
             isLoading: false,
-            resource: resource,
-            resourceCopy: JSON.parse(JSON.stringify(resource)),
-            associations: associations,
-            associationResources: associationResources,
+            resource: {},
             route: route,
             scheme: scheme,
-            params: params,
         });
     }
 
-    async loadAssociationResources(route,associations){
-        let associationResources = {};
-
-        let associationTableNames = Object.keys(associations);
-        for(let i=0; i<associationTableNames.length; i++){
-            let associationTableName = associationTableNames[i];
-            let associationName = associations[associationTableName]["associationName"];
-            associationResources[associationName] = await this.loadAssociation(route,associationName);
-        }
-        return associationResources;
-    }
-
-    async loadAssociation(route,associationName){
-        route = route+"/"+associationName;
-        let resource = await RequestHelper.sendRequestNormal("GET",route);
-        return resource;
-    }
-
     async updateResource(){
-        let resource = this.state.resource;
-        let payloadJSON = resource;
-        let answer = await RequestHelper.sendRequestNormal("PUT",this.state.route,payloadJSON);
+        let payloadJSON = this.state.resource;
+        let answer = await RequestHelper.sendRequestNormal("POST",this.state.route,payloadJSON);
         if(answer === undefined) {
             this.setState({
                 requestPending: false,
@@ -91,10 +60,9 @@ export class ResourceInstance extends Component {
             this.growl.show({severity: 'error', summary: 'Error', detail: answer.error});
         } else {
             this.growl.show({severity: 'success', summary: 'Success', detail: 'Changes saved'});
+            //TODO Go To Instance Side
             this.setState({
                 resource: answer,
-                resourceCopy: answer,
-                isEdited: false,
                 requestPending: false,
             });
         }
@@ -156,8 +124,8 @@ export class ResourceInstance extends Component {
         let attributeKeys = SchemeHelper.getAttributeKeys(this.state.scheme);
         for(let i=0; i<attributeKeys.length; i++){
             let attributeKey = attributeKeys[i];
-            if(!SchemeHelper.isReferenceField(this.state.scheme, attributeKey)){
-                let isEditable = SchemeHelper.isEditable(this.state.scheme, attributeKey);
+            let isEditable = SchemeHelper.isEditable(this.state.scheme, attributeKey);
+            if(isEditable){
                 output.push(this.renderDataField(attributeKey,isEditable));
             }
         }
@@ -176,7 +144,7 @@ export class ResourceInstance extends Component {
 
         return(
             <tr>
-                <th>{attributeKeyRow}</th>
+                {attributeKeyRow}
                 <td>{valueField}</td>
             </tr>
         )
@@ -321,89 +289,12 @@ export class ResourceInstance extends Component {
         });
     }
 
-
-    renderAssociationCards(){
-        let associationTableNames = Object.keys(this.state.associations);
-        let output = [];
-        for(let i=0; i<associationTableNames.length; i++){
-            let associationTableName = associationTableNames[i];
-            let associationName = this.state.associations[associationTableName]["associationName"];
-            output.push(this.renderAssociationCard(associationTableName,associationName));
-        }
-
-        return output;
-    }
-
-    renderAssociationCard(associationTableName,associationName){
-        let isPlural = associationTableName === associationName;
-
-        let resource = this.state.associationResources[associationTableName];
-
-        return(
-            <div className="p-col">
-                <Card title={"Association: "+associationName} style={{width: '500px'}}>
-                    <div>{}</div>
-                    <table style={{border:0}}>
-                        <tbody>
-                            <div>{JSON.stringify(resource)}</div>
-                        </tbody>
-                    </table>
-                    <br></br>
-                    <div>Insert New Association</div>
-                </Card>
-            </div>
-        )
-    }
-
-    openDialogDeleteResource(){
-        this.setState({visibleDialogDeleteResource: true});
-    }
-
-    async deleteResource(){
-        let route = this.state.route;
-        let answer = await RequestHelper.sendRequestNormal("DELETE",route);
-        console.log(answer);
-        if(answer!=false){
-            this.props.history.push('/models/'+ this.state.tableName);
-        }
-    }
-
-    renderDialogDeleteResource(){
-        const footer = (
-            <div>
-                <Button label="Yes" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setState({visibleDialogDeleteUser: false}); this.deleteResource(); }} />
-                <Button label="No" icon="pi pi-times" className="p-button-info p-button-raised" onClick={() => {this.setState({visibleDialogDeleteUser: false}); }} className="p-button-secondary" />
-            </div>
-        );
-
-        let tableNameSingle = this.state.tableName.slice(0,-1);
-
-        return(
-            <Dialog header={"Delete "+tableNameSingle} visible={this.state.visibleDialogDeleteResource} style={{width: '50vw'}} footer={footer} modal={true} onHide={() => this.setState({visibleDialogDeleteResource: false})}>
-                <div>Are you sure you want to delete this {tableNameSingle} ? This cannot be undone.</div>
-            </Dialog>
-        );
-    }
-
-    renderDangerZone(){
-        let tableNameSingle = this.state.tableName.slice(0,-1);
-
-        return(
-            <div className="p-col">
-                <Card title={"Danger Zone"} style={{width: '500px'}}>
-                    <Button label={"Delete "+tableNameSingle} icon="pi pi-times" className="p-button-danger p-button-raised" onClick={() => this.openDialogDeleteResource()} />
-                </Card>
-                {this.renderDialogDeleteResource()}
-            </div>
-        )
-    }
-
     renderHeader(){
         return(
             <div className="content-section introduction">
                 <div className="feature-intro">
                     <h1>{this.state.tableName}</h1>
-                    <p>All informations</p>
+                    <p>Creation</p>
                 </div>
             </div>
         )
@@ -426,8 +317,6 @@ export class ResourceInstance extends Component {
 
                     <div className="p-grid">
                         {this.renderDataCard()}
-                        {this.renderAssociationCards()}
-                        {this.renderDangerZone()}
                     </div>
                 </div>
             </div>

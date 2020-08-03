@@ -28,6 +28,10 @@ export class SchemeHelper extends Component {
 		return SchemeHelper.getType(scheme,field) === "JSON";
 	}
 
+	static isAllowedNull(scheme,field){
+		return scheme[field].allowNull!=false;
+	}
+
 	static isPrimaryKey(scheme, field){
 		return scheme[field].primaryKey;
 	}
