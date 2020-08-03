@@ -3,6 +3,7 @@ import MyExpressRouter from "../module/MyExpressRouter";
 import SequelizeHelper from "../helper/SequelizeHelper";
 import SequelizeRouteHelper from "../helper/SequelizeRouteHelper";
 import SequelizeAssociationController from "./SequelizeAssociationController";
+import DefaultControllerHelper from "../helper/DefaultControllerHelper";
 
 export default class SequelizeController {
 
@@ -38,6 +39,7 @@ export default class SequelizeController {
         this.configureGet(model); //configure the get route
         this.configureDelete(model);
         this.configureUpdate(model);
+        this.configureCreate(model);
         this.configurePrimaryParamsChecker(model); //configure the params for identifing the resource
     }
 
@@ -55,6 +57,44 @@ export default class SequelizeController {
 
         let route = SequelizeRouteHelper.getIndexRoute(model); //get the index route
         this.expressApp.get(route, functionForModel.bind(this)); //register route in express
+    }
+
+    /**
+     * Configure the Create Route for a model
+     * @param model the sequelize model
+     */
+    configureCreate(model){
+        let tableName = SequelizeHelper.getTableName(model);
+
+        let functionForModel = async function(req, res) { //define the index function
+            //evalOwningState
+
+            //sequelizeResource.setDevice(device, {save: false});
+
+            console.log("configureCreate function called");
+            let allowedAttributes = DefaultControllerHelper.getFilteredReqBodyByPermission(req,this.myAccessControl,tableName,"create","true");
+
+            allowedAttributes = {
+                pushNotificationToken: "DataTypes.STRING",
+                os: "DataTypes.STRING",
+                version: "DataTypes.STRING"
+            };
+
+            let sequelizeResource = model.build(allowedAttributes);
+            console.log(sequelizeResource);
+
+            req.locals.current_user.id = 1;
+            let isOwn = await sequelizeResource.willBeOwn(req.locals.current_user,sequelizeResource);
+            console.log("isOwn: "+isOwn);
+
+
+
+            //just call the default index
+            this.myExpressRouter.defaultControllerHelper.handleCreate(req, res, sequelizeResource, this.myAccessControl, tableName, tableName, isOwn)
+        }
+
+        let route = SequelizeRouteHelper.getIndexRoute(model); //get the index route
+        this.expressApp.post(route, functionForModel.bind(this)); //register route in express
     }
 
     /**

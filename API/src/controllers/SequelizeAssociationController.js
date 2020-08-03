@@ -2,6 +2,7 @@ import HttpStatus from "http-status-codes";
 import MyExpressRouter from "../module/MyExpressRouter";
 import SequelizeHelper from "../helper/SequelizeHelper";
 import SequelizeRouteHelper from "../helper/SequelizeRouteHelper";
+import SequelizeController from "./SequelizeController";
 
 export default class SequelizeAssociationController {
 
@@ -20,17 +21,22 @@ export default class SequelizeAssociationController {
             let associationObject = tableAssociations[j];
             let modelAssociationObjects = Object.keys(associationObject);
             let modelAssociationName = modelAssociationObjects[0];
-            //console.log("--".repeat(level)+" "+modelAssociationName);
-
             let pluralName = associationObject[modelAssociationName]["name"]["plural"];
 
             let isPlural = pluralName === modelAssociationName;
-            this.configureModelGetAssociationRoute(model,pluralName,modelAssociationName,isPlural);
+            let associationBaseRoute = SequelizeRouteHelper.getInstanceAssociationRoute(model,modelAssociationName);
+
+            this.configureModelGetAssociationRoute(model,pluralName,modelAssociationName,isPlural,associationBaseRoute);
+            this.configureModelGetAssociationInstanceRoute(model,pluralName,modelAssociationName,isPlural,associationBaseRoute);
         }
     }
 
-    configureModelGetAssociationRoute(model,pluralName,modelAssociationName,isPlural){
-        let associationRoute = SequelizeRouteHelper.getInstanceAssociationRoute(model,modelAssociationName);
+    configureModelGetAssociationInstanceRoute(model,pluralName,modelAssociationName,isPlural,associationBaseRoute){
+
+    }
+
+    configureModelGetAssociationRoute(model,pluralName,modelAssociationName,isPlural,associationBaseRoute){
+
         let associationGetFunction = "get"+modelAssociationName;
         let tableName = SequelizeHelper.getTableName(model);
 
@@ -60,7 +66,7 @@ export default class SequelizeAssociationController {
             }
         }
 
-        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+        this.expressApp.get(associationBaseRoute, functionForModel.bind(this)); // register route in express
     }
 
 }

@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "seed": "export NODE_ENV=production && npx sequelize-cli db:seed:all",
+    "migrate": "export NODE_ENV=production && npx sequelize-cli db:migrate",
+    "unmigrate": "export NODE_ENV=production && npx sequelize-cli db:migrate:undo:all",
+    "remigrate": "npm run unmigrate && npm run migrate && npm run seed",
     "start": "npm run build && node src/bundle.js",
     "start:dev": "webpack-dev-server --open --mode development",
     "build": "webpack --mode production",

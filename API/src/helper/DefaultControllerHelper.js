@@ -344,8 +344,6 @@ export default class DefaultControllerHelper {
                     this.handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn);
                 }
                 this.updateTableUpdateTimes(sequelizeResource.constructor, updateTableUpdateTimes); //pass update check to function
-		//console.log("DefaultControllerHelper handleCreate savedResource");
-		//console.log(savedResource);
                 return savedResource;
             }).catch(err => {
                 console.log(err);
@@ -359,8 +357,8 @@ export default class DefaultControllerHelper {
         } else {
             MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
                 errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to get Resource',
-                [resourceName + "_id"]: sequelizeResource.id
+                error: 'Forbidden to create Resource',
+                model: resourceName
             });
             return null;
         }
@@ -406,6 +404,10 @@ export default class DefaultControllerHelper {
         }
     }
 
+    static getFilteredReqBodyByPermission(req,myAccessControl,accessControlResource,crudOperation, isOwn){
+        let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,crudOperation,isOwn);
+        return permission.filter(req.body); //get Attributes with permission
+    }
 
     /**
      * Default Update Method for a Resource.
@@ -424,12 +426,13 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {String} error A description of the error
      */
     async handleUpdate(req, res, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false) {
+        let crudOperation = "update";
         let sequelizeResource = req.locals[resourceName]; //get the resource
-        let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"update",isOwn);
+        let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,crudOperation,isOwn);
         this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //can update resource
             this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user:" + req.locals.current_user.id + " body: " + JSON.stringify(req.body));
-            let allowedAttributesToUpdate = permission.filter(req.body); //get Attributes with permission
+            let allowedAttributesToUpdate = DefaultControllerHelper.getFilteredReqBodyByPermission(req,myAccessControl,accessControlResource,crudOperation, isOwn)
             this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user:" + req.locals.current_user.id + " allowedAttributesToUpdate: " + JSON.stringify(allowedAttributesToUpdate));
             sequelizeResource.update(allowedAttributesToUpdate).then((updatedResource) => { //update resource
                 req.locals[resourceName] = updatedResource;

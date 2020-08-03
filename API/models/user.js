@@ -87,6 +87,9 @@ module.exports = (sequelize, DataTypes) => {
           }
       );
       User.hasMany(
+          models.UserRole,
+      );
+      User.hasMany(
           models.Feedback,
       );
   };

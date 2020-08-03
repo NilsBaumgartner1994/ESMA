@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: 'CASCADE',
         }
     );
+    Role.hasMany(
+      models.UserRole,
+    );
   };
   return Role;
 };
