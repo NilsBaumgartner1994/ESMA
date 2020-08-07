@@ -16,6 +16,18 @@ export class SchemeHelper extends Component {
 		return attributeKeys;
 	}
 
+	static getPrimaryAttributeKeys(scheme){
+		let attributeKeys = SchemeHelper.getAttributeKeys(scheme);
+		let primaryAttributeKeys = [];
+		for(let i=0;i<attributeKeys.length; i++){
+			let key = attributeKeys[i];
+			if(SchemeHelper.isPrimaryKey(scheme, key)){
+				primaryAttributeKeys.push(key);
+			}
+		}
+		return primaryAttributeKeys;
+	}
+
 	static getType(scheme, field){
 		return scheme[field].type.key;
 	}
@@ -29,7 +41,7 @@ export class SchemeHelper extends Component {
 	}
 
 	static isAllowedNull(scheme,field){
-		return scheme[field].allowNull!=false;
+		return scheme[field].allowNull!==false;
 	}
 
 	static isPrimaryKey(scheme, field){

@@ -36,9 +36,6 @@ module.exports = (sequelize, DataTypes) => {
   };
     Device.prototype.isOwn = async function(current_user) {
         let owner = await this.getUser();
-        console.log("Owner searched");
-        console.log(owner);
-        console.log("!!current_user: "+!!current_user);
         if(!!owner && !!current_user){
             console.log(owner);
             return owner.id === current_user.id;

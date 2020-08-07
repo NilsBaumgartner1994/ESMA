@@ -37,11 +37,12 @@ export class ResourceInstance extends Component {
     }
 
     async loadResources(params){
-        let route = RouteHelper.getInstanceRouteForResource(this.state.schemes,this.state.tableName,params);
+        let route = RouteHelper.getInstanceRouteForParams(this.state.schemes,this.state.tableName,params);
         let resource = await RequestHelper.sendRequestNormal("GET",route);
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName);
         let associations = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName+"/associations");
         let associationResources = await this.loadAssociationResources(route,associations);
+        let associationSchemes = await this.loadAssociationSchemes(associations);
 
         console.log(resource);
 
@@ -51,10 +52,23 @@ export class ResourceInstance extends Component {
             resourceCopy: JSON.parse(JSON.stringify(resource)),
             associations: associations,
             associationResources: associationResources,
+            associationSchemes: associationSchemes,
             route: route,
             scheme: scheme,
             params: params,
         });
+    }
+
+    async loadAssociationSchemes(associations){
+        let associationSchemes = {};
+
+        let associationTableNames = Object.keys(associations);
+        for(let i=0; i<associationTableNames.length; i++){
+            let associationTableName = associationTableNames[i];
+            let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+associationTableName);
+            associationSchemes[associationTableName] = scheme;
+        }
+        return associationSchemes;
     }
 
     async loadAssociationResources(route,associations){
@@ -339,19 +353,42 @@ export class ResourceInstance extends Component {
 
         let resource = this.state.associationResources[associationTableName];
 
+        let output = [];
+        let resources = isPlural ? resource : [resource];
+
+        for(let i=0; i<resources.length; i++){
+            let associationResource = resources[i];
+            output.push(this.renderAssociationRow(associationResource,associationTableName))
+        }
+
         return(
             <div className="p-col">
                 <Card title={"Association: "+associationName} style={{width: '500px'}}>
                     <div>{}</div>
                     <table style={{border:0}}>
                         <tbody>
-                            <div>{JSON.stringify(resource)}</div>
+                            {output}
                         </tbody>
                     </table>
                     <br></br>
                     <div>Insert New Association</div>
                 </Card>
             </div>
+        )
+    }
+
+    renderAssociationRow(associationResource,associationTableName){
+        let scheme = this.state.associationSchemes[associationTableName];
+
+        let openButton = (
+            <Button type="button" className="p-button-success" label={associationTableName} iconPos="right" icon="pi pi-search" ></Button>
+        )
+
+        return(
+            <tr>
+                <td>{openButton}</td>
+                <td>{associationTableName}</td>
+            </tr>
         )
     }
 

@@ -69,11 +69,19 @@ export default class SequelizeController {
         let functionForModel = async function(req, res) { //define the index function
             let isOwn = false;
 
-            let allowedAttributes = DefaultControllerHelper.getFilteredReqBodyByPermission(req,this.myAccessControl,tableName,"create",isOwn);
-            let sequelizeResource = model.build(allowedAttributes);
-            //just call the default index
-            //TODO What about his own Resource ?
+            try{
+                let modelForOwnTest = model.build(req.body); //play as everything would be allowed
+                isOwn = await modelForOwnTest.isOwn(req.current_user); //now we know if it would be his own
+            } catch(err){
+                console.log("If the error is isOwn is not found, then ignore"); //TODO remove after testing
+                console.log(err);
+            }
 
+            //get the allowed attributes to change
+            let allowedAttributes = DefaultControllerHelper.getFilteredReqBodyByPermission(req,this.myAccessControl,tableName,"create",isOwn);
+            let sequelizeResource = model.build(allowedAttributes); //build model with allowed attributes
+
+            //create them
             this.myExpressRouter.defaultControllerHelper.handleCreate(req, res, sequelizeResource, this.myAccessControl, tableName, tableName, isOwn)
         }
 

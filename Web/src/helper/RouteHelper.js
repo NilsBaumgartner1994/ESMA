@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {SchemeHelper} from "./SchemeHelper";
 
 export class RouteHelper extends Component {
 
@@ -8,7 +9,7 @@ export class RouteHelper extends Component {
 		return getRoute;
 	}
 
-	static getInstanceRouteForResource(schemes, tableName, params){
+	static getInstanceRouteForParams(schemes, tableName, params){
 		let getRoute = schemes[tableName]["GET"];
 		getRoute = getRoute.replace("/api/","");
 		let paramKeys = Object.keys(params);
@@ -17,6 +18,27 @@ export class RouteHelper extends Component {
 			getRoute = getRoute.replace(":"+paramKey,params[paramKey]);
 		}
 		return getRoute;
+	}
+
+	static getInstanceResourceRoute(schemeRouteGET,scheme,tableName,resource){
+			schemeRouteGET = schemeRouteGET.replace("/api","");
+
+			let primaryAttributeKeys = SchemeHelper.getPrimaryAttributeKeys(scheme);
+			for(let i=0;i<primaryAttributeKeys.length; i++){
+				let key = primaryAttributeKeys[i];
+				let value = resource[key];
+				if(!!value){
+					let routeParamKey = ":"+tableName+"_"+key;
+					schemeRouteGET = schemeRouteGET.replace(routeParamKey,value);
+				}
+			}
+
+			if(schemeRouteGET.includes(":")){ //if there are still unresolved params, we have no complete route
+				return undefined;
+			}
+
+			let route = schemeRouteGET;
+			return route;
 	}
 
 	static getIndexRouteForResource(schemes, tableName){

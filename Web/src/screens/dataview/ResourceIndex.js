@@ -120,15 +120,13 @@ export class ResourceIndex extends Component {
         schemeRouteGET = schemeRouteGET.replace("/api","");
 
         let tableName = this.state.tableName;
-        let attributeKeys = SchemeHelper.getAttributeKeys(this.state.scheme);
-        for(let i=0;i<attributeKeys.length; i++){
-            let key = attributeKeys[i];
-            if(SchemeHelper.isPrimaryKey(this.state.scheme, key)){
-                let value = rowData[key];
-                if(!!value){
-                    let routeParamKey = ":"+tableName+"_"+key;
-                    schemeRouteGET = schemeRouteGET.replace(routeParamKey,value);
-                }
+        let primaryAttributeKeys = SchemeHelper.getPrimaryAttributeKeys(this.state.scheme);
+        for(let i=0;i<primaryAttributeKeys.length; i++){
+            let key = primaryAttributeKeys[i];
+            let value = rowData[key];
+            if(!!value){
+                let routeParamKey = ":"+tableName+"_"+key;
+                schemeRouteGET = schemeRouteGET.replace(routeParamKey,value);
             }
         }
 
