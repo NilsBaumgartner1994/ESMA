@@ -1,7 +1,7 @@
 {
   "production": {
     "username": "root",
-    "password": "KekseSindDasBesteAufDerWelt",
+    "password": "CookiesAreVeryGood",
     "database": "production",
     "host": "localhost",
     "dialect": "sqlite",
@@ -12,7 +12,7 @@
   },
   "development": {
     "username": "root",
-    "password": "KekseSindDasBesteAufDerWelt",
+    "password": "CookiesAreVeryGood",
     "database": "dev",
     "host": "localhost",
     "dialect": "sqlite",
@@ -27,13 +27,7 @@
     "redisPort": 6379,
     "serverAPIVersion": "1.0.0",
     "redisAlreadyRunning":false,
-    "email": {
-      "service": "gmail",
-      "auth": {
-        "user": "swosy.swos@gmail.com",
-        "pass": "Cola4Live!"
-      }
-    }
+    "authEnabled": false
   },
   "users": {
     "DaysOfInactivityUntilDeletion": 180,

@@ -266,6 +266,13 @@ export default class MyExpressRouter {
         req.locals.current_user.id = undefined; //better define it undefined
         req.locals.current_user.role = MyAccessControl.roleNameGuest; //define it as anonymous
 
+        if(!config.authEnabled){
+            req.locals.localhost = true;
+            req.locals.current_user.role = MyAccessControl.roleNameAdmin; //better make him then admin
+            next();
+            return; //abort further checks
+        }
+
         try { //lets try to find if a token is provided
             let authorization = req.headers.authorization; //get auth headers
             if (!!authorization) { //if there are headers

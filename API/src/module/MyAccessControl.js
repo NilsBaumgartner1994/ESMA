@@ -124,11 +124,6 @@ export default class MyAccessControl {
      */
     initGuestPermissions() {
         let ac = this.getAccessControlInstance();
-	    ac.grant(MyAccessControl.roleNameGuest).readOwn(this.models.Feedback.tableName, ['message', 'label', 'id', 'createdAt']);
-        ac.grant(MyAccessControl.roleNameGuest).createOwn(this.models.Feedback.tableName, ['message', 'label']);
-
-        //ac.grant(MyAccessControl.roleNameGuest).readOwn(MyExpressRouter.permissions_accessControlResource, ['*']);
-
         ac.grant(MyAccessControl.roleNameGuest).createOwn(this.models.User.tableName, ["plaintextSecret"]);
     }
 
@@ -143,34 +138,10 @@ export default class MyAccessControl {
         let ac = this.getAccessControlInstance();
         ac.grant(MyAccessControl.roleNameUser).extend(MyAccessControl.roleNameGuest);
 
-        //ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.user_accessToken_accessControlResource); // Something which is not saved in DB
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(this.models.Device.tableName, ['pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.Device.tableName, ['id', 'pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.Device.tableName, ['pushNotificationToken', "os", 'version']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.Device.tableName);
-
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.Login.tableName, ['plaintextSecret']);
-
-        ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.Feedback.tableName, ['message', 'label', 'id', 'createdAt']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.Feedback.tableName);
-
-        ac.grant(MyAccessControl.roleNameUser).createOwn(this.models.StreamView.tableName, ['screen', 'event', 'props', 'eventTime']);
-        ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.StreamView.tableName, ['id', 'screen', 'event', 'props', 'eventTime']);
-        ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.StreamView.tableName, ['text']);
-        ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.StreamView.tableName);
-
         //TODO Rename privacyPoliceReadDate to privacyPolicyReadDate
         ac.grant(MyAccessControl.roleNameUser).readOwn(this.models.User.tableName, ['id', 'onlineTime', 'privacyPolicyReadDate', 'pseudonym', 'avatar', 'typefood', 'language', 'ResidenceId', "CanteenId"]);
         ac.grant(MyAccessControl.roleNameUser).updateOwn(this.models.User.tableName, ['pseudonym', 'avatar', '!privacyPolicyReadDate', 'typefood', 'language', 'ResidenceId', "CanteenId"]); // user is not allowed to change privacyPoliceReadDate manualy
         ac.grant(MyAccessControl.roleNameUser).deleteOwn(this.models.User.tableName);
-
-        //ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.friend_accessControlResource, ['id', 'pseudonym', 'avatar', 'createdAt','UserFriends']); //Friend is here a User
-        //ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.friend_accessControlResource);
-
-        //ac.grant(MyAccessControl.roleNameUser).createOwn(MyExpressRouter.friendrequest_accessControlResource);
-        //ac.grant(MyAccessControl.roleNameUser).readOwn(MyExpressRouter.friendrequest_accessControlResource, ['id']); //Friend is here a User
-        //ac.grant(MyAccessControl.roleNameUser).deleteOwn(MyExpressRouter.friendrequest_accessControlResource); //Delete them
     }
 
     /**
@@ -193,12 +164,6 @@ export default class MyAccessControl {
     initSuperModeratorPermissions() {
         let ac = this.getAccessControlInstance();
         ac.grant(MyAccessControl.roleNameSuperModerator).extend(MyAccessControl.roleNameModerator);
-
-        // UserRole must be checked to only make changes under own permission group
-        // Assign new SuperModarator,
-        //ac.grant(MyAccessControl.roleNameSuperModerator).createAny(MyExpressRouter.userrole_accessControlResource, ['UserID', 'RoleId']);
-        //ac.grant(MyAccessControl.roleNameSuperModerator).updateAny(MyExpressRouter.userrole_accessControlResource, ['UserID', 'RoleId']);
-        //ac.grant(MyAccessControl.roleNameSuperModerator).deleteAny(MyExpressRouter.userrole_accessControlResource); //only lower or own
     }
 
     /**

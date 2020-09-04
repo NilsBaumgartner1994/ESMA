@@ -35,49 +35,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   User.associate = function(models) {
     // associations can be defined here
-    User.belongsToMany(
-          models.User,
-          {
-              through: 'UserFriends',
-              as: "Friends",
-              foreignKey: {name: 'UserId', allowNull: false},
-              otherKey: 'FriendId',
-              onUpdate: "CASCADE",
-              onDelete: 'CASCADE'
-          }
-      );
-      User.belongsToMany(
-          models.User,
-          {
-              through: 'UserFriendRequests',
-              as: "OutgoingFriendRequests",
-              foreignKey: {name: 'UserId', allowNull: false},
-              otherKey: {name: 'FriendId', allowNull: false},
-              onUpdate: "CASCADE",
-              onDelete: 'CASCADE'
-          }
-      );
-      User.belongsToMany(
-          models.User,
-          {
-              through: 'UserFriendRequests',
-              as: "IncommingFriendRequests",
-              foreignKey: {name: 'FriendId', allowNull: false},
-              otherKey: {name: 'UserId', allowNull: false},
-              onUpdate: "CASCADE",
-              onDelete: 'CASCADE'
-          }
-      );
-    User.hasOne(
-        models.Login
-    );
-      User.hasOne(
-          models.Device,
-	  {
-          onUpdate: "CASCADE",
-          onDelete: 'CASCADE',
-        }
-      );
       User.belongsToMany(
           models.Role,
           {
@@ -88,9 +45,6 @@ module.exports = (sequelize, DataTypes) => {
       );
       User.hasMany(
           models.UserRole,
-      );
-      User.hasMany(
-          models.Feedback,
       );
   };
     User.prototype.isOwn = async function(current_user) {
