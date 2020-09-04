@@ -34,8 +34,6 @@ module.exports = {
 
       let user = await models.User.findOne();
       if(!!user){
-        await user.setDevice(model);
-        //await user.addDevice(model);
         const getMethods = (obj) => {
           let properties = new Set()
           let currentObj = obj
@@ -45,6 +43,22 @@ module.exports = {
           return [...properties.keys()].filter(item => typeof obj[item] === 'function')
         }
         console.log(getMethods(user));
+
+
+        let result1 = await user.setDevice(model);
+        console.log(result1);
+        //let hasDevice = await user.hasDevice();
+        //console.log("Has Device: "+hasDevice);
+        //await user.addDevice(model);
+        let foundDevice = await user.getDevice();
+        console.log(foundDevice);
+        console.log("Added a device ? : "+!!foundDevice);
+
+        let result = await user.setDevice(null);
+        console.log(result);
+        foundDevice = await user.getDevice();
+        console.log("Device after delete present ? : "+!!foundDevice);
+
       }
     }
 

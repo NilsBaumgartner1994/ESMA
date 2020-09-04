@@ -81,15 +81,18 @@ export default class SequelizeSchemeController {
             let modelsWithPermission = Object.keys(grants[req.locals.current_user.role]);
             let filteredAssociationData = {};
 
-            for(let j=0; j<tableAssociations.length; j++) {
-                let associationObject = tableAssociations[j];
-                let modelAssociationObjects = Object.keys(associationObject);
-                let modelAssociationName = modelAssociationObjects[0];
+            let modelAssociationNames = Object.keys(tableAssociations);
 
-                let pluralName = associationObject[modelAssociationName]["name"]["plural"];
+            for(let j=0; j<modelAssociationNames.length; j++) {
+                let modelAssociationName = modelAssociationNames[j];
+                let associationObject = tableAssociations[modelAssociationName].options;
+                let associationTargetModel = tableAssociations[modelAssociationName].target;
+
+                let pluralName = associationObject["name"]["plural"];
                 if(modelsWithPermission.includes(pluralName)){
                     filteredAssociationData[pluralName] = {
-                        "associationName": modelAssociationName
+                        "associationName": modelAssociationName,
+                        "target": SequelizeHelper.getTableName(associationTargetModel)
                     }
                 }
             }

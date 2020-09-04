@@ -116,6 +116,25 @@ export default class DefaultControllerHelper {
     }
 
     /**
+     * Response a Request with the default Message for a deletion of a resource
+     * @param req The request object
+     * @param res The response object
+     */
+    static respondWithInternalErrorMessage(req, res, err) {
+        MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {
+            errorCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: err.toString()
+        });
+    }
+
+    static respondWithForbiddenMessage(req,res,reason){
+        MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
+            errorCode: HttpStatus.FORBIDDEN,
+            error: 'Forbidden: ' + reason
+        });
+    }
+
+    /**
      *
      * @param sequelizeModel
      * @param updateTableUpdateTimes
@@ -136,39 +155,6 @@ export default class DefaultControllerHelper {
     async updateTableUpdateTimesByTableName(tableName) {
         await DefaultControllerHelper.updateTableUpdateTimesByTableNameAndModels(tableName, this.models, this.myExpressRouter.workerID, this.logger);
     }
-
-    /**
-     * Default Paramchecker of a resource. Saves the found Resource req.locals[resourceName] and continues with next function. Or if not found it will response with not found error to req.
-     * @param req The request object
-     * @param res The response object
-     * @param next The next funtion
-     * @param resource_id The id of the resource
-     * @param sequelizeModel The Sequelize Model
-     * @param accessControlResource Not yet neeeded access control.
-     * @param resourceName The name of the resource where it should be stored
-     */
-    paramcheckerResourceId(req, res, next, resource_id, sequelizeModel, accessControlResource, resourceName,functionForOwningResource) {
-        this.logger.info("[DefaultControllerHelper] paramcheckerResourceId - " + resourceName + " resource_id: " + resource_id);
-        sequelizeModel.findOne({where: {id: resource_id}}).then(async resource => {
-            if (!resource) { //if resource was not found
-                MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {
-                    error: resourceName + '_id not found',
-                    [resourceName + "_id"]: resource_id
-                });
-		return;
-            } else { //resource was found
-                req.locals[resourceName] = resource; //save the found resource
-                if(!!functionForOwningResource){
-                    let isOwn = await functionForOwningResource(req,resource);
-                    req.locals[resourceName+"isOwn"] = isOwn;
-                }
-                next();
-            }
-        }).catch(err => { //handle error
-            this.logger.error("[DefaultControllerHelper] paramcheckerResourceId - " + err.toString());
-            MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-        });
-    };
 
     /**
      * Parse Operators if content is provided
@@ -219,7 +205,7 @@ export default class DefaultControllerHelper {
         return sequelizeQuery;
     }
 
-    isQueryInRequest(req){
+    static isQueryInRequest(req){
         let queryKeyLength = Object.keys(req.query).length;
         return queryKeyLength !== 0;
     }
@@ -235,14 +221,11 @@ export default class DefaultControllerHelper {
                 MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
             }).catch(err => {
                 this.logger.error("[DefaultControllerHelper] handleAssociationIndex - " + resourceName + " - " + err.toString());
-                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
+                DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
 
             });
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to get Resource: ' + resourceName
-            });
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Index "+resourceName);
         }
     }
 
@@ -263,34 +246,32 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {Number} errorCode The HTTP-Code of the error. Possible Errors: FORBIDDEN, INTERNAL_SERVER_ERROR
      * @apiError (Error) {String} error A description of the error
      */
-    async handleIndex(req, res, sequelizeModel, myAccessControl, accessControlResource, resourceName, includeModels = [], redisKey, customPermission) {
+    async handleIndex(req, res, sequelizeModel, myAccessControl, accessControlResource, includeModels = [], redisKey, customPermission) {
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"read",false);
         if(!!customPermission){
             permission = customPermission;
         }
         if (permission.granted) { //can you read any of this resource ?
-            if(!!redisKey & !this.isQueryInRequest(req)){
+            if(!!redisKey & !DefaultControllerHelper.isQueryInRequest(req)){
                 let redisClient = MyExpressRouter.redisClient; //get the client
                 let role = req.locals.current_user.role; //get users role
 
                 redisClient.get(role + ":" + redisKey, (err, cachedStringData) => { //search in cache
                     if (!!cachedStringData) { //if something saved in cache
-                        let cachedJSONData = JSON.parse(cachedStringData); //parse to json
-                        let dataJSON = cachedJSONData;
-                        this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " found in cache for role: " + role);
+                        let dataJSON =  JSON.parse(cachedStringData); //parse to json
+                        this.logger.info("[DefaultControllerHelper] handleIndex - " + accessControlResource + " found in cache for role: " + role);
                         MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON);
 
                     } else { //not found in cache, then lets look it up
                         sequelizeModel.findAll({include: includeModels}).then(resources => { //get resources
                             let dataJSON = DefaultControllerHelper.filterResourcesWithPermission(resources, permission); //filter
                             redisClient.setex(role + ":" + redisKey, redisCacheTime, JSON.stringify(dataJSON)); //save in cahce
-                            this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " not found in cache for role: " + role);
+                            this.logger.info("[DefaultControllerHelper] handleIndex - " + accessControlResource + " not found in cache for role: " + role);
                             MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
 
                         }).catch(err => {
-                            this.logger.error("[DefaultControllerHelper] handleIndex - " + resourceName + " found in cache for role: " + role + " - " + err.toString());
-                            MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-
+                            this.logger.error("[DefaultControllerHelper] handleIndex - " + accessControlResource + " found in cache for role: " + role + " - " + err.toString());
+                            DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
                         });
                     }
                 });
@@ -300,19 +281,16 @@ export default class DefaultControllerHelper {
                 //lets find all resources with query
                 sequelizeModel.findAll(sequelizeQuery).then(resources => {
                     //console.log(resources);
-                    this.logger.info("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query));
+                    this.logger.info("[DefaultControllerHelper] handleIndex - " + accessControlResource + " with query: " + JSON.stringify(req.query));
                     //console.log("[DefaultControllerHelper] handleIndex found: "+resources.length);
                     DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, resources, permission);
                 }).catch(err => {
-                    this.logger.error("[DefaultControllerHelper] handleIndex - " + resourceName + " with query: " + JSON.stringify(req.query) + " - " + err.toString());
-                    MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
+                    this.logger.error("[DefaultControllerHelper] handleIndex - " + accessControlResource + " with query: " + JSON.stringify(req.query) + " - " + err.toString());
+                    DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
                 });
             }
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to get Resource: ' + resourceName
-            });
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Get "+accessControlResource);
 
         }
     }
@@ -333,37 +311,48 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {Number} errorCode The HTTP-Code of the error. Possible Errors: FORBIDDEN, INTERNAL_SERVER_ERROR
      * @apiError (Error) {String} error A description of the error
      */
-    async handleCreate(req, res, sequelizeResource, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false,customAnswer=false) {
+    async handleCreate(req, res, sequelizeResource, myAccessControl, accessControlResource, updateTableUpdateTimes = false, customAnswer=false) {
+        let isOwn = DefaultControllerHelper.getOwningState(req,accessControlResource);
+
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"create",isOwn);
 
-        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleCreate - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
+        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleCreate - " + accessControlResource + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //check if allowed to create the resource
             return sequelizeResource.save().then(savedResource => { //save resource, this will generate ids and other stuff
-                req.locals[resourceName] = savedResource;
+                req.locals[accessControlResource] = savedResource;
                 if(!customAnswer){
-                    this.handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn);
+                    this.handleGet(req, res, myAccessControl, accessControlResource, isOwn);
                 }
                 this.updateTableUpdateTimes(sequelizeResource.constructor, updateTableUpdateTimes); //pass update check to function
                 return savedResource;
             }).catch(err => {
                 console.log(err);
                 this.logger.error("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleCreate - " + err.toString());
-                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {
-                    errorCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                    error: err.toString()
-                });
+                DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
                 return null;
             });
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to create Resource',
-                model: resourceName
-            });
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Create "+accessControlResource);
             return null;
         }
     }
 
+    static async evalOwningState(req,resource){
+        try{
+            //check if there is an owning function
+            return await resource.isOwn(req.locals.current_user);
+        } catch(err) {
+            return false; //if not, then we dont care
+        }
+    }
+
+    static async setOwningState(req,tableName){
+        req.locals["own"+tableName] = await DefaultControllerHelper.evalOwningState(req,req.locals[tableName]);
+    }
+
+    static getOwningState(req,tableName){
+        return req.locals["own"+tableName];
+    }
 
     /**
      * Default Get Method for a single resource
@@ -379,28 +368,24 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {Number} errorCode The HTTP-Code of the error. Possible Errors: FORBIDDEN, NOT_FOUND
      * @apiError (Error) {String} error A description of the error
      */
-    async handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn) {
-        let sequelizeResource = req.locals[resourceName]; //get the found resource, found by paramcheckers
+    async handleGet(req, res, myAccessControl, accessControlResource) {
+        let sequelizeResource = req.locals[accessControlResource]; //get the found resource, found by paramcheckers
         if(!sequelizeResource){
             MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {
                 error: 'No Resource found',
-                model: resourceName
+                model: accessControlResource
             });
             return;
         }
 
+        let isOwn = DefaultControllerHelper.getOwningState(req,accessControlResource);
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"read",isOwn);
         if (permission.granted) { //can read/get resource
             console.log("Permission Granted");
             DefaultControllerHelper.respondWithPermissionFilteredResource(req, res, sequelizeResource, permission);
             console.log("Handle Get Finished");
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to get Resource',
-                [resourceName + "_id"]: sequelizeResource.id
-            });
-
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Get "+accessControlResource);
         }
     }
 
@@ -425,29 +410,27 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {Number} errorCode The HTTP-Code of the error. Possible Errors: FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND
      * @apiError (Error) {String} error A description of the error
      */
-    async handleUpdate(req, res, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false) {
+    async handleUpdate(req, res, myAccessControl, accessControlResource, updateTableUpdateTimes = false) {
         let crudOperation = "update";
-        let sequelizeResource = req.locals[resourceName]; //get the resource
+        let sequelizeResource = req.locals[accessControlResource]; //get the resource
+
+        let isOwn = DefaultControllerHelper.getOwningState(req,accessControlResource);
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,crudOperation,isOwn);
-        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
+        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + accessControlResource + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //can update resource
-            this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user:" + req.locals.current_user.id + " body: " + JSON.stringify(req.body));
+            this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + accessControlResource + " current_user:" + req.locals.current_user.id + " body: " + JSON.stringify(req.body));
             let allowedAttributesToUpdate = DefaultControllerHelper.getFilteredReqBodyByPermission(req,myAccessControl,accessControlResource,crudOperation, isOwn)
-            this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + resourceName + " current_user:" + req.locals.current_user.id + " allowedAttributesToUpdate: " + JSON.stringify(allowedAttributesToUpdate));
+            this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + accessControlResource + " current_user:" + req.locals.current_user.id + " allowedAttributesToUpdate: " + JSON.stringify(allowedAttributesToUpdate));
             sequelizeResource.update(allowedAttributesToUpdate).then((updatedResource) => { //update resource
-                req.locals[resourceName] = updatedResource;
-                this.handleGet(req, res, myAccessControl, accessControlResource, resourceName, isOwn);
+                req.locals[accessControlResource] = updatedResource;
+                this.handleGet(req, res, myAccessControl, accessControlResource, isOwn);
                 this.updateTableUpdateTimes(sequelizeResource.constructor, updateTableUpdateTimes);
             }).catch(err => {
                 this.logger.error("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleUpdate - " + err.toString());
-                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
+                DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
             });
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to update Resource',
-                [resourceName + "_id"]: sequelizeResource.id
-            });
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Update "+accessControlResource);
 
         }
     }
@@ -469,31 +452,25 @@ export default class DefaultControllerHelper {
      * @apiError (Error) {Number} errorCode The HTTP-Code of the error. Possible Errors: FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND
      * @apiError (Error) {String} error A description of the error
      */
-    async handleDelete(req, res, myAccessControl, accessControlResource, resourceName, isOwn, updateTableUpdateTimes = false) {
+    async handleDelete(req, res, myAccessControl, accessControlResource, updateTableUpdateTimes = false) {
 	    //console.log("Helper handleDelete");
-        let sequelizeResource = req.locals[resourceName]; //get the resource which should be deleted
+        let sequelizeResource = req.locals[accessControlResource]; //get the resource which should be deleted
     	//console.log("Found Resource: "+!!sequelizeResource);
+
+        let isOwn = DefaultControllerHelper.getOwningState(req,accessControlResource);
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,"delete",isOwn);
-        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleDelete - " + resourceName + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
+        this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleDelete - " + accessControlResource + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //can delete resource
             let constructor = sequelizeResource.constructor; //get constructor for table update times
             sequelizeResource.destroy().then(amountDeletedResources => { //ignoring the amount of deletions
                 DefaultControllerHelper.respondWithDeleteMessage(req, res);
                 this.updateTableUpdateTimes(constructor, updateTableUpdateTimes);
             }).catch(err => {
-                this.logger.error("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleDelete - " + resourceName + " " + err.toString());
-                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {
-                    errorCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                    error: err.toString()
-                });
-
+                this.logger.error("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleDelete - " + accessControlResource + " " + err.toString());
+                DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
             });
         } else {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.FORBIDDEN, {
-                errorCode: HttpStatus.FORBIDDEN,
-                error: 'Forbidden to destroy Resource',
-                [resourceName + "_id"]: sequelizeResource.id
-            });
+            DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Delete "+accessControlResource);
 
         }
     }

@@ -3,22 +3,23 @@ import MyExpressRouter from "../module/MyExpressRouter";
 
 export default class SequelizeRouteHelper {
 
+    static METHOD_COUNT_PREFIX = "count";
+
     /**
-     * Get the identifier of the primary key identifier of the model
-     * @param model the sequelize model
-     * @param primaryKeyAttribute the specific primary key
-     * @return {string} a unique composition of modelname and primary key
+     * SCHEMES
      */
-    static getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute){
-        //we need the tablename, otherwise it would be ambigous for example UserRoles and UserFriends
-        return SequelizeHelper.getTableName(model)+"_"+primaryKeyAttribute;
-    }
 
     static getSchemeRoute(model){
         let tableName = SequelizeHelper.getTableName(model);
         return MyExpressRouter.routeSchemes + "/" + tableName;
     }
 
+
+    /**
+     * MODELS
+     */
+
+    // Index Route
     /**
      * Get the Index route for a model
      * @param model the sequelize model
@@ -29,6 +30,7 @@ export default class SequelizeRouteHelper {
         return MyExpressRouter.routeModels + "/" + tableName;
     }
 
+    // Instance Route
     /**
      * Get the GET route for model
      * @param model the sequelize model
@@ -36,13 +38,81 @@ export default class SequelizeRouteHelper {
      */
     static getInstanceRoute(model){
         let route = SequelizeRouteHelper.getIndexRoute(model); // get the index route
+        route += SequelizeRouteHelper.getModelPrimaryKeyAttributeRoute(model);
+        return route;
+    }
+
+
+    /**
+     * ASSOCIATIONS
+     */
+
+    static getAssociationBaseRoute(model){
+        let instanceRoute = SequelizeRouteHelper.getInstanceRoute(model);
+        return instanceRoute+"/associations";
+    }
+
+    static getAssociationMethodRoute(model,method){
+        return SequelizeRouteHelper.getAssociationBaseRoute(model)+"/"+method;
+    }
+
+
+    static getModelAssociationMethodRoute(model,method,modelAssociationName){
+        let baseRoute = SequelizeRouteHelper.getAssociationMethodRoute(model,method);
+        return baseRoute + "/" + modelAssociationName;
+    }
+
+    static getModelAssociationBaseRoute(model,modelAssociationName){
+        let baseRoute = SequelizeRouteHelper.getAssociationBaseRoute(model);
+        return baseRoute + "/" + modelAssociationName;
+    }
+
+    static getModelAssociationInstanceRoute(model,modelAssociationName,accessControlAssociationResource,associationModel){
+        let associationIndexRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);
+        let primaryKeyAttributeRoute = SequelizeRouteHelper.getModelPrimaryKeyAttributeRoute(associationModel,accessControlAssociationResource);
+        return associationIndexRoute + primaryKeyAttributeRoute;
+    }
+
+
+    /**
+     * MODEL FUNCTIONS
+     */
+
+    // Count Model
+
+    // Count Associations
+
+
+
+    /**
+     * HELPER
+     */
+
+    /**
+     * Get the identifier of the primary key identifier of the model
+     * @param model the sequelize model
+     * @param primaryKeyAttribute the specific primary key
+     * @return {string} a unique composition of modelname and primary key
+     */
+    static getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute, reqLocalsKey=null){
+        let tableName = SequelizeHelper.getTableName(model);
+        if(!reqLocalsKey){
+            reqLocalsKey = tableName
+        }
+
+        //we need the tablename, otherwise it would be ambigous for example UserRoles and UserFriends
+        return reqLocalsKey+"_"+primaryKeyAttribute;
+    }
+
+
+    static getModelPrimaryKeyAttributeRoute(model,reqLocalsKey=null){
+        let route = "";
 
         let primaryKeyAttributes = SequelizeHelper.getPrimaryKeyAttributes(model); // lets get all primary keys
         for(let i=0; i<primaryKeyAttributes.length; i++){ //for every primary key
             let primaryKeyAttribute = primaryKeyAttributes[i];
-            route+="/:"+SequelizeRouteHelper.getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute); //we add it to the route
+            route+="/:"+SequelizeRouteHelper.getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute,reqLocalsKey); //we add it to the route
         }
-
         return route;
     }
 
@@ -67,13 +137,6 @@ export default class SequelizeRouteHelper {
             allModelRoutes[tableName] = modelRoutes;
         }
         return allModelRoutes;
-    }
-
-
-    static getInstanceAssociationRoute(model,modelAssociationName){
-        let instanceRoute = SequelizeRouteHelper.getInstanceRoute(model);
-        let associationRoute = instanceRoute+"/"+modelAssociationName;
-        return associationRoute;
     }
 
 }

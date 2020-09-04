@@ -40,7 +40,7 @@ export default class SequelizeController {
         this.configureDelete(model);
         this.configureUpdate(model);
         this.configureCreate(model);
-        this.configurePrimaryParamsChecker(model); //configure the params for identifing the resource
+        SequelizeController.configurePrimaryParamsChecker(this.expressApp,model); //configure the params for identifing the resource
     }
 
     /**
@@ -52,7 +52,7 @@ export default class SequelizeController {
 
         let functionForModel = function(req, res) { //define the index function
             //just call the default index
-            this.myExpressRouter.defaultControllerHelper.handleIndex(req, res, model, this.myAccessControl, tableName, tableName);
+            this.myExpressRouter.defaultControllerHelper.handleIndex(req, res, model, this.myAccessControl, tableName);
         }
 
         let route = SequelizeRouteHelper.getIndexRoute(model); //get the index route
@@ -82,7 +82,7 @@ export default class SequelizeController {
             let sequelizeResource = model.build(allowedAttributes); //build model with allowed attributes
 
             //create them
-            this.myExpressRouter.defaultControllerHelper.handleCreate(req, res, sequelizeResource, this.myAccessControl, tableName, tableName, isOwn)
+            this.myExpressRouter.defaultControllerHelper.handleCreate(req, res, sequelizeResource, this.myAccessControl, tableName, isOwn)
         }
 
         let route = SequelizeRouteHelper.getIndexRoute(model); //get the index route
@@ -98,7 +98,7 @@ export default class SequelizeController {
 
         let functionForModel = function(req, res){ //define the get function
             //just call the default GET
-            this.myExpressRouter.defaultControllerHelper.handleGet(req, res, this.myAccessControl, tableName, tableName, SequelizeController.getOwningState(req,tableName));
+            this.myExpressRouter.defaultControllerHelper.handleGet(req, res, this.myAccessControl, tableName);
         }
 
         let route = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
@@ -115,7 +115,7 @@ export default class SequelizeController {
 
         let functionForModel = function(req, res){ //define the get function
             //just call the default DELETE
-            this.myExpressRouter.defaultControllerHelper.handleDelete(req, res, this.myAccessControl, tableName, tableName, SequelizeController.getOwningState(req,tableName));
+            this.myExpressRouter.defaultControllerHelper.handleDelete(req, res, this.myAccessControl, tableName);
         }
 
         let route = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
@@ -131,7 +131,7 @@ export default class SequelizeController {
 
         let functionForModel = function(req, res){ //define the get function
             //just call the default UPDATE
-            this.myExpressRouter.defaultControllerHelper.handleUpdate(req, res, this.myAccessControl, tableName, tableName, SequelizeController.getOwningState(req,tableName));
+            this.myExpressRouter.defaultControllerHelper.handleUpdate(req, res, this.myAccessControl, tableName);
         }
 
         let route = SequelizeRouteHelper.getInstanceRoute(model); // get the GET route
@@ -141,61 +141,51 @@ export default class SequelizeController {
     /**
      * Configure the primary params checker
      * @param model the sequelize model
+     * @param reqLocalsKey the key the found resource will be saved in req.locals
      */
-    configurePrimaryParamsChecker(model){
+    static configurePrimaryParamsChecker(expressApp, model, reqLocalsKey = null){
         let primaryKeyAttributes = SequelizeHelper.getPrimaryKeyAttributes(model); // get primary key attributes
         for(let i=0; i<primaryKeyAttributes.length; i++){ //for every primary key
             let primaryKeyAttribute = primaryKeyAttributes[i];
-            this.configurePrimaryParamChecker(model,primaryKeyAttribute); //configure param checker
+            console.log("configurePrimaryParamsChecker: reqLocalsKey: "+reqLocalsKey);
+            SequelizeController.configurePrimaryParamChecker(expressApp, model,primaryKeyAttribute, reqLocalsKey); //configure param checker
         }
     }
 
     /**
      * Configure a primary param checker
      * @param model
+     * @param reqLocalsKey the key the found resource will be saved in req.locals
      * @param primaryKeyAttribute
      */
-    configurePrimaryParamChecker(model, primaryKeyAttribute){
+    static configurePrimaryParamChecker(expressApp, model, primaryKeyAttribute, reqLocalsKey = null){
         // get the identifier
         let modelPrimaryKeyAttributeParameter = SequelizeRouteHelper.getModelPrimaryKeyAttributeParameter(model,primaryKeyAttribute);
         // link identifier to paramchecker
-        this.expressApp.param(modelPrimaryKeyAttributeParameter, this.paramPrimaryParamChecker.bind(this,primaryKeyAttribute,model));
-    }
-
-    static async evalOwningState(req,resource){
-        try{
-            //check if there is an owning function
-            return await resource.isOwn(req.locals.current_user);
-        } catch(err) {
-            return false; //if not, then we dont care
-        }
-    }
-
-    static async setOwningState(req,tableName){
-        req.locals["own"+tableName] = await SequelizeController.evalOwningState(req,req.locals[tableName]);
-    }
-
-    static getOwningState(req,tableName){
-        return req.locals["own"+tableName];
+        expressApp.param(modelPrimaryKeyAttributeParameter, SequelizeController.paramPrimaryParamChecker.bind(this,primaryKeyAttribute,reqLocalsKey,model));
     }
 
     /**
      * Primary param checker
      * @param primaryKeyAttribute the key attribute name
+     * @param reqLocalsKey the key the found resource will be saved in req.locals
      * @param model the sequelize model
      * @param req the request
      * @param res the response
      * @param next the next middleware
      * @param primaryKeyAttributeValue the primary key value to check
      */
-    paramPrimaryParamChecker(primaryKeyAttribute, model, req, res, next, primaryKeyAttributeValue) {
+    static paramPrimaryParamChecker(primaryKeyAttribute, reqLocalsKey = null, model, req, res, next, primaryKeyAttributeValue) {
         let tableName = SequelizeHelper.getTableName(model);
+        if(!reqLocalsKey){
+            reqLocalsKey = tableName
+        }
 
         // define a search clause for the model
         let searchJSON = req.locals.searchJSON || {}; // get or init
-        let modelSearchJSON = searchJSON[tableName] || {}; // get for model
+        let modelSearchJSON = searchJSON[reqLocalsKey] || {}; // get for model
         modelSearchJSON[primaryKeyAttribute] = primaryKeyAttributeValue; // set search param
-        searchJSON[tableName] = modelSearchJSON; // save for model
+        searchJSON[reqLocalsKey] = modelSearchJSON; // save for model
         req.locals.searchJSON = searchJSON; // save in locals for later use
 
         //we search for all, since there are maybe multiple primary keys
@@ -210,8 +200,8 @@ export default class SequelizeController {
                 return;
             } else { // resource was found
                 if(resources.length===1){ //exactly one was found
-                    req.locals[tableName] = resources[0]; //save the found resource
-                    await SequelizeController.setOwningState(req,tableName);
+                    req.locals[reqLocalsKey] = resources[0]; //save the found resource
+                    await SequelizeController.setOwningState(req,reqLocalsKey);
                 }
                 next();
             }
