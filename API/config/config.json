@@ -1,7 +1,7 @@
 {
   "production": {
     "username": "root",
-    "password": "KekseSindDasBesteAufDerWelt",
+    "password": "CookiesAreVeryGood",
     "database": "production",
     "host": "localhost",
     "dialect": "sqlite",
@@ -12,7 +12,7 @@
   },
   "development": {
     "username": "root",
-    "password": "KekseSindDasBesteAufDerWelt",
+    "password": "CookiesAreVeryGood",
     "database": "dev",
     "host": "localhost",
     "dialect": "sqlite",
