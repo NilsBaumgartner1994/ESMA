@@ -290,6 +290,13 @@ export default class MyExpressRouter {
             return; //abort further checks
         }
 
+        if(!config.authEnabled){
+            req.locals.localhost = true;
+            req.locals.current_user.role = MyAccessControl.roleNameAdmin; //better make him then admin
+            next();
+            return; //abort further checks
+        }
+
         try { //lets try to find if a token is provided
             let authorization = req.headers.authorization; //get auth headers
             if (!!authorization) { //if there are headers

@@ -27,13 +27,7 @@
     "redisPort": 6379,
     "serverAPIVersion": "1.0.0",
     "redisAlreadyRunning":false,
-    "email": {
-      "service": "gmail",
-      "auth": {
-        "user": "swosy.swos@gmail.com",
-        "pass": "Cola4Live!"
-      }
-    }
+    "authEnabled": false
   },
   "users": {
     "DaysOfInactivityUntilDeletion": 180,

@@ -1,27 +1,10 @@
 'use strict';
 
-var models = require('./../models');
-
-const resourceJSONs = [{
-  pseudonym: 'Seed-Nils',
-  language: "de",
-
-  privacyPolicyReadDate: new Date(),
-}];
+const models = require('./../models');
+const resourceJSONs = require('./../config/users.json');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /*
-      Add altering commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkInsert('People', [{
-        name: 'John Doe',
-        isBetaMember: false
-      }], {});
-    */
-
     let modelSync = await models.sequelize.sync();
     //console.log("Okay models should now be synced");
 
@@ -29,6 +12,10 @@ module.exports = {
       let resourceJSON = resourceJSONs[i];
 
       let model = await models.User.findOne({where: resourceJSON} );
+      if(!!model){
+        await model.delete();
+        model = await models.User.findOne({where: resourceJSON} );
+      }
       if(model==null){
         model = models.User.build( resourceJSON );
         await model.save();
