@@ -5,7 +5,7 @@
 
 /**
  * @apiDefine 1Overview 1. Overview
- * Welcome to the API Documentation of ESMA. There are a lot of informations in here. I recommend you to read at least the small 4 Chapters 1-4 and then you should be good enough prepared
+ * Welcome to the API Documentation of GEG. There are a lot of informations in here. I recommend you to read at least the small 4 Chapters 1-4 and then you should be good enough prepared
  * to handle this API. This Document can be found in /EMSA/API/doc/customDocumentation/1overview.js.
  * ! If you make any changes in the documentation please run the command "npm run doc" to generate this document.
  */

@@ -1,5 +1,6 @@
 import MyExpressRouter from "./MyExpressRouter";
 import SequelizeHelper from "../helper/SequelizeHelper";
+import SequelizeAssociationController from "../controllers/SequelizeAssociationController";
 
 const AccessControl = require('accesscontrol');
 
@@ -175,8 +176,8 @@ export default class MyAccessControl {
         ac.grant(MyAccessControl.roleNameAdmin).extend(MyAccessControl.roleNameSuperModerator);
 
         let tableNames = SequelizeHelper.getModelTableNames(this.models);
-
-        let totalAdminPermission = tableNames;
+        let associationNames = SequelizeAssociationController.getForAllModelsAllAccessControlAssociationResources(this.models);
+        let totalAdminPermission = tableNames.concat(associationNames);
 
         //.push(MyExpressRouter.adminRoutes_accessControlResource); //for any general not resource based
 

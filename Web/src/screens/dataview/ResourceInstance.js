@@ -84,7 +84,7 @@ export class ResourceInstance extends Component {
     }
 
     async loadAssociation(route,associationName){
-        route = route+"/"+associationName;
+        route = route+"/associations/"+associationName;
         let resource = await RequestHelper.sendRequestNormal("GET",route);
         return resource;
     }
@@ -354,16 +354,21 @@ export class ResourceInstance extends Component {
         let resource = this.state.associationResources[associationTableName];
 
         let output = [];
+        console.log("isPlural ?"+isPlural);
         let resources = isPlural ? resource : [resource];
 
-        for(let i=0; i<resources.length; i++){
-            let associationResource = resources[i];
-            output.push(this.renderAssociationRow(associationResource,associationTableName))
+        if(!!resources){
+            for(let i=0; i<resources.length; i++){
+                let associationResource = resources[i];
+                output.push(this.renderAssociationRow(associationResource,associationTableName))
+            }
         }
+
+        let muxPrefix = isPlural ? "Plural" : "Singular";
 
         return(
             <div className="p-col">
-                <Card title={"Association: "+associationName} style={{width: '500px'}}>
+                <Card title={muxPrefix+" Association: "+associationName} style={{width: '500px'}}>
                     <div>{}</div>
                     <table style={{border:0}}>
                         <tbody>
@@ -436,10 +441,11 @@ export class ResourceInstance extends Component {
     }
 
     renderHeader(){
+        let tableNameSingle = this.state.tableName.slice(0,-1);
         return(
             <div className="content-section introduction">
                 <div className="feature-intro">
-                    <h1>{this.state.tableName}</h1>
+                    <h1>{tableNameSingle}</h1>
                     <p>All informations</p>
                 </div>
             </div>

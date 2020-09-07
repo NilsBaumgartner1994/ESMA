@@ -13,7 +13,7 @@ module.exports = {
 
       let model = await models.User.findOne({where: resourceJSON} );
       if(!!model){
-        await model.delete();
+        await model.destroy();
         model = await models.User.findOne({where: resourceJSON} );
       }
       if(model==null){

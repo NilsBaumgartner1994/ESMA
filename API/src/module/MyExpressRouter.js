@@ -200,9 +200,8 @@ export default class MyExpressRouter {
         /**
          * Pulic Routes
          */
-        this.expressApp.post(MyExpressRouter.custom_bugReport, this.handleSendBugReport.bind(this));
-        this.expressApp.get(MyExpressRouter.custom_showAllEndpoints, this.handleCustomShowAllEndpoints.bind(this));
 
+        this.expressApp.get(MyExpressRouter.custom_showAllEndpoints, this.handleCustomShowAllEndpoints.bind(this));
         //for api stress test https://loader.io/
         this.expressApp.get("/loaderio-4fffcfb2d8504b146819ec8df3a58421/", this.handleVerification.bind(this));
 
@@ -231,19 +230,6 @@ export default class MyExpressRouter {
         this.sequelizeController = new SequelizeController(logger,models,expressApp,myAccessControl,instance);
         this.sequelizeSchemeController = new SequelizeSchemeController(logger,models,expressApp,myAccessControl,instance);
 
-
-        //Tables
-        /**
-        this.deviceController = new DeviceController(logger, models, expressApp, myAccessControl, instance);
-        this.friendController = new FriendController(logger, models, expressApp, myAccessControl, instance);
-        this.loginController = new LoginController(logger, models, expressApp, myAccessControl, instance);
-        this.permissionController = new PermissionController(logger, models, expressApp, myAccessControl, instance);
-        this.roleController = new RoleController(logger, models, expressApp, myAccessControl, instance);
-        this.streamViewController = new StreamViewController(logger, models, expressApp, myAccessControl, instance);
-        this.userController = new UserController(logger, models, expressApp, myAccessControl, instance);
-        this.userroleController = new UserRoleController(logger, models, expressApp, myAccessControl, instance);
-        this.feedbackController = new FeedbackController(logger, models, expressApp, myAccessControl, instance);
-         */
     }
 
     /**
@@ -278,17 +264,6 @@ export default class MyExpressRouter {
         req.locals.current_user = {}; //create a current user, which will be the user who initiates the request
         req.locals.current_user.id = undefined; //better define it undefined
         req.locals.current_user.role = MyAccessControl.roleNameGuest; //define it as anonymous
-        req.locals.localhost = false; //this is not the local host !
-
-        let ip = req.connection.remoteAddress; //get the dam IP adress
-
-        if (this.isThisLocalhost(req)) { //this comes from the local host, well then the user is ON the Machine, meaning he is in control of this
-            req.locals.localhost = true;
-            req.locals.current_user.role = MyAccessControl.roleNameAdmin; //better make him then admin
-            //logger.info("[" + workerID + "][MyExpressRouter] middlewareAuthToken - detected localhost: remoteAddress: " + ip);
-            next();
-            return; //abort further checks
-        }
 
         if(!config.authEnabled){
             req.locals.localhost = true;
@@ -367,11 +342,6 @@ export default class MyExpressRouter {
      * @apiParam {String} plaintextSecret User's password as plain text.
      */
     middlewareOnlyAuthenticatedViaPlaintextSecret(req, res, next) {
-        if (req.locals.localhost) { //if this is the localhost ergo admin
-            next(); //continue
-            return;
-        }
-
         //Remove Token Authentication
         req.locals.current_user = {};
         req.locals.current_user.id = undefined;
@@ -470,114 +440,6 @@ export default class MyExpressRouter {
     /**
      * Custom
      */
-
-    /**
-     * @deprecated since version 1.0 Use FeedbackController itself
-     * Handle when a Bug Report comes in
-     * @param req the request object
-     * @param res the response object
-     */
-    handleSendBugReport(req, res) {
-        let message = req.body.bugReport; //get the bug report message
-        let sanitized = escape(message); //remove any dangerous text
-        sanitized = sanitized.replace(/%20/g, " "); //replace escaped spaces and readd them
-        this.bugReportLogger.info(sanitized); //log into bug logger
-        MyExpressRouter.responseWithJSON(res, HttpStatus.OK, {success: 'We received your message'});
-
-        //try to put them into better FeedBackController
-        try {
-            req.body.message = message;
-            req.body.label = "bugreport";
-            this.feedbackController.handleCreate(req, res);
-            return;
-        } catch (e) {
-            //console.log(e);
-        }
-
-    }
-
-    /**
-     * Get the Image of the todays main dish in the canteen. Since the Studentenwerk/INFOMax cant handle variable URLs, we create a "static"
-     * URL. Since Photos were made in the Canteen Westerberg this URL refers to this canteen.
-     * @param req the request object
-     * @param res the response object
-     *
-     * @api {get} /api/custom/photoSchnellerTellerWesterberg Get main dish Image
-     * @apiDescription Get the Image of the todays main dish in the canteen. Since the Studentenwerk/INFOMax cant handle variable URLs, we create a "static"
-     * URL. Since Photos were made in the Canteen Westerberg this URL refers to this canteen.
-     * @apiName GetMainDishWesterberg
-     * @apiPermission Anonym
-     * @apiGroup Custom
-     *
-     * @apiSuccess {Binary} Image Image of the main Dish.
-     * @apiError (Error) {String} error The possible error that can occur. Possible Errors: NOT_FOUND, INTERNAL_SERVER_ERROR
-     *
-     * @apiExample Example usage:
-     * curl -i http://localhost/api/custom/photoSchnellerTellerWesterberg
-     */
-    handleCustomWesterbergSchnellerTellerPhoto(req, res) {
-        //we need to create our dynmic link ourself somehow
-        let date = new Date(); //okay it now that was easy
-
-        let canteenName = "Mensa Westerberg"; //we know the name of the canteen
-
-        this.models.Canteen.findOne({where: {name: canteenName}}).then(canteen => { //lets search for it
-            if (!canteen || !canteen.id) { //no canteen foound ?
-                MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {error: MyExpressRouter.canteen_resourceName + ' not found'});
-                return;
-            }
-            //okay canteen if found
-            this.models.CanteenMeal.findAll({ //search for all offers
-                include: [{
-                    model: this.models.Meal,
-                    include: [{
-                        model: this.models.RecipeGroup
-                    }],
-                }],
-                where: {
-                    CanteenId: canteen.id, //in our canteen
-                    date: date.toISOString() //and today
-                }
-            }).then(canteenMealOffers => { //get all offers
-                if (!canteenMealOffers) { //if there are no meals ?
-                    MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {error: 'No Meal CanteenMealOffer not found'});
-                    return;
-                }
-                for (let mealOfferIndex = 0; mealOfferIndex < canteenMealOffers.length; mealOfferIndex++) { //okay search in all meals
-                    let mealOffer = canteenMealOffers[mealOfferIndex]; //get the offer
-                    try { //finding the "main" dish can be tricky
-                        let recipeGroupName = mealOffer.Meal.RecipeGroup.name; //get recipe group name
-                        if (recipeGroupName === "KM Schneller Teller" || recipeGroupName === "KM Express") { //these are typicaly "main" groups
-                            let schnellerTellerMealId = mealOffer.Meal.id; //get the ID of the meal
-
-                            //search the image path
-                            this.photoHelper.findOrCreateResolutionImage(MyExpressRouter.meal_resourceName, schnellerTellerMealId, DefaultPhotoHelper.highResTag, true, true).then(pathToFile => {
-                                if (!pathToFile) {  //no image yet ...
-                                    var ownPath = fs.realpathSync('.');
-                                    let pathEmptyFood = ownPath + '/src/data/photos/custom/FotoLeererTellerZubereitung.jpg';
-                                    res.sendFile(pathEmptyFood); //send default image
-                                } else { //image found, nice send it
-                                    res.sendFile(pathToFile);
-                                }
-                            }).catch(err => {
-                                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-                            });
-                            return;
-                        }
-                    } catch (err) {
-                        MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-                        return;
-                    }
-                }
-                //Well seems there is none offered
-                MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, {error: 'No ExpressMenu not found'});
-            }).catch(err => {
-                MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-            });
-        }).catch(err => {
-            MyExpressRouter.responseWithJSON(res, HttpStatus.INTERNAL_SERVER_ERROR, {error: err.toString()});
-        });
-    }
 
     /**
      * Shows all possible routes which could be used

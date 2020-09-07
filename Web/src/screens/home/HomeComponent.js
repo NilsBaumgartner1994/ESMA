@@ -12,7 +12,7 @@ export class HomeComponent extends Component {
                     <h2>{config.title}</h2>
                 </div>
                 <div className="features">
-                    <h3>Why ESMA?</h3>
+                    <h3>Why GEG?</h3>
                     <p className="features-tagline">Congratulation! <span role="img" aria-label="celebrate">🎉</span>
                         The search for the simple tool is over.</p>
 

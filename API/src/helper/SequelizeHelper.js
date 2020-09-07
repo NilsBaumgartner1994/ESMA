@@ -50,7 +50,7 @@ export default class SequelizeHelper {
     }
 
     static getAssociationForModelJSON(model){
-        const result = [];
+        const result = {};
         if (!model || typeof model.associations !== 'object') {
             throw new Error("Model should be an object with the 'associations' property.");
         }
@@ -60,10 +60,10 @@ export default class SequelizeHelper {
 
             // all needed information in the 'options' object
             if (model.associations[key].hasOwnProperty('options')) {
-                association[key] = model.associations[key].options;
+                result[key] = model.associations[key];
+                //console.log(model.associations[key]["options"]);
+                //association[key] = model.associations[key].options;
             }
-
-            result.push(association);
         });
 
         return result;
