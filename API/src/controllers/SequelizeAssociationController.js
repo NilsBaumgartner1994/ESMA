@@ -114,6 +114,7 @@ export default class SequelizeAssociationController {
     }
 
 
+
     configureModelCountAssociationInstanceRoute(model,pluralName,modelAssociationName){
         let methodName = SequelizeRouteHelper.METHOD_COUNT_PREFIX;
 

@@ -323,6 +323,7 @@ export default class DefaultControllerHelper {
         console.log("is own: "+isOwn);
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,DefaultControllerHelper.CRUD_CREATE,isOwn);
 
+
         this.logger.info("[" + this.myExpressRouter.workerID + "][DefaultControllerHelper] handleCreate - " + accessControlResource + " current_user: " + req.locals.current_user.id + " granted: " + permission.granted);
         if (permission.granted) { //check if allowed to create the resource
             console.log("permission granted");

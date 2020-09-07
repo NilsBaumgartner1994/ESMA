@@ -153,6 +153,7 @@ export default class SequelizeController {
         for(let i=0; i<primaryKeyAttributes.length; i++){ //for every primary key
             let primaryKeyAttribute = primaryKeyAttributes[i];
             SequelizeController.configurePrimaryParamChecker(expressApp, model,primaryKeyAttribute, reqLocalsKey); //configure param checker
+            console.log("configurePrimaryParamsChecker: reqLocalsKey: "+reqLocalsKey);
         }
     }
 
