@@ -19,6 +19,17 @@ export default class SequelizeRouteHelper {
      * MODELS
      */
 
+    // Count Route
+    /**
+     * Get the Count route for a model
+     * @param model the sequelize model
+     * @return {string} api uri to the index
+     */
+    static getCountRoute(model){
+        let tableName = SequelizeHelper.getTableName(model);
+        return MyExpressRouter.routeModels + "/count/" + tableName;
+    }
+
     // Index Route
     /**
      * Get the Index route for a model

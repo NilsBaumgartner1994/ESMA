@@ -1,5 +1,6 @@
 import HttpStatus from "http-status-codes";
 import MyExpressRouter from "../module/MyExpressRouter";
+import SequelizeHelper from "./SequelizeHelper";
 const { Op } = require('sequelize');
 
 const {
@@ -193,6 +194,7 @@ export default class DefaultControllerHelper {
     getSequelizeQuery(req,permission,includeModels){
         let queryCopy = JSON.parse(JSON.stringify(req.query)); //create a copy on that we work
         delete queryCopy.limit;
+        delete queryCopy.offset;
         delete queryCopy.order;
         let queryFiltered = permission.filter(queryCopy); //filter all now allowed query variables
         queryFiltered = this.parseOperatorContent(queryFiltered);
@@ -203,6 +205,9 @@ export default class DefaultControllerHelper {
 
         if(req.query.limit){ //check for limit
             sequelizeQuery.limit = parseInt(req.query.limit);
+        }
+        if(req.query.offset){ //check for limit
+            sequelizeQuery.offset = parseInt(req.query.offset);
         }
         if(req.query.order){ //check for order
             sequelizeQuery.order = JSON.parse(req.query.order);
@@ -215,12 +220,15 @@ export default class DefaultControllerHelper {
         return queryKeyLength !== 0;
     }
 
-    async handleAssociationIndex(req,res,sequelizeModel,myAccessControl,accessControlResource,resourceName,functionNameToCall,isOwn,includeModels = []){
+    async handleAssociationIndex(req,res,resource,myAccessControl,accessControlResource,resourceName,functionNameToCall,isOwn,includeModels = []){
+        console.log("handleAssociationIndex");
+
         let permission = DefaultControllerHelper.getPermission(req,myAccessControl,accessControlResource,DefaultControllerHelper.CRUD_READ,isOwn);
         if(permission.granted){
+            console.log("Permission granted");
             let sequelizeQuery = this.getSequelizeQuery(req,permission,includeModels);
-
-            sequelizeModel[functionNameToCall](sequelizeQuery).then(resources => { //get resources
+            console.log("functionNameToCall: "+functionNameToCall);
+            resource[functionNameToCall](sequelizeQuery).then(resources => { //get resources
                 let dataJSON = DefaultControllerHelper.filterResourcesWithPermission(resources, permission); //filter
                 this.logger.info("[DefaultControllerHelper] handleAssociationIndex - " + resourceName);
                 MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
@@ -234,6 +242,15 @@ export default class DefaultControllerHelper {
         }
     }
 
+    async handleCount(req, res, sequelizeModel, myAccessControl, accessControlResource, redisKey, customPermission){
+        //TODO permission, maybe use the Index Permission ?
+        sequelizeModel.count().then(amount => {
+            let dataJSON = {count:amount};
+            MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
+        }).catch(err => {
+            DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
+        });
+    }
     /**
      * Default Function to Handle Index Requests for Resources.
      * @param req The request object
@@ -274,7 +291,6 @@ export default class DefaultControllerHelper {
                             redisClient.setex(role + ":" + redisKey, redisCacheTime, JSON.stringify(dataJSON)); //save in cahce
                             this.logger.info("[DefaultControllerHelper] handleIndex - " + accessControlResource + " not found in cache for role: " + role);
                             MyExpressRouter.responseWithJSON(res, HttpStatus.OK, dataJSON); //anyway answer normaly
-
                         }).catch(err => {
                             this.logger.error("[DefaultControllerHelper] handleIndex - " + accessControlResource + " found in cache for role: " + role + " - " + err.toString());
                             DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);

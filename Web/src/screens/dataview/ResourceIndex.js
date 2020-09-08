@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {DataTable} from '../../components/datatable/DataTable';
+import {Paginator} from '../../components/paginator/Paginator';
 import {Column} from '../../components/column/Column';
 import {InputText} from '../../components/inputtext/InputText';
 import {Dropdown} from '../../components/dropdown/Dropdown';
@@ -16,6 +17,7 @@ import {RouteHelper} from "../../helper/RouteHelper";
 
 export class ResourceIndex extends Component {
 
+    static DEFAULT_ITEMS_PER_PAGE = 10;
     static searchLoopIcon = "\ud83d\udd0d";
     static defaultDivStyle = {"textAlign":"center","wordBreak": "break-word"};
 
@@ -25,6 +27,11 @@ export class ResourceIndex extends Component {
             schemes: schemes,
             isLoading: true,
             advanced: false,
+            limit : ResourceIndex.DEFAULT_ITEMS_PER_PAGE,
+            offset : 0,
+            page: 0,
+            count: 0,
+            multiSortMeta: {}
         };
     }
 
@@ -32,24 +39,58 @@ export class ResourceIndex extends Component {
         const { match: { params } } = this.props;
         let tableName = params.tableName;
 
-        this.loadResources(tableName);
+        this.loadConfigs(tableName);
     }
 
-    async loadResources(tableName) {
+    async loadConfigs(tableName) {
         let createRoute = RouteHelper.getCreateRouteForResource(this.state.schemes,tableName);
         let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName);
         let routes = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName+"/routes");
-        let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName);
+        let countAnswer = await RequestHelper.sendRequestNormal("GET","models/"+"count/"+tableName);
 
-        let resources = resourcesAnswer || [];
+        let count = countAnswer.count || 0;
 
-        this.setState({
+        await this.setState({
             isLoading: false,
-	        resources: resources,
             scheme: scheme,
+            count: count,
             routes: routes,
             createRoute: createRoute,
             tableName: tableName
+        });
+
+        await this.loadResourcesFromServer();
+    }
+
+    async loadResourcesFromServer(){
+        let tableName = this.state.tableName;
+        let offset = this.state.offset;
+        let limit = this.state.limit;
+
+        let orderParam = "";
+        let multiSortMeta = this.state.multiSortMeta;
+        if(!!multiSortMeta && multiSortMeta.length>0){
+            orderParam = orderParam+"&order=[";
+            console.log(multiSortMeta);
+            for(let i=0; i<multiSortMeta.length; i++){
+                if(i>0){
+                    orderParam+=",";
+                }
+                let field = multiSortMeta[i].field;
+                let ascending = multiSortMeta[i].order === 1;
+                let ASCDESC = ascending ? "ASC" : "DESC";
+                orderParam = orderParam+'["'+field+'","'+ASCDESC+'"]';
+            }
+            orderParam = orderParam+"]";
+        }
+        console.log("orderParam: "+orderParam);
+        console.log("URL: "+"models/"+tableName+"?limit="+limit+"&offset="+offset+orderParam);
+
+        let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName+"?limit="+limit+"&offset="+offset+orderParam);
+        let resources = resourcesAnswer || [];
+
+        await this.setState({
+            resources: resources
         });
     }
 
@@ -195,6 +236,10 @@ export class ResourceIndex extends Component {
         </div>;
     }
 
+    async handleOnSort(event){
+        await this.setState({multiSortMeta: event.multiSortMeta});
+        await this.loadResourcesFromServer();
+    }
 
     renderDataTable(){
         let emptyMessage = "No records found";
@@ -207,9 +252,15 @@ export class ResourceIndex extends Component {
         const header = this.renderHeader();
 
             return (
-                <DataTable ref={(el) => this.dt = el} responsive={true} value={this.state.resources} paginator={true} rows={10}
-                           header={header}
-                           globalFilter={this.state.globalFilter} emptyMessage={emptyMessage}>
+                <DataTable key={"Datatable:"+this.state.limit+JSON.stringify(this.state.multiSortMeta)}
+                    ref={(el) => this.dt = el}
+                    sortMode="multiple"
+                   multiSortMeta={this.state.multiSortMeta} onSort={(e) => this.handleOnSort(e)}
+                   responsive={true}
+                   value={this.state.resources}
+                   rows={this.state.limit}
+                   header={header}
+                   globalFilter={this.state.globalFilter} emptyMessage={emptyMessage}>
                     {columns}
                 </DataTable>
             );
@@ -230,13 +281,17 @@ export class ResourceIndex extends Component {
         }
     }
 
+    async handlePaginationChanged(event){
+        await this.setState({page: event.page, offset: event.first, limit: event.rows});
+        await this.loadResourcesFromServer();
+    }
+
     render() {
         let dataTable = this.renderDataTable();
 
         let amountOfResources = "?";
-        if(!!this.state.resources){
-            console.log("Resources Found: "+this.state.resources.length);
-            amountOfResources = this.state.resources.length;
+        if(!!this.state.count){
+            amountOfResources = this.state.count;
         }
 	    let tableName = this.state.tableName || "";
 
@@ -262,6 +317,7 @@ export class ResourceIndex extends Component {
 
                 <div className="content-section implementation">
                     {dataTable}
+                    <Paginator first={this.state.offset} rows={this.state.limit} totalRecords={this.state.count} rowsPerPageOptions={[ResourceIndex.DEFAULT_ITEMS_PER_PAGE,25,50]} onPageChange={(e) => this.handlePaginationChanged(e)}></Paginator>
                 </div>
             </div>
         );

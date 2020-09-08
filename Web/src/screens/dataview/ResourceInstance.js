@@ -350,25 +350,47 @@ export class ResourceInstance extends Component {
 
     renderAssociationCard(associationTableName,associationName){
         let isPlural = associationTableName === associationName;
+        return isPlural ? this.renderAssociationCardPlural(associationTableName,associationName) : this.renderAssociationCardSingle(associationTableName,associationName);
+    }
 
-        let resource = this.state.associationResources[associationTableName];
-
+    renderAssociationCardPlural(associationTableName,associationName){
+        let resources = this.state.associationResources[associationTableName];
+        let amountText = "";
         let output = [];
-        console.log("isPlural ?"+isPlural);
-        let resources = isPlural ? resource : [resource];
 
         if(!!resources){
-            for(let i=0; i<resources.length; i++){
+            let amount = resources.length;
+            for(let i=0; i<amount; i++){
                 let associationResource = resources[i];
                 output.push(this.renderAssociationRow(associationResource,associationTableName))
             }
+            amountText = "("+amount+")";
         }
-
-        let muxPrefix = isPlural ? "Plural" : "Singular";
 
         return(
             <div className="p-col">
-                <Card title={muxPrefix+" Association: "+associationName} style={{width: '500px'}}>
+                <Card title={associationName+" "+amountText} style={{width: '500px'}}>
+                    <div>{}</div>
+                    <table style={{border:0}}>
+                        <tbody>
+                            {output}
+                        </tbody>
+                    </table>
+                    <br></br>
+                    <div>Insert New Association</div>
+                </Card>
+            </div>
+        )
+    }
+
+    renderAssociationCardSingle(associationTableName,associationName){
+        let resource = this.state.associationResources[associationTableName];
+        let output = [];
+        output.push(this.renderAssociationRow(resource,associationTableName))
+
+        return(
+            <div className="p-col">
+                <Card title={associationName} style={{width: '500px'}}>
                     <div>{}</div>
                     <table style={{border:0}}>
                         <tbody>

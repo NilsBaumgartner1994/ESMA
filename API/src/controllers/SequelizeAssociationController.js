@@ -142,15 +142,10 @@ export default class SequelizeAssociationController {
     configureMultipleAssociationsIndexRoute(model,modelAssociationName,associationModel,accessControlAssociationResource){
         let associationFunction = "get"+modelAssociationName;
         let tableName = SequelizeHelper.getTableName(model);
-
-        console.log("Configure Index Associtation: "+tableName+" "+associationFunction+" ");
         let functionForModel = async function(req, res){ //define the get function
-
+            //TODO maybe use: DefaultControllerHelper.handleAssociationIndex
             let resource = req.locals[tableName];
-            let associations = await resource[associationFunction]();
-            let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_READ,false);
-            //TODO Permission, associationObject itself needs to be readed for normal users or they get it as permission
-            DefaultControllerHelper.respondWithPermissionFilteredResources(req, res, associations, permission);
+            this.myExpressRouter.defaultControllerHelper.handleAssociationIndex(req,res,resource,this.myAccessControl,accessControlAssociationResource,modelAssociationName,associationFunction,false)
         }
 
         let associationRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);

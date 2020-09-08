@@ -36,12 +36,26 @@ export default class SequelizeController {
      * @param model the given sequelize moodel
      */
     configureModelRoutes(model){
+        this.configureCount(model); //configure the index route
         this.configureIndex(model); //configure the index route
         this.configureGet(model); //configure the get route
         this.configureDelete(model);
         this.configureUpdate(model);
         this.configureCreate(model);
         SequelizeController.configurePrimaryParamsChecker(this.expressApp,model); //configure the params for identifing the resource
+    }
+
+    configureCount(model){
+        let tableName = SequelizeHelper.getTableName(model);
+
+        let functionForModel = function(req, res) { //define the index function
+            //just call the default index
+            this.myExpressRouter.defaultControllerHelper.handleCount(req, res, model, this.myAccessControl, tableName);
+        }
+
+        let route = SequelizeRouteHelper.getCountRoute(model); //get the index route
+        this.expressApp.get(route, functionForModel.bind(this)); //register route in express
+
     }
 
     /**
