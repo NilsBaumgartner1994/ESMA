@@ -34,7 +34,7 @@ export class ResourceCreate extends Component {
     }
 
     async loadResources(){
-        let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName);
+        let scheme = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+this.state.tableName);
         let route = RouteHelper.getIndexRouteForResource(this.state.schemes,this.state.tableName);
 
         this.setState({
@@ -47,7 +47,7 @@ export class ResourceCreate extends Component {
 
     async updateResource(){
         let payloadJSON = this.state.resource;
-        let answer = await RequestHelper.sendRequestNormal("POST",this.state.route,payloadJSON);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_POST,this.state.route,payloadJSON);
         if(answer === undefined) {
             this.setState({
                 requestPending: false,

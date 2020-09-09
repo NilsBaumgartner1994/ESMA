@@ -19,7 +19,7 @@ export class AppMenu extends Component {
     }
 
     async loadInformations(){
-        let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
+        let schemes = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes");
         let tableNames = Object.keys(schemes);
         this.setState({
             tableNames: tableNames,
@@ -48,9 +48,9 @@ export class AppMenu extends Component {
                 <button id="data_menutitle" onClick={() => this.toggleMenu(0)}
                         className={classNames({'active-menuitem': this.state.activeMenu === 0})}>
                     <img alt="data" className="layout-menu-icon-inactive"
-                         src="showcase/resources/images/mono/data.svg"/>
+                         src="/showcase/resources/images/mono/data.svg"/>
                     <img alt="data" className="layout-menu-icon-active"
-                         src="showcase/resources/images/mono/data-active.svg"/>
+                         src="/showcase/resources/images/mono/data-active.svg"/>
                     <span>Tabellen</span>
                 </button>
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}
@@ -63,9 +63,9 @@ export class AppMenu extends Component {
                 <button id="data_menutitle" onClick={() => this.toggleMenu(1)}
                         className={classNames({'active-menuitem': this.state.activeMenu === 1})}>
                     <img alt="data" className="layout-menu-icon-inactive"
-                         src="showcase/resources/images/mono/charts.svg"/>
+                         src="/showcase/resources/images/mono/charts.svg"/>
                     <img alt="data" className="layout-menu-icon-active"
-                         src="showcase/resources/images/mono/charts-active.svg"/>
+                         src="/showcase/resources/images/mono/charts-active.svg"/>
                     <span>Statistiken</span>
                 </button>
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}
@@ -80,9 +80,9 @@ export class AppMenu extends Component {
                 <button id="data_menutitle" onClick={() => this.toggleMenu(3)}
                         className={classNames({'active-menuitem': this.state.activeMenu === 3})}>
                     <img alt="data" className="layout-menu-icon-inactive"
-                         src="showcase/resources/images/mono/file.svg"/>
+                         src="/showcase/resources/images/mono/file.svg"/>
                     <img alt="data" className="layout-menu-icon-active"
-                         src="showcase/resources/images/mono/file-active.svg"/>
+                         src="/showcase/resources/images/mono/file-active.svg"/>
                     <span>Backups</span>
                 </button>
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}
@@ -98,9 +98,9 @@ export class AppMenu extends Component {
                 <button id="data_menutitle" onClick={() => this.toggleMenu(4)}
                         className={classNames({'active-menuitem': this.state.activeMenu === 4})}>
                     <img alt="data" className="layout-menu-icon-inactive"
-                         src="showcase/resources/images/mono/data.svg"/>
+                         src="/showcase/resources/images/mono/data.svg"/>
                     <img alt="data" className="layout-menu-icon-active"
-                         src="showcase/resources/images/mono/data-active.svg"/>
+                         src="/howcase/resources/images/mono/data-active.svg"/>
                     <span>Server Information</span>
                 </button>
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}

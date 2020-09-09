@@ -2,6 +2,12 @@ import config from "./../config";
 
 export class RequestHelper {
 
+    static REQUEST_TYPE_GET = "GET";
+    static REQUEST_TYPE_POST = "POST";
+    static REQUEST_TYPE_PUT = "PUT";
+    static REQUEST_TYPE_DELETE = "DELETE";
+
+
     static getAPIURL(){
         if(!!config.specificAPIURL){
             return config.specificAPIURL;
@@ -20,8 +26,7 @@ export class RequestHelper {
      * @param headers
      * @returns {Promise<undefined|any>}
      */
-    static async private_sendRequest(requestType, resource_url, payload_json, headers){
-        payload_json = payload_json || {};
+    static async private_sendRequest(requestType, resource_url, payload_json = {}, headers){
         //console.warn("SendRequest to: "+url);
         let payload = JSON.stringify(payload_json);
 
@@ -33,7 +38,7 @@ export class RequestHelper {
         console.log("private_sendRequest: payload: ");
         console.log(payload_json);
 
-        if(requestType==="GET"){
+        if(requestType===RequestHelper.REQUEST_TYPE_GET){
             response = await fetch(resource_url, {
                 method: requestType,
                 credentials: 'include',

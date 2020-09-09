@@ -59,7 +59,7 @@ export class SystemInformationView extends Component {
 
     async getSystemInformationData() {
         try {
-			let response = await RequestHelper.sendRequestNormal("GET",'custom/systemInformation');
+			let response = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,'custom/systemInformation');
 	    	this.storeSystemInformationsData(response);
         } catch (err) {
             return null;

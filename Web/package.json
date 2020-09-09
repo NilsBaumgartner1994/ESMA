@@ -37,7 +37,8 @@
     "react-transition-group": "^2.5.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "genFavicons" : "node ./src/FavIconGeneration.js",
+    "start": "npm run genFavicons && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -61,6 +62,7 @@
     "avataaars": "^1.2.1",
     "base-64": "^0.1.0",
     "express": "^4.17.1",
+    "favicons": "^6.2.0",
     "luxon": "^1.24.1",
     "primereact": "^4.2.2",
     "query-string": "^6.13.1",

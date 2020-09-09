@@ -48,7 +48,7 @@ export class App extends Component {
     }
 
     async loadInformations(){
-        let schemes = await RequestHelper.sendRequestNormal("GET","schemes");
+        let schemes = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes");
         let tableNames = Object.keys(schemes);
         console.log(tableNames);
         this.setState({
@@ -229,8 +229,8 @@ export class App extends Component {
                           onClick={this.onMenuButtonClick} onKeyDown={this.onMenuButtonKeyDown}>
                         <i className="pi pi-bars"/>
                     </span>
-                    <Link to="/" className="logo">
-                        <img alt="data" src="showcase/resources/images/esmaLogo.svg" style={{width: "auto" ,height: 55}}/>
+                    <Link to="/" className="logo" style={{"margin-left":"0px"}}>
+                        <img alt="data" src="/showcase/resources/images/Banner.png" style={{width: "auto" ,height: 55}}/>
                     </Link>
 
                     <ul className="topbar-menu p-unselectable-text">

@@ -12,6 +12,8 @@ import {InputText} from '../../components/inputtext/InputText';
 import {InputTextarea} from '../../components/inputtextarea/InputTextarea';
 import {Dialog} from '../../components/dialog/Dialog';
 import {RouteHelper} from "../../helper/RouteHelper";
+import { OverlayPanel } from '../../components/overlaypanel/OverlayPanel';
+import {Link} from "react-router-dom";
 
 export class ResourceInstance extends Component {
 
@@ -24,6 +26,7 @@ export class ResourceInstance extends Component {
             isEdited: false,
             jsonEditorsVisible: {},
             jsonEditorsValues: {},
+            dialogs: {},
             requestPending: false,
             visibleDialogDeleteResource: false,
         };
@@ -38,9 +41,9 @@ export class ResourceInstance extends Component {
 
     async loadResources(params){
         let route = RouteHelper.getInstanceRouteForParams(this.state.schemes,this.state.tableName,params);
-        let resource = await RequestHelper.sendRequestNormal("GET",route);
-        let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName);
-        let associations = await RequestHelper.sendRequestNormal("GET","schemes/"+this.state.tableName+"/associations");
+        let resource = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,route);
+        let scheme = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+this.state.tableName);
+        let associations = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+this.state.tableName+"/associations");
         let associationResources = await this.loadAssociationResources(route,associations);
         let associationSchemes = await this.loadAssociationSchemes(associations);
 
@@ -65,7 +68,7 @@ export class ResourceInstance extends Component {
         let associationTableNames = Object.keys(associations);
         for(let i=0; i<associationTableNames.length; i++){
             let associationTableName = associationTableNames[i];
-            let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+associationTableName);
+            let scheme = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+associationTableName);
             associationSchemes[associationTableName] = scheme;
         }
         return associationSchemes;
@@ -85,14 +88,14 @@ export class ResourceInstance extends Component {
 
     async loadAssociation(route,associationName){
         route = route+"/associations/"+associationName;
-        let resource = await RequestHelper.sendRequestNormal("GET",route);
+        let resource = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,route);
         return resource;
     }
 
     async updateResource(){
         let resource = this.state.resource;
         let payloadJSON = resource;
-        let answer = await RequestHelper.sendRequestNormal("PUT",this.state.route,payloadJSON);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_PUT,this.state.route,payloadJSON);
         if(answer === undefined) {
             this.setState({
                 requestPending: false,
@@ -362,7 +365,7 @@ export class ResourceInstance extends Component {
             let amount = resources.length;
             for(let i=0; i<amount; i++){
                 let associationResource = resources[i];
-                output.push(this.renderAssociationRow(associationResource,associationTableName))
+                output.push(this.renderAssociationRow(associationResource,associationTableName,associationName,true))
             }
             amountText = "("+amount+")";
         }
@@ -383,10 +386,46 @@ export class ResourceInstance extends Component {
         )
     }
 
+    async handleDisassociateMultipleAssociation(associationTableName,associationName,associationResource,closeFunction){
+        //TODO implement function
+        alert("handleDisassociateMultipleAssociation: "+associationTableName);
+
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,this.state.route);
+        let success = true;
+        if(success){
+            closeFunction();
+        }
+    }
+
+    renderAssociationDisassociateMultiple(associationTableName,associationName,associationResource){
+        let closeFunction = this.setDialogVisibility.bind(this,associationTableName,false);
+
+        const footer = (
+            <div>
+                <Button label="Yes" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.handleDisassociateMultipleAssociation(associationTableName,associationName,associationResource,closeFunction) }} />
+                <Button label="No" icon="pi pi-times" className="p-button-info p-button-raised" onClick={closeFunction} className="p-button-secondary" />
+            </div>
+        );
+
+        let visible = this.state.dialogs[associationTableName];
+
+        return (
+            <div>
+                <Button label="TODO: Disassociate" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setDialogVisibility(associationTableName,true)}} />
+                <Dialog header={"Disassociate "+associationName} visible={visible} style={{width: '50vw'}} footer={footer} modal={true} onHide={closeFunction}>
+                    <div>Are you sure you want to disassociate this {associationName} ? This cannot be undone.</div>
+                </Dialog>
+            </div>
+        )
+    }
+
     renderAssociationCardSingle(associationTableName,associationName){
         let resource = this.state.associationResources[associationTableName];
         let output = [];
-        output.push(this.renderAssociationRow(resource,associationTableName))
+
+        if(!!resource){
+            output.push(this.renderAssociationRow(resource,associationTableName,associationName,false));
+        }
 
         return(
             <div className="p-col">
@@ -404,17 +443,64 @@ export class ResourceInstance extends Component {
         )
     }
 
-    renderAssociationRow(associationResource,associationTableName){
-        let scheme = this.state.associationSchemes[associationTableName];
+    handleDisassociateSingleAssociation(associationTableName,associationName,closeFunction){
+        //TODO implement function
+        alert("handleDisassociateSingleAssociation: "+associationTableName);
+        let success = true;
+        if(success){
+            closeFunction();
+        }
+    }
 
-        let openButton = (
-            <Button type="button" className="p-button-success" label={associationTableName} iconPos="right" icon="pi pi-search" ></Button>
+    renderAssociationDisassociateSingle(associationTableName,associationName){
+        let closeFunction = this.setDialogVisibility.bind(this,associationTableName,false);
+
+        const footer = (
+            <div>
+                <Button label="Yes" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.handleDisassociateSingleAssociation(associationTableName,associationName,closeFunction) }} />
+                <Button label="No" icon="pi pi-times" className="p-button-info p-button-raised" onClick={closeFunction} className="p-button-secondary" />
+            </div>
+        );
+
+        let visible = this.state.dialogs[associationTableName];
+
+        return (
+            <div>
+                <Button label="TODO: Disassociate" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setDialogVisibility(associationTableName,true)}} />
+                <Dialog header={"Disassociate "+associationName} visible={visible} style={{width: '50vw'}} footer={footer} modal={true} onHide={closeFunction}>
+                    <div>Are you sure you want to disassociate this {associationName} ? This cannot be undone.</div>
+                </Dialog>
+            </div>
         )
+    }
+
+    setDialogVisibility(associationTableName,visible){
+        let dialogs = this.state.dialogs;
+        dialogs[associationTableName] = visible;
+        this.setState({dialogs: dialogs});
+    }
+
+    renderAssociationRow(associationResource,associationTableName,associationName,isPlural){
+        let modelscheme = this.state.associationSchemes[associationTableName];
+        let route = RouteHelper.getInstanceRouteForResource(this.state.schemes,modelscheme,associationTableName,associationResource);
+
+        let displayname = associationResource.name || associationResource.id;
+
+        let visitButton = (
+            <Link to={"/"+route}>
+                <Button type="button" className="p-button-success" label={""+displayname} iconPos="right" icon="pi pi-search" style={{"width":"100%"}} ></Button>
+            </Link>
+        )
+
+        let disassociateButton = isPlural ?
+            this.renderAssociationDisassociateMultiple(associationTableName,associationName,associationResource) :
+            this.renderAssociationDisassociateSingle(associationTableName,associationName)
 
         return(
             <tr>
-                <td>{openButton}</td>
+                <td>{visitButton}</td>
                 <td>{associationTableName}</td>
+                <td>{disassociateButton}</td>
             </tr>
         )
     }
@@ -425,7 +511,7 @@ export class ResourceInstance extends Component {
 
     async deleteResource(){
         let route = this.state.route;
-        let answer = await RequestHelper.sendRequestNormal("DELETE",route);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,route);
         console.log(answer);
         if(answer!=false){
             this.props.history.push('/models/'+ this.state.tableName);

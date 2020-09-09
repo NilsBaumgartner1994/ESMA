@@ -6,6 +6,7 @@ import {InputText} from '../../components/inputtext/InputText';
 import {Dropdown} from '../../components/dropdown/Dropdown';
 import {ProgressSpinner} from '../../components/progressspinner/ProgressSpinner';
 import {MultiSelect} from '../../components/multiselect/MultiSelect';
+import {Calendar} from '../../components/calendar/Calendar';
 import {Link} from 'react-router-dom';
 
 import {Button} from '../../components/button/Button';
@@ -44,9 +45,9 @@ export class ResourceIndex extends Component {
 
     async loadConfigs(tableName) {
         let createRoute = RouteHelper.getCreateRouteForResource(this.state.schemes,tableName);
-        let scheme = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName);
-        let routes = await RequestHelper.sendRequestNormal("GET","schemes/"+tableName+"/routes");
-        let countAnswer = await RequestHelper.sendRequestNormal("GET","models/"+"count/"+tableName);
+        let scheme = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+tableName);
+        let routes = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"schemes/"+tableName+"/routes");
+        let countAnswer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"models/"+"count/"+tableName);
 
         let count = countAnswer.count || 0;
 
@@ -86,7 +87,7 @@ export class ResourceIndex extends Component {
         console.log("orderParam: "+orderParam);
         console.log("URL: "+"models/"+tableName+"?limit="+limit+"&offset="+offset+orderParam);
 
-        let resourcesAnswer = await RequestHelper.sendRequestNormal("GET","models/"+tableName+"?limit="+limit+"&offset="+offset+orderParam);
+        let resourcesAnswer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,"models/"+tableName+"?limit="+limit+"&offset="+offset+orderParam);
         let resources = resourcesAnswer || [];
 
         await this.setState({
@@ -200,12 +201,25 @@ export class ResourceIndex extends Component {
         if(!body){
             body = this.defaultBodyTemplate.bind(this, field);
         }
+        let scheme = this.state.scheme;
 
-        if(SchemeHelper.isTypeJSON(this.state.scheme,field)){
+        if(SchemeHelper.isTypeJSON(scheme,field)){
             body = this.bodyTemplateJSON.bind(this,field);
         }
 
-        return (<Column key={field} field={field} header={header} body={body} sortable filterMatchMode="contains" filter filterPlaceholder={ResourceIndex.searchLoopIcon+" search"}/>);
+        let filterType = "text";
+        if(SchemeHelper.isTypeInteger(scheme, field)){
+            filterType = "number";
+        }
+        //TODO implement Type specific filter
+        // https://www.primefaces.org/primereact/showcase/#/datatable/filter
+        //const dateFilter = <Calendar value={this.state.selectedDate} onChange={(e) => this.setState({ selectedDate: e.value })} dateFormat="yy-mm-dd" className="p-column-filter" placeholder="Registration Date"/>;
+
+        //TODO implement differend filterMatchMode
+        // Add a button to choose the filterMatchMode
+        // https://www.primefaces.org/primereact/showcase/#/datatable
+
+        return (<Column key={field} filterType={filterType} field={field} header={header} body={body} sortable filterMatchMode="contains" filter filterPlaceholder={ResourceIndex.searchLoopIcon+" search"}/>);
     }
 
     bodyTemplateJSON(field, rowData, column){
@@ -241,6 +255,13 @@ export class ResourceIndex extends Component {
         await this.loadResourcesFromServer();
     }
 
+    async handleOnFilter(event){
+        console.log(event);
+        //TODO implement good filtering on backend
+        // https://sequelize.org/master/manual/model-querying-basics.html OPERATORS
+        this.setState({filters: event.filters});
+    }
+
     renderDataTable(){
         let emptyMessage = "No records found";
         if (this.state.isLoading) {
@@ -254,6 +275,8 @@ export class ResourceIndex extends Component {
             return (
                 <DataTable key={"Datatable:"+this.state.limit+JSON.stringify(this.state.multiSortMeta)}
                     ref={(el) => this.dt = el}
+                   filters={this.state.filters}
+                   onFilter={(e) => this.handleOnFilter(e)}
                     sortMode="multiple"
                    multiSortMeta={this.state.multiSortMeta} onSort={(e) => this.handleOnSort(e)}
                    responsive={true}

@@ -20,25 +20,22 @@ export class RouteHelper extends Component {
 		return getRoute;
 	}
 
-	static getInstanceResourceRoute(schemeRouteGET,scheme,tableName,resource){
-			schemeRouteGET = schemeRouteGET.replace("/api","");
+	static getInstanceRouteForResource(schemes,modelscheme,tableName,resource){
+		let primaryKeyFields = SchemeHelper.getPrimaryAttributeKeys(modelscheme);
+		let getRoute = schemes[tableName]["GET"];
+		getRoute = getRoute.replace("/api/","");
+		for(let i=0; i<primaryKeyFields.length; i++){
+			let primaryKeyField = primaryKeyFields[i];
+			let value = resource[primaryKeyField];
+			getRoute = getRoute.replace(":"+tableName+"_"+primaryKeyField,value)
+		}
+		return getRoute;
+	}
 
-			let primaryAttributeKeys = SchemeHelper.getPrimaryAttributeKeys(scheme);
-			for(let i=0;i<primaryAttributeKeys.length; i++){
-				let key = primaryAttributeKeys[i];
-				let value = resource[key];
-				if(!!value){
-					let routeParamKey = ":"+tableName+"_"+key;
-					schemeRouteGET = schemeRouteGET.replace(routeParamKey,value);
-				}
-			}
-
-			if(schemeRouteGET.includes(":")){ //if there are still unresolved params, we have no complete route
-				return undefined;
-			}
-
-			let route = schemeRouteGET;
-			return route;
+	static getInstanceRouteForAssociatedResource(schemes,resourceModelScheme,resourceTablename, resource, associationModelScheme, associationName, associationResource){
+		let resourceInstanceRoute = RouteHelper.getInstanceRouteForResource(schemes, resourceModelScheme,resourceTablename,resource);
+		let associationRoute = resourceInstanceRoute+"/associations/";
+		return associationRoute;
 	}
 
 	static getIndexRouteForResource(schemes, tableName){

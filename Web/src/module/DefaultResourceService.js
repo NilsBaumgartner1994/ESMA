@@ -10,7 +10,7 @@ export class DefaultResourceService {
      */
     static async handleIndex(resourceName) {
         console.log("[DefaultResourceService]: "+resourceName+" Index request");
-        let answer = await RequestHelper.sendRequestNormal("GET",resourceName);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,resourceName);
         if(answer==undefined){ // bei einem Problem
             return []; // gebe leere Liste aus
         }
@@ -25,7 +25,7 @@ export class DefaultResourceService {
      */
     static async handleCreate(resourceName, payloadJSON) {
         console.log("[DefaultResourceService]: "+resourceName+" Create Request");
-        let answer = await RequestHelper.sendRequestNormal("POST",resourceName,payloadJSON);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_POST,resourceName,payloadJSON);
         return answer;
     }
 
@@ -37,7 +37,7 @@ export class DefaultResourceService {
      */
     static async handleGet(resourceName, resource_id) {
         console.log("[DefaultResourceService]: "+resourceName+" Get Request: "+resource_id);
-        let answer = await RequestHelper.sendRequestNormal("GET",resourceName+'/'+resource_id);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,resourceName+'/'+resource_id);
         return answer;
     }
 
@@ -50,7 +50,7 @@ export class DefaultResourceService {
      */
     static async handleGetAssociation(resourceName, resource_id, routeAfterResource) {
         console.log("[DefaultResourceService]: "+resourceName+" Get Association Request: "+resource_id);
-        let answer = await RequestHelper.sendRequestNormal("GET",resourceName+'/'+resource_id+"/"+routeAfterResource);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,resourceName+'/'+resource_id+"/"+routeAfterResource);
         return answer;
     }
 
@@ -63,7 +63,7 @@ export class DefaultResourceService {
      */
     static async handleUpdate(resourceName, resource_id, payloadJSON) {
         console.log("[DefaultResourceService]: "+resourceName+" Update Request: "+resource_id);
-        let answer = await RequestHelper.sendRequestNormal("POST",resourceName+'/'+resource_id,payloadJSON);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_POST,resourceName+'/'+resource_id,payloadJSON);
         return answer;
     }
 
@@ -75,7 +75,7 @@ export class DefaultResourceService {
      */
     static async handleDelete(resourceName, resource_id) {
         console.log("[DefaultResourceService]: "+resourceName+" Delete Request: "+resource_id);
-        let answer = await RequestHelper.sendRequestNormal("DELETE",resourceName+'/'+resource_id);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,resourceName+'/'+resource_id);
         return answer;
     }
 

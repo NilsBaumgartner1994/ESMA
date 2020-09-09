@@ -3,7 +3,7 @@ import {RequestHelper} from "./RequestHelper";
 export class DefaultResourcePhotoService {
 
     static async handleDelete(resourceName, resource_id) {
-        let answer = await RequestHelper.sendRequestNormal("DELETE",resourceName+'/'+resource_id+"/photos");
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,resourceName+'/'+resource_id+"/photos");
         return answer;
     }
 

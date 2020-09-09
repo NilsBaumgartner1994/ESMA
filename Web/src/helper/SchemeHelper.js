@@ -40,6 +40,18 @@ export class SchemeHelper extends Component {
 		return SchemeHelper.getType(scheme,field) === "JSON";
 	}
 
+	static isTypeInteger(scheme, field){
+		return SchemeHelper.getType(scheme,field) === "INTEGER";
+	}
+
+	static isTypeDate(scheme, field){
+		return SchemeHelper.getType(scheme,field) === "DATE";
+	}
+
+	static isTypeString(scheme, field){
+		return SchemeHelper.getType(scheme,field) === "STRING";
+	}
+
 	static isAllowedNull(scheme,field){
 		return scheme[field].allowNull!==false;
 	}
