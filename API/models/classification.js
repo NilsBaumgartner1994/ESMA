@@ -33,8 +33,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Classification.associate = function(models) {
     // associations can be defined here
-      Classification.hasMany(
+      Classification.belongsToMany(
           models.Task,
+          {
+              through: 'TaskClassifications',
+          }
       );
   };
   return Classification;
