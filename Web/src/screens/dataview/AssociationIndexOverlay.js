@@ -32,9 +32,11 @@ export class AssociationIndexOverlay extends Component {
             callbackFunction: props.callbackFunction,
             functionLabel: props.functionLabel,
             associatedResources: props.associatedResources,
+            maxAssociatedResources: props.maxAssociatedResources || -1,
             associatedResourcesMap: {},
             showOnlyAssociated: props.showOnlyAssociated || false,
             selectedResourcesMap: {},
+            maxSelectedResources: props.maxSelectedResources || -1,
             isLoading: true,
             advanced: false,
             limit : ResourceIndex.DEFAULT_ITEMS_PER_PAGE,
@@ -331,15 +333,26 @@ export class AssociationIndexOverlay extends Component {
 
     renderSubmitButton(){
         if(!!this.state.callbackFunction) {
+            let selectedResourcesMap = this.state.selectedResourcesMap;
+            let selectedResources = [];
+            let keys = Object.keys(selectedResourcesMap);
+            let amountSelectedResources = keys.length;
+            for(let i=0; i<amountSelectedResources; i++){
+                selectedResources.push(selectedResourcesMap[keys[i]]);
+            }
+
+            let invalid = false;
+            if(this.state.maxSelectedResources > -1 && amountSelectedResources > this.state.maxSelectedResources){
+                invalid = true;
+            }
+
+            if(this.state.maxAssociatedResources > -1 && this.state.associatedResources.length > this.state.maxAssociatedResources){
+                invalid = true;
+            }
+
             return (
-                    <Button type="button" className="p-button-success" label={this.state.functionLabel} iconPos="right"
+                    <Button disabled={invalid} type="button" className="p-button-success" label={this.state.functionLabel} iconPos="right"
                             icon="pi pi-check" onClick={() => {
-                                let selectedResourcesMap = this.state.selectedResourcesMap;
-                                let selectedResources = [];
-                                let keys = Object.keys(selectedResourcesMap);
-                                for(let i=0; i<keys.length; i++){
-                                    selectedResources.push(selectedResourcesMap[keys[i]]);
-                                }
                                 this.state.callbackFunction(selectedResources);
                             }} ></Button >
             );

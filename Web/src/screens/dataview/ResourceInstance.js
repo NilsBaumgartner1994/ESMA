@@ -86,8 +86,13 @@ export class ResourceInstance extends Component {
         for(let i=0; i<associationTableNames.length; i++){
             let associationTableName = associationTableNames[i];
             let associationName = associations[associationTableName]["associationName"];
-            associationResources[associationName] = await this.loadAssociation(route,associationName);
-            console.log(associationResources[associationName]);
+            let answer = await this.loadAssociation(route,associationName);
+            if(!!answer && !answer.error){
+                associationResources[associationName] = answer;
+                console.log(associationResources[associationName]);
+            } else {
+                associationResources[associationName] = null;
+            }
         }
         return associationResources;
     }
@@ -390,6 +395,7 @@ export class ResourceInstance extends Component {
                         <AssociationIndexOverlay showOnlyAssociated={true} callbackFunction={removeCallbackFunction} tableName={associationTableName} scheme={modelscheme} associatedResources={resources} functionLabel={"Remove"}></AssociationIndexOverlay>
                     </OverlayPanel>
 
+                    <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-search" label="TODO: View" onClick={(e) => console.log("Implement me!")} />
                     <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-plus" label="Add" onClick={(e) => this[overlaypanelIDAddNew].toggle(e)} />
                     <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-minus" label="Remove" onClick={(e) => this[overlaypanelIDRemove].toggle(e)} />
 
@@ -456,91 +462,72 @@ export class ResourceInstance extends Component {
 
     renderAssociationCardSingle(associationTableName,associationName){
         let resource = this.state.associationResources[associationName];
-        console.log("renderAssociationCardSingle");
-        console.log(resource);
+        let modelscheme = this.state.associationSchemes[associationTableName];
+        let amountText = "";
 
-        let output = [];
-
-        if(!!resource){
-            output.push(this.renderAssociationRow(resource,associationTableName,associationName,false));
+        let isAssociated = !!resource;
+        let associatedResources = [];
+        if(isAssociated){
+            associatedResources = [resource];
         }
+
+        let overlaypanelID = "overlayPanel-"+associationName;
+        let overlaypanelIDAddNew = overlaypanelID+"AddNew";
+
+        let addCallbackFunction = this.handleSetAssociationsSingle.bind(this,overlaypanelIDAddNew,associationTableName,associationName);
+        let removeCallbackFunction = this.handleRemoveAssociationsSingle.bind(this,associationTableName,associationName);
 
         return(
             <div className="p-col">
                 <Card title={associationName} style={{width: '500px'}}>
-                    <div>{}</div>
-                    <table style={{border:0}}>
-                        <tbody>
-                            {output}
-                        </tbody>
-                    </table>
-                    <br></br>
-                    <div>Insert New Association</div>
+                    <OverlayPanel ref={(el) => this[overlaypanelIDAddNew] = el}>
+                        <AssociationIndexOverlay maxSelectedResources={1} maxAssociatedResources={0} showOnlyAssociated={false} callbackFunction={addCallbackFunction} tableName={associationTableName} scheme={modelscheme} associatedResources={associatedResources} functionLabel={"Add"}></AssociationIndexOverlay>
+                    </OverlayPanel>
+
+                    <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-search" label="TODO: View" onClick={(e) => console.log("Implement me!")} />
+                    <Button style={{"margin-right":"1em"}} disabled={isAssociated} type="button" icon="pi pi-plus" label="Set" onClick={(e) => this[overlaypanelIDAddNew].toggle(e)} />
+                    <Button style={{"margin-right":"1em"}} disabled={!isAssociated} type="button" icon="pi pi-minus" label="Remove" onClick={(e) => removeCallbackFunction()} />
+
                 </Card>
             </div>
         )
     }
 
-    handleDisassociateSingleAssociation(associationTableName,associationName,closeFunction){
-        //TODO implement function
-        alert("handleDisassociateSingleAssociation: "+associationTableName);
-        let success = true;
-        if(success){
-            closeFunction();
+    async handleSetAssociationsSingle(overlaypanelID,associationTableName,associationName,associationResources){
+        let associationModelscheme = this.state.associationSchemes[associationTableName];
+        if(!!associationResources && associationResources.length===1){
+            let associationResource = associationResources[0];
+            let route = RouteHelper.getInstanceRouteForAssociatedResource(this.state.schemes,this.state.scheme,this.state.tableName,this.state.resource,associationModelscheme,associationTableName,associationName,associationResource);
+            console.log("handleSetAssociationsSingle");
+            console.log(route);
+            let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_POST,route);
+            let success = !!answer && !answer.error;
+            if(success){
+                //TODO Toast, success
+                this.reloadPage(); //TODO remove reload page, instead reload partially. Problem if dependencies delete also, CASCADE ?
+            }
+        } else {
+
         }
     }
 
-    renderAssociationDisassociateSingle(associationTableName,associationName){
-        let closeFunction = this.setDialogVisibility.bind(this,associationTableName,false);
-
-        const footer = (
-            <div>
-                <Button label="Yes" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.handleDisassociateSingleAssociation(associationTableName,associationName,closeFunction) }} />
-                <Button label="No" icon="pi pi-times" className="p-button-info p-button-raised" onClick={closeFunction} className="p-button-secondary" />
-            </div>
-        );
-
-        let visible = this.state.dialogs[associationTableName];
-
-        return (
-            <div>
-                <Button label="TODO: Disassociate" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setDialogVisibility(associationTableName,true)}} />
-                <Dialog header={"Disassociate "+associationName} visible={visible} style={{width: '50vw'}} footer={footer} modal={true} onHide={closeFunction}>
-                    <div>Are you sure you want to disassociate this {associationName} ? This cannot be undone.</div>
-                </Dialog>
-            </div>
-        )
+    async handleRemoveAssociationsSingle(associationTableName,associationName){
+        let route = RouteHelper.getIndexRouteForAssociation(this.state.schemes,this.state.scheme,this.state.tableName,this.state.resource,associationName);
+        console.log("handleRemoveAssociationsSingle");
+        console.log(route);
+        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,route);
+        let success = !!answer && !answer.error;
+        if(success){
+            //TODO Toast, success
+            this.reloadPage(); //TODO remove reload page, instead reload partially. Problem if dependencies delete also, CASCADE ?
+        }
     }
+
 
     setDialogVisibility(associationTableName,visible){
         let dialogs = this.state.dialogs;
         dialogs[associationTableName] = visible;
         this.setState({dialogs: dialogs});
-    }
-
-    renderAssociationRow(associationResource,associationTableName,associationName,isPlural){
-        let modelscheme = this.state.associationSchemes[associationTableName];
-        let route = RouteHelper.getInstanceRouteForResource(this.state.schemes,modelscheme,associationTableName,associationResource);
-
-        let displayname = associationResource.name || associationResource.id;
-
-        let visitButton = (
-            <Link to={"/"+route}>
-                <Button type="button" className="p-button-success" label={""+displayname} icon="pi pi-search" style={{"width":"100%"}} ></Button>
-            </Link>
-        )
-
-        let disassociateButton = isPlural ?
-            this.renderAssociationDisassociateMultiple(associationTableName,associationName,associationResource) :
-            this.renderAssociationDisassociateSingle(associationTableName,associationName)
-
-        return(
-            <tr>
-                <td>{visitButton}</td>
-                <td>{associationTableName}</td>
-                <td>{disassociateButton}</td>
-            </tr>
-        )
     }
 
     openDialogDeleteResource(){

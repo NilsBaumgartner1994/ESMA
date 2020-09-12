@@ -254,6 +254,7 @@ export default class SequelizeAssociationController {
         let functionForModel = async function(req, res){ //define the get function
 
             //TODO Permission
+            console.log("handle SingleAssociationGetRoute");
 
             let resource = req.locals[tableName];
             let associationResource = await resource[associationFunction]();
@@ -273,6 +274,7 @@ export default class SequelizeAssociationController {
         }
 
         let associationRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);
+        console.log("configureSingleAssociationGetRoute: "+associationRoute);
         this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
     }
 
@@ -281,13 +283,16 @@ export default class SequelizeAssociationController {
 
         console.log("Configure remove Associtation: "+tableName);
         let functionForModel = async function(req, res){ //define the get function
-
+            console.log("handle SingleAssociationRemoveRoute")
             let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_DELETE,false);
             if(permission.granted){
+                console.log("Permission granted");
                 let resource = req.locals[tableName];
                 let isAssociated = await resource["set"+singularName](null);
+                console.log(isAssociated);
+                console.log("Maybe that not correct ?");
                 if(isAssociated){
-                        DefaultControllerHelper.respondWithDeleteMessage(req, res);
+                    DefaultControllerHelper.respondWithDeleteMessage(req, res);
                 } else {
                     MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, { //response with error
                         error: 'No Resource found',
@@ -301,7 +306,7 @@ export default class SequelizeAssociationController {
         }
 
         let associationRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);
-        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+        this.expressApp.delete(associationRoute, functionForModel.bind(this)); // register route in express
     }
 
     configureSingleAssociationSetRoute(model, singularName, modelAssociationName, accessControlAssociationResource,associationModel){
@@ -310,7 +315,7 @@ export default class SequelizeAssociationController {
         let methodName = "get";
         let associationFunction = methodName+modelAssociationName;
 
-        console.log("Configure remove Associtation: "+tableName);
+        console.log("Configure set Associtation: "+tableName);
         let functionForModel = async function(req, res){ //define the get function
 
             let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_CREATE,false);
@@ -340,7 +345,7 @@ export default class SequelizeAssociationController {
         }
 
         let associationRoute = SequelizeRouteHelper.getModelAssociationInstanceRoute(model,modelAssociationName,accessControlAssociationResource,associationModel)
-        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+        this.expressApp.post(associationRoute, functionForModel.bind(this)); // register route in express
     }
 
 }

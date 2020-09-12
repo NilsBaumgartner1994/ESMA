@@ -118,7 +118,7 @@ export default class DefaultControllerHelper {
      * @param res The response object
      */
     static respondWithDeleteMessage(req, res) {
-        MyExpressRouter.respondWithSuccessMessage(req, res);
+        DefaultControllerHelper.respondWithSuccessMessage(req, res);
     }
 
     /**
