@@ -100,7 +100,7 @@ export class AppMenu extends Component {
                     <img alt="data" className="layout-menu-icon-inactive"
                          src="/showcase/resources/images/mono/data.svg"/>
                     <img alt="data" className="layout-menu-icon-active"
-                         src="/howcase/resources/images/mono/data-active.svg"/>
+                         src="/showcase/resources/images/mono/data-active.svg"/>
                     <span>Server Information</span>
                 </button>
                 <CSSTransition classNames="layout-submenu" timeout={{enter: 400, exit: 400}}

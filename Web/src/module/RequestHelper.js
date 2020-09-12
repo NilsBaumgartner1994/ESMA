@@ -13,8 +13,8 @@ export class RequestHelper {
             return config.specificAPIURL;
         }
         let base_url = window.location.origin;
-        console.log("base_url");
-        console.log(base_url);
+        //console.log("base_url");
+        //console.log(base_url);
         return base_url+"/api/";
     }
 
@@ -31,12 +31,12 @@ export class RequestHelper {
         let payload = JSON.stringify(payload_json);
 
         resource_url = RequestHelper.getAPIURL()+resource_url;
-        console.log("resource_url:");
-        console.log(resource_url);
+        //console.log("resource_url:");
+        //console.log(resource_url);
 
         let response = undefined;
-        console.log("private_sendRequest: payload: ");
-        console.log(payload_json);
+        //console.log("private_sendRequest: payload: ");
+        //console.log(payload_json);
 
         if(requestType===RequestHelper.REQUEST_TYPE_GET){
             response = await fetch(resource_url, {
@@ -54,9 +54,9 @@ export class RequestHelper {
         }
         try {
 
-            console.log(response);
+            //console.log(response);
             let answer = await response.json();
-            console.log(answer);
+            //console.log(answer);
             return answer;
         } catch(e){
             console.log("Error at: ");

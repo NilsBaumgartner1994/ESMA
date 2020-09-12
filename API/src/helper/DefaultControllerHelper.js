@@ -118,6 +118,15 @@ export default class DefaultControllerHelper {
      * @param res The response object
      */
     static respondWithDeleteMessage(req, res) {
+        MyExpressRouter.respondWithSuccessMessage(req, res);
+    }
+
+    /**
+     * Response a Request with the default Message for a success
+     * @param req The request object
+     * @param res The response object
+     */
+    static respondWithSuccessMessage(req, res) {
         MyExpressRouter.responseWithJSON(res, HttpStatus.OK, {success: true});
     }
 

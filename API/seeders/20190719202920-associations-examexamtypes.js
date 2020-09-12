@@ -14,7 +14,7 @@ module.exports = {
 
     for(let i=0; i<exams.length; i++){
       let exam = exams[i];
-      exam.setExamtype(examtype);
+      await exam.setExamtype(examtype);
     }
 
     return;

@@ -32,12 +32,6 @@ export class RouteHelper extends Component {
 		return getRoute;
 	}
 
-	static getInstanceRouteForAssociatedResource(schemes,resourceModelScheme,resourceTablename, resource, associationModelScheme, associationName, associationResource){
-		let resourceInstanceRoute = RouteHelper.getInstanceRouteForResource(schemes, resourceModelScheme,resourceTablename,resource);
-		let associationRoute = resourceInstanceRoute+"/associations/";
-		return associationRoute;
-	}
-
 	static getIndexRouteForResource(schemes, tableName){
 		let getRoute = schemes[tableName]["INDEX"];
 		getRoute = getRoute.replace("/api/","");
@@ -48,6 +42,20 @@ export class RouteHelper extends Component {
 		let getRoute = RouteHelper.getIndexRouteForResource(schemes,tableName);
 		getRoute = "/create/"+getRoute;
 		return getRoute;
+	}
+
+	static getIndexRouteForAssociation(schemes,resourceModelScheme,resourceTablename, resource, associationName){
+		let resourceInstanceRoute = RouteHelper.getInstanceRouteForResource(schemes, resourceModelScheme,resourceTablename,resource);
+		let associationIndexRoute = resourceInstanceRoute+"/associations/"+associationName;
+		return associationIndexRoute;
+	}
+
+	static getInstanceRouteForAssociatedResource(schemes,resourceModelScheme,resourceTablename, resource, associationModelScheme, associationTableName,associationName, associationResource){
+		let associationIndexRoute = RouteHelper.getIndexRouteForAssociation(schemes,resourceModelScheme,resourceTablename, resource, associationName);
+		let associationInstanceRoute = RouteHelper.getInstanceRouteForResource(schemes,associationModelScheme,associationTableName,associationResource);
+		let primaryKeyParamsRoute = associationInstanceRoute.replace("models/"+associationTableName+"/","");
+		let associationRoute = associationIndexRoute+"/"+primaryKeyParamsRoute;
+		return associationRoute;
 	}
 
 }

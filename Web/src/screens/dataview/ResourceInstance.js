@@ -13,6 +13,7 @@ import {InputTextarea} from '../../components/inputtextarea/InputTextarea';
 import {Dialog} from '../../components/dialog/Dialog';
 import {RouteHelper} from "../../helper/RouteHelper";
 import { OverlayPanel } from '../../components/overlaypanel/OverlayPanel';
+import {AssociationIndexOverlay} from "./AssociationIndexOverlay";
 import {Link} from "react-router-dom";
 
 export class ResourceInstance extends Component {
@@ -39,6 +40,10 @@ export class ResourceInstance extends Component {
         this.loadResources(params);
     }
 
+    reloadPage(){
+        window.location.reload();
+    }
+
     async loadResources(params){
         let route = RouteHelper.getInstanceRouteForParams(this.state.schemes,this.state.tableName,params);
         let resource = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,route);
@@ -47,7 +52,7 @@ export class ResourceInstance extends Component {
         let associationResources = await this.loadAssociationResources(route,associations);
         let associationSchemes = await this.loadAssociationSchemes(associations);
 
-        console.log(resource);
+        //console.log(resource);
 
         this.setState({
             isLoading: false,
@@ -82,12 +87,14 @@ export class ResourceInstance extends Component {
             let associationTableName = associationTableNames[i];
             let associationName = associations[associationTableName]["associationName"];
             associationResources[associationName] = await this.loadAssociation(route,associationName);
+            console.log(associationResources[associationName]);
         }
         return associationResources;
     }
 
     async loadAssociation(route,associationName){
         route = route+"/associations/"+associationName;
+        console.log("loadAssociation: "+route);
         let resource = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_GET,route);
         return resource;
     }
@@ -147,17 +154,17 @@ export class ResourceInstance extends Component {
 
     renderResetButton(){
         if(this.state.isEdited && !this.state.requestPending){
-            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" iconPos="right" onClick={() => {this.resetResource()}} />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" onClick={() => {this.resetResource()}} />);
         } else {
-            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" iconPos="right" disabled="disabled" />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Reset" icon="pi pi-undo" disabled="disabled" />);
         }
     }
 
     renderUpdateButton(){
         if(this.state.isEdited && !this.state.requestPending){
-            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" onClick={() => {this.updateResource()}} />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" onClick={() => {this.updateResource()}} />);
         } else {
-            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" iconPos="right" disabled="disabled" />);
+            return(<Button style={{"margin-right":"1em"}} className="p-button-raised" label="Save" icon="pi pi-check" disabled="disabled" />);
         }
     }
 
@@ -357,44 +364,72 @@ export class ResourceInstance extends Component {
     }
 
     renderAssociationCardPlural(associationTableName,associationName){
-        let resources = this.state.associationResources[associationTableName];
+        let resources = this.state.associationResources[associationName];
+        let modelscheme = this.state.associationSchemes[associationTableName];
         let amountText = "";
-        let output = [];
 
         if(!!resources){
             let amount = resources.length;
-            for(let i=0; i<amount; i++){
-                let associationResource = resources[i];
-                output.push(this.renderAssociationRow(associationResource,associationTableName,associationName,true))
-            }
             amountText = "("+amount+")";
         }
+
+        let overlaypanelID = "overlayPanel-"+associationName;
+        let overlaypanelIDAddNew = overlaypanelID+"AddNew";
+        let overlaypanelIDRemove = overlaypanelID+"Remove";
+
+        let addCallbackFunction = this.handleAddAssociationsMultiple.bind(this,overlaypanelIDAddNew,associationTableName,associationName);
+        let removeCallbackFunction = this.handleRemoveAssociationsMultiple.bind(this,overlaypanelIDRemove,associationTableName,associationName);
 
         return(
             <div className="p-col">
                 <Card title={associationName+" "+amountText} style={{width: '500px'}}>
-                    <div>{}</div>
-                    <table style={{border:0}}>
-                        <tbody>
-                            {output}
-                        </tbody>
-                    </table>
-                    <br></br>
-                    <div>Insert New Association</div>
+                    <OverlayPanel ref={(el) => this[overlaypanelIDAddNew] = el}>
+                        <AssociationIndexOverlay showOnlyAssociated={false} callbackFunction={addCallbackFunction} tableName={associationTableName} scheme={modelscheme} associatedResources={resources} functionLabel={"Add"}></AssociationIndexOverlay>
+                    </OverlayPanel>
+                    <OverlayPanel ref={(el) => this[overlaypanelIDRemove] = el}>
+                        <AssociationIndexOverlay showOnlyAssociated={true} callbackFunction={removeCallbackFunction} tableName={associationTableName} scheme={modelscheme} associatedResources={resources} functionLabel={"Remove"}></AssociationIndexOverlay>
+                    </OverlayPanel>
+
+                    <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-plus" label="Add" onClick={(e) => this[overlaypanelIDAddNew].toggle(e)} />
+                    <Button style={{"margin-right":"1em"}} type="button" icon="pi pi-minus" label="Remove" onClick={(e) => this[overlaypanelIDRemove].toggle(e)} />
+
                 </Card>
             </div>
         )
     }
 
-    async handleDisassociateMultipleAssociation(associationTableName,associationName,associationResource,closeFunction){
-        //TODO implement function
-        alert("handleDisassociateMultipleAssociation: "+associationTableName);
-
-        let answer = await RequestHelper.sendRequestNormal(RequestHelper.REQUEST_TYPE_DELETE,this.state.route);
-        let success = true;
-        if(success){
-            closeFunction();
+    async handleAddAssociationsMultiple(overlaypanelID,associationTableName,associationName,associationResources){
+        this[overlaypanelID].hide();
+        let amountSuccess = 0;
+        for(let i=0; i<associationResources.length; i++){
+            let associationResource = associationResources[i];
+            let success = await this.handleRequestTypeOnMultipleAssociation(associationTableName,associationName,associationResource,RequestHelper.REQUEST_TYPE_POST);
+            if(success){
+                amountSuccess++;
+            }
         }
+        this.reloadPage(); //TODO remove reload page, instead reload partially. Problem if dependencies delete also, CASCADE ?
+    }
+
+    async handleRemoveAssociationsMultiple(overlaypanelID,associationTableName,associationName,associationResources){
+        this[overlaypanelID].hide();
+        let amountSuccess = 0;
+        for(let i=0; i<associationResources.length; i++){
+            let associationResource = associationResources[i];
+            let success = await this.handleRequestTypeOnMultipleAssociation(associationTableName,associationName,associationResource,RequestHelper.REQUEST_TYPE_DELETE);
+            if(success){
+                amountSuccess++;
+            }
+        }
+        this.reloadPage(); //TODO remove reload page, instead reload partially. Problem if dependencies delete also, CASCADE ?
+    }
+
+    async handleRequestTypeOnMultipleAssociation(associationTableName,associationName,associationResource,requestType){
+        let associationModelscheme = this.state.associationSchemes[associationTableName];
+        let route = RouteHelper.getInstanceRouteForAssociatedResource(this.state.schemes,this.state.scheme,this.state.tableName,this.state.resource,associationModelscheme,associationTableName,associationName,associationResource);
+        let answer = await RequestHelper.sendRequestNormal(requestType,route);
+        let success = !!answer && !answer.error;
+        return success;
     }
 
     renderAssociationDisassociateMultiple(associationTableName,associationName,associationResource){
@@ -411,7 +446,7 @@ export class ResourceInstance extends Component {
 
         return (
             <div>
-                <Button label="TODO: Disassociate" icon="pi pi-check" className="p-button-danger p-button-raised" onClick={() => {this.setDialogVisibility(associationTableName,true)}} />
+                <Button label="TODO: Disassociate" icon="pi pi-minus" className="p-button-danger p-button-raised" onClick={() => {this.setDialogVisibility(associationTableName,true)}} />
                 <Dialog header={"Disassociate "+associationName} visible={visible} style={{width: '50vw'}} footer={footer} modal={true} onHide={closeFunction}>
                     <div>Are you sure you want to disassociate this {associationName} ? This cannot be undone.</div>
                 </Dialog>
@@ -420,7 +455,10 @@ export class ResourceInstance extends Component {
     }
 
     renderAssociationCardSingle(associationTableName,associationName){
-        let resource = this.state.associationResources[associationTableName];
+        let resource = this.state.associationResources[associationName];
+        console.log("renderAssociationCardSingle");
+        console.log(resource);
+
         let output = [];
 
         if(!!resource){
@@ -488,7 +526,7 @@ export class ResourceInstance extends Component {
 
         let visitButton = (
             <Link to={"/"+route}>
-                <Button type="button" className="p-button-success" label={""+displayname} iconPos="right" icon="pi pi-search" style={{"width":"100%"}} ></Button>
+                <Button type="button" className="p-button-success" label={""+displayname} icon="pi pi-search" style={{"width":"100%"}} ></Button>
             </Link>
         )
 

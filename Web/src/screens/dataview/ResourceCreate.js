@@ -12,6 +12,7 @@ import {InputText} from '../../components/inputtext/InputText';
 import {InputTextarea} from '../../components/inputtextarea/InputTextarea';
 import {Dialog} from '../../components/dialog/Dialog';
 import {RouteHelper} from "../../helper/RouteHelper";
+import {InputSwitch} from "../../components/inputswitch/InputSwitch";
 
 export class ResourceCreate extends Component {
 
@@ -295,6 +296,14 @@ export class ResourceCreate extends Component {
                 <div className="feature-intro">
                     <h1>{this.state.tableName}</h1>
                     <p>Creation</p>
+                    <table style={{width: "100%"}}>
+                        <tr>
+                            <td align="right">
+                                <p>Advanced: </p>
+                                <InputSwitch checked={this.state.advanced} onChange={(e) => this.setState({advanced: e.value})} />
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         )

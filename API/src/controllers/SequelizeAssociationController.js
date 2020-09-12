@@ -70,44 +70,45 @@ export default class SequelizeAssociationController {
             let accessControlAssociationResource = "Association"+tableName+modelAssociationName;
 
             if(hasManyAssociated){ // e.G. User has many Feedbacks
-                console.log("    Configure Primary Param Checker")
-                SequelizeController.configurePrimaryParamsChecker(this.expressApp,associationTargetModel,accessControlAssociationResource); //configure the params for identifing the resource
+                //configure the params for identifing the associated resource
+                SequelizeController.configurePrimaryParamsChecker(this.expressApp,associationTargetModel,accessControlAssociationResource);
 
                 // GET /Users/1/associations/count/Feedbacks
-                console.log("    Configure Count Associtation");
-                this.configureModelCountAssociationInstanceRoute(model,pluralName,modelAssociationName);
+                this.configureMultipleAssociationCountRoute(model,pluralName,modelAssociationName);
 
                 // GET /Users/1/associations/Feedbacks ==> Get List of all Feedbacks
-                    //pagination, search, filter, ...
                 this.configureMultipleAssociationsIndexRoute(model,modelAssociationName,associationTargetModel,accessControlAssociationResource);
 
-                // POST /Users/1/associations/Feedbacks ==> Add List of all Feedbacks
+                // TODO POST /Users/1/associations/Feedbacks ==> Add List of all Feedbacks
+                // TODO PUT /Users/1/associations/Feedbacks ==> Replace List of all Feedbacks
+                // TODO DELETE /Users/1/associations/Feedbacks ==> Clear List of all Feedbacks
 
-                // PUT /Users/1/associations/Feedbacks ==> Replace List of all Feedbacks
-
-                // DELETE /Users/1/associations/Feedbacks ==> Clear List of all Feedbacks
-
-
-                // GET /Users/1/associations/Feedback/3 ==> Get single specific Feedback
+                // GET /Users/1/associations/Feedbacks/3 ==> Get single specific Feedback
                 this.configureMultipleAssociationsGetSpecificRoute(model,modelAssociationName,associationTargetModel,accessControlAssociationResource);
 
-                // POST /Users/1/associations/Feedback ==> Add Association Feedback
-                // POST /Users/1/associations/Feedback/3 ==> Add Association Feedback to specific
+                // POST /Users/1/associations/Feedbacks/3 ==> Add Association Feedback to specific
+                this.configureMultipleAssociationsAddSpecificRoute(model,modelAssociationName,associationTargetModel,accessControlAssociationResource,singularName);
 
-                // DELETE /Users/1/associations/Feedback/3 ==> Remove Association to Feedback
+                // DELETE /Users/1/associations/Feedbacks/3 ==> Remove Association to Feedback
                 this.configureMultipleAssociationsRemoveSpecificRoute(model,modelAssociationName,associationTargetModel,accessControlAssociationResource,singularName);
             } else {
-                // GET /Users/1/associations/count/Feedback
+                SequelizeController.configurePrimaryParamsChecker(this.expressApp,associationTargetModel,accessControlAssociationResource);
+
+                // Method does not exist --> Not implemented GET /Users/1/associations/count/Feedback
 
                 // GET /Users/1/associations/Feedback ==> Get single Feedback
+                this.configureSingleAssociationGetRoute(model, singularName, modelAssociationName,accessControlAssociationResource);
 
                 //check if there is an old association, if yes than deny, should use PUT
-                // POST /Users/1/associations/Feedback ==> Add Association Feedback
-                // POST /Users/1/associations/Feedback/3 ==> Add Association Feedback to specific
+                // TODO POST /Users/1/associations/Feedback ==> Add Association Feedback
 
-                // PUT /Users/1/associations/Feedback/3 ==> Replace Association Feedback to specific
+                // POST /Users/1/associations/Feedback/3 ==> Add Association Feedback to specific
+                this.configureSingleAssociationSetRoute(model, singularName, modelAssociationName,accessControlAssociationResource,associationTargetModel);
+
+                // TODO PUT /Users/1/associations/Feedback/3 ==> Replace Association Feedback to specific
 
                 // DELETE /Users/1/associations/Feedback ==> Remove Association to Feedback
+                this.configureSingleAssociationRemoveRoute(model, singularName, modelAssociationName,accessControlAssociationResource);
                 //this.configureSingleAssociationRemoveRoute(model,modelAssociationName,associationTargetModel,accessControlAssociationResource);
             }
         }
@@ -115,7 +116,7 @@ export default class SequelizeAssociationController {
 
 
 
-    configureModelCountAssociationInstanceRoute(model,pluralName,modelAssociationName){
+    configureMultipleAssociationCountRoute(model, pluralName, modelAssociationName){
         let methodName = SequelizeRouteHelper.METHOD_COUNT_PREFIX;
 
         let associationFunction = methodName+modelAssociationName;
@@ -189,6 +190,12 @@ export default class SequelizeAssociationController {
                     }).catch(err => {
                         DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
                     });
+                } else {
+                    MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, { //response with error
+                        error: 'No Resource found',
+                        model: modelAssociationName,
+                    });
+                    return;
                 }
             } else {
                 DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Delete "+accessControlAssociationResource);
@@ -198,17 +205,142 @@ export default class SequelizeAssociationController {
 
         let route = SequelizeRouteHelper.getModelAssociationInstanceRoute(model, modelAssociationName, accessControlAssociationResource, associationModel);
         console.log("Association Route: " + route);
-        this.expressApp.get(route, functionForModel.bind(this)); // register route in express
+        this.expressApp.delete(route, functionForModel.bind(this)); // register route in express
+    }
+
+    configureMultipleAssociationsAddSpecificRoute(model,modelAssociationName,associationModel,accessControlAssociationResource,singularName) {
+        console.log("configure association route: configureMultipleAssociationsAddSpecificRoute");
+        let tableName = SequelizeHelper.getTableName(model);
+        let associatedTableName = SequelizeHelper.getTableName(associationModel);
+
+        let functionForModel = async function (req, res) { //define the get function
+            //just call the default GET
+            let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_CREATE,false);
+            if(permission.granted){
+                let resource = req.locals[tableName];
+                let associatedResource = req.locals[accessControlAssociationResource];
+
+                let isAssociated = await resource["has"+singularName](associatedResource);
+                console.log(isAssociated);
+                if(!isAssociated){
+                    resource["add"+singularName](associatedResource).then(success => {
+                        DefaultControllerHelper.respondWithSuccessMessage(req, res); //TODO better response ? Maybe handleGet ?
+                    }).catch(err => {
+                        DefaultControllerHelper.respondWithInternalErrorMessage(req,res,err);
+                    });
+                }
+            } else {
+                DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Add "+accessControlAssociationResource);
+            }
+
+        }
+
+        let route = SequelizeRouteHelper.getModelAssociationInstanceRoute(model, modelAssociationName, accessControlAssociationResource, associationModel);
+        console.log("Association Route: " + route);
+        this.expressApp.post(route, functionForModel.bind(this)); // register route in express
     }
 
 
     /**
-     configureSingleAssociationRemoveRoute(model,modelAssociationName,associationModel,accessControlAssociationResource){
-        let functionForModel = async function (req, res) { //define the get function
-            //just call the default GET
-        }
-    }
+     * Single Resource
      */
+    configureSingleAssociationGetRoute(model, singularName, modelAssociationName, accessControlAssociationResource){
+        let methodName = "get";
 
+        let associationFunction = methodName+modelAssociationName;
+        let tableName = SequelizeHelper.getTableName(model);
+
+        console.log("Configure Get Associtation: "+tableName+" "+associationFunction+" ");
+        let functionForModel = async function(req, res){ //define the get function
+
+            //TODO Permission
+
+            let resource = req.locals[tableName];
+            let associationResource = await resource[associationFunction]();
+            if(!!associationResource) {
+                let reqLocalsKey = accessControlAssociationResource;
+                req.locals[reqLocalsKey] = associationResource; //save the found resource
+                await DefaultControllerHelper.setOwningState(req, reqLocalsKey);
+                this.myExpressRouter.defaultControllerHelper.handleGet(req, res, this.myAccessControl, accessControlAssociationResource);
+                return;
+            } else {
+                MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, { //response with error
+                    error: 'No Resource found',
+                    model: modelAssociationName,
+                });
+                return;
+            }
+        }
+
+        let associationRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);
+        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+    }
+
+    configureSingleAssociationRemoveRoute(model, singularName, modelAssociationName, accessControlAssociationResource){
+        let tableName = SequelizeHelper.getTableName(model);
+
+        console.log("Configure remove Associtation: "+tableName);
+        let functionForModel = async function(req, res){ //define the get function
+
+            let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_DELETE,false);
+            if(permission.granted){
+                let resource = req.locals[tableName];
+                let isAssociated = await resource["set"+singularName](null);
+                if(isAssociated){
+                        DefaultControllerHelper.respondWithDeleteMessage(req, res);
+                } else {
+                    MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, { //response with error
+                        error: 'No Resource found',
+                        model: modelAssociationName,
+                    });
+                    return;
+                }
+            } else {
+                DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Delete "+accessControlAssociationResource);
+            }
+        }
+
+        let associationRoute = SequelizeRouteHelper.getModelAssociationBaseRoute(model,modelAssociationName);
+        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+    }
+
+    configureSingleAssociationSetRoute(model, singularName, modelAssociationName, accessControlAssociationResource,associationModel){
+        let tableName = SequelizeHelper.getTableName(model);
+
+        let methodName = "get";
+        let associationFunction = methodName+modelAssociationName;
+
+        console.log("Configure remove Associtation: "+tableName);
+        let functionForModel = async function(req, res){ //define the get function
+
+            let permission = DefaultControllerHelper.getPermission(req,this.myAccessControl,accessControlAssociationResource,DefaultControllerHelper.CRUD_CREATE,false);
+            if(permission.granted){
+                let resource = req.locals[tableName];
+
+                let currentAssociationResource = await resource[associationFunction]();
+                if(!!currentAssociationResource){
+                    DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Create "+accessControlAssociationResource+" Unassociate first or use PUT to override");
+                    return;
+                } else {
+                    let newAssociationResource = req.locals[accessControlAssociationResource];
+                    let isAssociated = await resource["set"+singularName](newAssociationResource);
+                    if(isAssociated){
+                        DefaultControllerHelper.respondWithSuccessMessage(req, res); //TODO better response ? Maybe handleGet ?
+                    } else {
+                        MyExpressRouter.responseWithJSON(res, HttpStatus.NOT_FOUND, { //response with error
+                            error: 'No Resource found',
+                            model: modelAssociationName,
+                        });
+                        return;
+                    }
+                }
+            } else {
+                DefaultControllerHelper.respondWithForbiddenMessage(req,res,"Create "+accessControlAssociationResource);
+            }
+        }
+
+        let associationRoute = SequelizeRouteHelper.getModelAssociationInstanceRoute(model,modelAssociationName,accessControlAssociationResource,associationModel)
+        this.expressApp.get(associationRoute, functionForModel.bind(this)); // register route in express
+    }
 
 }
